@@ -1,24 +1,27 @@
-package top.lingkang.finalserver.server.web;
+package top.lingkang.finalserver.server.web.nio;
 
 
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelId;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.*;
 import io.netty.util.CharsetUtil;
+import top.lingkang.finalserver.server.web.http.FinalServerContext;
 
 /**
  * @author lingkang
  * Created by 2022/12/6
  */
-public class HandlerHttpRequest extends SimpleChannelInboundHandler<FullHttpRequest> {
+public class HandlerHttpRequest extends SimpleChannelInboundHandler<FinalServerContext> {
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest msg) throws Exception {
-        System.out.println(msg.uri());
-
+    protected void channelRead0(ChannelHandlerContext ctx, FinalServerContext context) throws Exception {
         try {
+            ChannelId id = ctx.channel().id();
+            System.out.println(context.getRequest().getHttpMethod().name());
+            System.out.println(id.asLongText());
             send(ctx, "404", HttpResponseStatus.NOT_FOUND);
         } catch (Exception e) {
             e.printStackTrace();

@@ -1,4 +1,4 @@
-package top.lingkang.annotation;
+package top.lingkang.finalserver.server.annotation;
 
 import java.lang.annotation.*;
 

@@ -1,13 +1,12 @@
-package top.lingkang.finalserver.server.web;
+package top.lingkang.finalserver.server.web.nio;
 
-import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 import org.springframework.context.ApplicationContext;
-import top.lingkang.finalserver.server.web.handler.FirstHandler;
+import top.lingkang.finalserver.server.web.http.Filter;
 
 import java.util.Arrays;
 
@@ -29,6 +28,7 @@ public class ServerInitializer extends ChannelInitializer<Channel> {
         ChannelPipeline pipeline = ch.pipeline();
         pipeline.addLast(new HttpServerCodec());
         pipeline.addLast(new HttpObjectAggregator(1024));
+        pipeline.addLast(new HandlerHttpWrapper());
         pipeline.addLast(new HandlerHttpRequest());
     }
 
