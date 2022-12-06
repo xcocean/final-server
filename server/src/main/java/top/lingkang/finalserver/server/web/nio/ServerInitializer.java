@@ -6,9 +6,6 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 import org.springframework.context.ApplicationContext;
-import top.lingkang.finalserver.server.web.http.Filter;
-
-import java.util.Arrays;
 
 /**
  * @author lingkang
@@ -19,8 +16,6 @@ public class ServerInitializer extends ChannelInitializer<Channel> {
 
     public ServerInitializer(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
-        String[] filters = applicationContext.getBeanNamesForType(Filter.class);
-        System.out.println(Arrays.toString(filters));
     }
 
     @Override

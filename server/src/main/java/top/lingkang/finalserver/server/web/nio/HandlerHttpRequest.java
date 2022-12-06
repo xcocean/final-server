@@ -8,7 +8,10 @@ import io.netty.channel.ChannelId;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.*;
 import io.netty.util.CharsetUtil;
+import top.lingkang.finalserver.server.web.FinalServerWeb;
 import top.lingkang.finalserver.server.web.http.FinalServerContext;
+import top.lingkang.finalserver.server.web.http.HandlerChain;
+
 
 /**
  * @author lingkang
@@ -22,10 +25,20 @@ public class HandlerHttpRequest extends SimpleChannelInboundHandler<FinalServerC
             ChannelId id = ctx.channel().id();
             System.out.println(context.getRequest().getHttpMethod().name());
             System.out.println(id.asLongText());
-            send(ctx, "404", HttpResponseStatus.NOT_FOUND);
+
+            for (HandlerChain chain : FinalServerWeb.handlerChain) {
+                if (!chain.handler(context))
+                    break;
+            }
+            HttpMethod get = HttpMethod.GET;
+            System.out.println(ctx.channel().bytesBeforeWritable());
+            if (!context.getResponse().isWrite())
+                send(ctx, "404", HttpResponseStatus.NOT_FOUND);
         } catch (Exception e) {
             e.printStackTrace();
         }
+        ctx.channel().flush();
+        send(ctx, null, HttpResponseStatus.OK);
     }
 
     @Override
@@ -35,17 +48,11 @@ public class HandlerHttpRequest extends SimpleChannelInboundHandler<FinalServerC
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        send(ctx, "后台异常", HttpResponseStatus.INTERNAL_SERVER_ERROR);
+        cause.printStackTrace();
     }
 
-    /**
-     * 发送的返回值
-     *
-     * @param ctx     返回
-     * @param context 消息
-     * @param status  状态
-     */
-    private void send(ChannelHandlerContext ctx, String context,
-                      HttpResponseStatus status) {
+    private void send(ChannelHandlerContext ctx, String context, HttpResponseStatus status) {
         FullHttpResponse response = new DefaultFullHttpResponse(
                 HttpVersion.HTTP_1_1, status,
                 Unpooled.copiedBuffer(context, CharsetUtil.UTF_8)

@@ -1,6 +1,7 @@
 package top.lingkang.finalserver.server.web.http;
 
 import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * @author lingkang
@@ -9,9 +10,10 @@ import java.io.InputStream;
 public interface Response {
     void setHeader(String name,String value);
 
-    InputStream getInputStream();
+    void writeString(Object obj);
 
     void setStatusCode(int code);
 
+    boolean isWrite();
 
 }

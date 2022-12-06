@@ -7,6 +7,7 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertySources;
 import org.springframework.core.env.StandardEnvironment;
+import org.springframework.stereotype.Controller;
 import top.lingkang.finalserver.server.FinalServerApplication;
 import top.lingkang.finalserver.server.annotation.FinalServerBoot;
 
@@ -17,7 +18,7 @@ import java.util.Arrays;
  * Created by 2022/12/6
  */
 @FinalServerBoot
-// @ComponentScan("top.lingkang.finalserver.example")
+@Controller
 public class Demo01 {
     @Autowired
     private static Environment environment;

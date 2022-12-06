@@ -6,17 +6,25 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.util.concurrent.EventExecutorGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
 import top.lingkang.finalserver.server.FinalServerApplication;
 import top.lingkang.finalserver.server.core.impl.ShutdownEventWeb;
+import top.lingkang.finalserver.server.utils.ProxyUtils;
+import top.lingkang.finalserver.server.web.handler.FilterHandlerChain;
+import top.lingkang.finalserver.server.web.http.Filter;
+import top.lingkang.finalserver.server.web.http.HandlerChain;
 import top.lingkang.finalserver.server.web.nio.FinalServerNioServerSocketChannel;
 import top.lingkang.finalserver.server.web.nio.ServerInitializer;
+
+import javax.annotation.PostConstruct;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * @author lingkang
@@ -33,9 +41,14 @@ public class FinalServerWeb {
     @Autowired
     private ApplicationContext applicationContext;
 
-    /*public FinalServerWeb(ApplicationContext applicationContext) {
-        this.applicationContext=applicationContext;
-    }*/
+    public static final List<HandlerChain> handlerChain = new ArrayList<>();
+
+
+    @PostConstruct
+    private void init() {
+        // 添加处理链
+        handlerChain.addAll(setHandlerChain());
+    }
 
     public void run() {
         int port = Integer.valueOf(environment.getProperty("server.port"));
@@ -45,11 +58,10 @@ public class FinalServerWeb {
             System.exit(0);
         }
 
-
         web(port);
     }
 
-    private void web(int port){
+    private void web(int port) {
         //创建 主线程组，主线程接收并把任务丢给从线程，从线程做处理
         mainGroup = new NioEventLoopGroup();
         //从线程组
@@ -85,6 +97,42 @@ public class FinalServerWeb {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private List<HandlerChain> setHandlerChain() {
+        List<HandlerChain> chains = new ArrayList<>();
+
+        // 过滤类
+        String[] filters = applicationContext.getBeanNamesForType(Filter.class);
+        if (filters.length > 0) {
+            List<Filter> list = new ArrayList<>();
+            for (String name : filters)
+                list.add((Filter) applicationContext.getBean(name));
+
+            // 排序
+            list.sort(new Comparator<Filter>() {
+                @Override
+                public int compare(Filter o1, Filter o2) {
+                    Class<? extends Filter> aClass = o1.getClass();
+                    int v1 = 0, v2 = 0;
+                    Order order = ProxyUtils.getSpringProxyToClass(o1.getClass()).getAnnotation(Order.class);
+                    if (order != null)
+                        v1 = order.value();
+                    order = ProxyUtils.getSpringProxyToClass(o2.getClass()).getAnnotation(Order.class);
+                    if (order != null)
+                        v2 = order.value();
+
+                    if (v1 == v2)
+                        return 0;
+
+                    return v1 > v2 ? 1 : -1;
+                }
+            });
+
+            chains.add(new FilterHandlerChain(list.toArray(new Filter[]{})));
+        }
+
+        return chains;
     }
 
 }
