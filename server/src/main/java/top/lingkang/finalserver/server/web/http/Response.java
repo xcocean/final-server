@@ -2,6 +2,7 @@ package top.lingkang.finalserver.server.web.http;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Map;
 
 /**
  * @author lingkang
@@ -10,10 +11,16 @@ import java.io.OutputStream;
 public interface Response {
     void setHeader(String name,String value);
 
-    void writeString(Object obj);
+    void returnString(String obj);
+
+    void returnJsonObject(Object json);
+
+    void returnTemplate(String template);
+
+    void returnTemplate(String template, Map<String, Object> map);
 
     void setStatusCode(int code);
 
-    boolean isWrite();
+    boolean isReady();
 
 }

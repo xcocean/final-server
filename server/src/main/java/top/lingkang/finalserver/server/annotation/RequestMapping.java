@@ -12,7 +12,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface RequestMapping {
-    String name() default "";
+    String path() default "";
 
     RequestMethod method() default RequestMethod.GET;
 }

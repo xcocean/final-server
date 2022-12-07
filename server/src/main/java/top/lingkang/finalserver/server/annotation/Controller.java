@@ -1,16 +1,14 @@
 package top.lingkang.finalserver.server.annotation;
 
-import org.springframework.core.annotation.AliasFor;
-
 import java.lang.annotation.*;
 
 /**
  * @author lingkang
- * Created by 2022/12/7
+ * Created by 2022/12/6
  */
-@Target({ElementType.METHOD})
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface POST {
-    String path() default "";
+@org.springframework.stereotype.Controller
+public @interface Controller {
 }

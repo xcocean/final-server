@@ -4,13 +4,16 @@ package top.lingkang.finalserver.server.utils;
  * @author lingkang
  * Created by 2022/12/7
  */
-public class ProxyUtils {
+public class ProxyBeanUtils {
     public static Class<?> getSpringProxyToClass(Class<?> clazz) {
-        String name = clazz.getName().split("\\$\\$")[0];
         try {
-            return Class.forName(name);
+            return Class.forName(getSpringProxyBeanName(clazz));
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static String getSpringProxyBeanName(Class<?> clazz) {
+        return clazz.getName().split("\\$\\$")[0];
     }
 }

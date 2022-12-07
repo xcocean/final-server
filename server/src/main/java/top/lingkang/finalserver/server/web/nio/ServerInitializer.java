@@ -6,6 +6,10 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 import org.springframework.context.ApplicationContext;
+import top.lingkang.finalserver.server.web.handler.ControllerHandlerChain;
+import top.lingkang.finalserver.server.web.handler.FilterHandlerChain;
+import top.lingkang.finalserver.server.web.http.Filter;
+import top.lingkang.finalserver.server.web.http.HandlerHttpRequest;
 
 /**
  * @author lingkang
@@ -13,9 +17,13 @@ import org.springframework.context.ApplicationContext;
  */
 public class ServerInitializer extends ChannelInitializer<Channel> {
     private ApplicationContext applicationContext;
+    private Filter[] filter;
+    private ControllerHandlerChain controller;
 
-    public ServerInitializer(ApplicationContext applicationContext) {
+    public ServerInitializer(ApplicationContext applicationContext, Filter[] filter, ControllerHandlerChain controller) {
         this.applicationContext = applicationContext;
+        this.filter = filter;
+        this.controller = controller;
     }
 
     @Override
@@ -24,7 +32,7 @@ public class ServerInitializer extends ChannelInitializer<Channel> {
         pipeline.addLast(new HttpServerCodec());
         pipeline.addLast(new HttpObjectAggregator(1024));
         pipeline.addLast(new HandlerHttpWrapper());
-        pipeline.addLast(new HandlerHttpRequest());
+        pipeline.addLast(new HandlerHttpRequest(filter, controller));
     }
 
 }

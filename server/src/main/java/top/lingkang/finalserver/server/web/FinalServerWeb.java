@@ -14,7 +14,9 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
 import top.lingkang.finalserver.server.FinalServerApplication;
 import top.lingkang.finalserver.server.core.impl.ShutdownEventWeb;
-import top.lingkang.finalserver.server.utils.ProxyUtils;
+import top.lingkang.finalserver.server.utils.ProxyBeanUtils;
+import top.lingkang.finalserver.server.web.handler.BuildControllerHandler;
+import top.lingkang.finalserver.server.web.handler.ControllerHandlerChain;
 import top.lingkang.finalserver.server.web.handler.FilterHandlerChain;
 import top.lingkang.finalserver.server.web.http.Filter;
 import top.lingkang.finalserver.server.web.http.HandlerChain;
@@ -41,13 +43,14 @@ public class FinalServerWeb {
     @Autowired
     private ApplicationContext applicationContext;
 
-    public static final List<HandlerChain> handlerChain = new ArrayList<>();
+    private Filter[] filter;
+    private ControllerHandlerChain controller;
 
 
     @PostConstruct
     private void init() {
-        // 添加处理链
-        handlerChain.addAll(setHandlerChain());
+        controller = new BuildControllerHandler(applicationContext).build();
+        filter=setFilterHandlerChain();
     }
 
     public void run() {
@@ -76,7 +79,7 @@ public class FinalServerWeb {
                 //置连接为保持活动的状态
                 .childOption(ChannelOption.SO_KEEPALIVE, true);
         // 子处理器
-        serverBootstrap.childHandler(new ServerInitializer(applicationContext));
+        serverBootstrap.childHandler(new ServerInitializer(applicationContext, filter, controller));
         //启动server并绑定端口监听和设置同步方式
         try {
             ChannelFuture channelFuture = serverBootstrap.bind(port).sync();
@@ -99,8 +102,7 @@ public class FinalServerWeb {
         }
     }
 
-    private List<HandlerChain> setHandlerChain() {
-        List<HandlerChain> chains = new ArrayList<>();
+    private Filter[] setFilterHandlerChain() {
 
         // 过滤类
         String[] filters = applicationContext.getBeanNamesForType(Filter.class);
@@ -115,10 +117,10 @@ public class FinalServerWeb {
                 public int compare(Filter o1, Filter o2) {
                     Class<? extends Filter> aClass = o1.getClass();
                     int v1 = 0, v2 = 0;
-                    Order order = ProxyUtils.getSpringProxyToClass(o1.getClass()).getAnnotation(Order.class);
+                    Order order = ProxyBeanUtils.getSpringProxyToClass(o1.getClass()).getAnnotation(Order.class);
                     if (order != null)
                         v1 = order.value();
-                    order = ProxyUtils.getSpringProxyToClass(o2.getClass()).getAnnotation(Order.class);
+                    order = ProxyBeanUtils.getSpringProxyToClass(o2.getClass()).getAnnotation(Order.class);
                     if (order != null)
                         v2 = order.value();
 
@@ -129,10 +131,11 @@ public class FinalServerWeb {
                 }
             });
 
-            chains.add(new FilterHandlerChain(list.toArray(new Filter[]{})));
+            return list.toArray(new Filter[]{});
         }
 
-        return chains;
+
+        return new Filter[0];
     }
 
 }

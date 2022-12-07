@@ -1,17 +1,14 @@
 package top.lingkang.finalserver.example;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.ComponentScans;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.env.Environment;
-import org.springframework.core.env.PropertySources;
 import org.springframework.core.env.StandardEnvironment;
-import org.springframework.stereotype.Controller;
 import top.lingkang.finalserver.server.FinalServerApplication;
+import top.lingkang.finalserver.server.annotation.Controller;
 import top.lingkang.finalserver.server.annotation.FinalServerBoot;
-
-import java.util.Arrays;
+import top.lingkang.finalserver.server.annotation.GET;
+import top.lingkang.finalserver.server.web.http.HttpResponse;
+import top.lingkang.finalserver.server.web.http.Response;
 
 /**
  * @author lingkang
@@ -27,5 +24,12 @@ public class Demo01 {
         FinalServerApplication.run(Demo01.class, args);
         StandardEnvironment bean = FinalServerApplication.applicationContext.getBean(StandardEnvironment.class);
         System.out.println(bean.getProperty("server.port"));
+        System.out.println(FinalServerApplication.applicationContext.containsBean("demo01"));
+    }
+
+    @GET
+    public void index(HttpResponse response){
+        System.out.println("123");
+        response.returnString("hi你好啊");
     }
 }
