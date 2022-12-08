@@ -23,8 +23,6 @@ public interface Response {
 
     void returnFile(String filePath);
 
-    void returnFile(String filePath, HttpHeaders headers);
-
     void setStatusCode(int code);
 
     boolean isReady();

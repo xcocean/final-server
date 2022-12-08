@@ -45,10 +45,10 @@ public class HandlerHttpRequest extends SimpleChannelInboundHandler<FinalServerC
                 staticFile(res.getFilePath(), ctx);
                 return;
             }
-            HttpUtils.sendString(ctx, res, 200);
+            HttpUtils.sendResponse(ctx, res, 200);
         } else {// 返回空值
             log.warn("此请求未做处理，将返回空值: " + NetUtils.getRequestPathInfo(context.getRequest()));
-            HttpUtils.sendString(ctx, "", 200);
+            HttpUtils.sendString(ctx, "404", 404);
         }
     }
 

@@ -29,6 +29,7 @@ public class Demo01 {
     @GET
     public void index(HttpResponse response){
         System.out.println("123");
-        response.returnString("hi你好啊");
+        // response.returnString("hi你好啊");
+        response.returnTemplate("index.html");
     }
 }

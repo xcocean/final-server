@@ -1,12 +1,12 @@
 package top.lingkang.finalserver.server.web.http;
 
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaderValues;
 import io.netty.handler.codec.http.HttpHeaders;
 import top.lingkang.finalserver.server.core.FinalServerConfiguration;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 /**
@@ -15,61 +15,65 @@ import java.util.Map;
  */
 public class HttpResponse implements Response {
     private ChannelHandlerContext ctx;
-    private FullHttpRequest msg;
     private HttpHeaders headers = FinalServerConfiguration.defaultResponseHeaders;
 
     private boolean isReady;
     private boolean isStatic;
-    private String content, filePath;
+    private String filePath;
+    private byte[] content;
     private int code;
 
-    public HttpResponse(ChannelHandlerContext ctx, FullHttpRequest msg) {
+    public HttpResponse(ChannelHandlerContext ctx) {
         this.ctx = ctx;
-        this.msg = msg;
     }
 
     @Override
     public void setHeader(String name, String value) {
-
+        headers.set(name, value);
     }
 
     @Override
     public void returnString(String obj) {
-        content = obj;
+        checkReady();
+        if (obj != null)
+            content = obj.getBytes(StandardCharsets.UTF_8);
         isReady = true;
-        headers.set(HttpHeaderNames.CONTENT_TYPE, HttpHeaderValues.TEXT_PLAIN + "; charset=utf-8");
+        if (!headers.contains(HttpHeaderNames.CONTENT_TYPE))
+            headers.set(HttpHeaderNames.CONTENT_TYPE, HttpHeaderValues.TEXT_PLAIN);
     }
 
     @Override
     public void returnJsonObject(Object json) {
-        content = json.toString();
-        headers.set(HttpHeaderNames.CONTENT_TYPE, HttpHeaderValues.APPLICATION_JSON + "; charset=utf-8");
+        checkReady();
+        if (json != null)
+            content = FinalServerConfiguration.serializable.jsonTo(json);
+        if (!headers.contains(HttpHeaderNames.CONTENT_TYPE))
+            headers.set(HttpHeaderNames.CONTENT_TYPE, HttpHeaderValues.APPLICATION_JSON);
     }
 
     @Override
     public void returnTemplate(String template) {
-        content = template;
-        headers.set(HttpHeaderNames.CONTENT_TYPE, HttpHeaderValues.TEXT_HTML + "; charset=utf-8");
+        returnTemplate(template, null);
     }
 
     @Override
     public void returnTemplate(String template, Map<String, Object> map) {
-        headers.set(HttpHeaderNames.CONTENT_TYPE, HttpHeaderValues.TEXT_HTML + "; charset=utf-8");
+        checkReady();
+        isReady = true;
+        headers.set(HttpHeaderNames.CONTENT_TYPE, HttpHeaderValues.TEXT_HTML);
+        try {
+            content = TemplateUtils.getTemplate(template, map);
+        } catch (Exception e) {
+            throw new RuntimeException("解析模板异常：", e);
+        }
     }
 
     @Override
     public void returnFile(String filePath) {
-        returnFile(filePath, null);
-
-    }
-
-    @Override
-    public void returnFile(String filePath, HttpHeaders headers) {
+        checkReady();
         isReady = true;
         isStatic = true;
         this.filePath = filePath;
-        if (headers != null)
-            this.headers.add(headers);
     }
 
     @Override
@@ -80,6 +84,12 @@ public class HttpResponse implements Response {
     @Override
     public boolean isReady() {
         return isReady;
+    }
+
+    private void checkReady() {
+        if (isReady) {
+            throw new RuntimeException("007-已经设置响应值");
+        }
     }
 
 
@@ -102,15 +112,11 @@ public class HttpResponse implements Response {
         return ctx;
     }
 
-    public FullHttpRequest getMsg() {
-        return msg;
-    }
-
     public HttpHeaders getHeaders() {
         return headers;
     }
 
-    public String getContent() {
+    public byte[] getContent() {
         return content;
     }
 

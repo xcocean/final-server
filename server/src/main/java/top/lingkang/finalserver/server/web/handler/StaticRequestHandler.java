@@ -1,16 +1,10 @@
 package top.lingkang.finalserver.server.web.handler;
 
-import io.netty.handler.codec.http.DefaultHttpResponse;
-import io.netty.handler.codec.http.HttpHeaderNames;
-import io.netty.handler.codec.http.HttpResponseStatus;
-import io.netty.handler.codec.http.HttpVersion;
-import io.netty.handler.stream.ChunkedFile;
+import org.springframework.core.env.Environment;
 import top.lingkang.finalserver.server.web.http.FinalServerContext;
-import top.lingkang.finalserver.server.web.http.HttpResponse;
 
-import java.io.File;
-import java.io.RandomAccessFile;
 import java.net.URL;
+import java.net.URLDecoder;
 
 /**
  * @author lingkang
@@ -18,12 +12,20 @@ import java.net.URL;
  */
 public class StaticRequestHandler implements RequestHandler {
 
+    private String basePath = "";
+
+    public StaticRequestHandler(Environment environment) {
+        basePath = environment.getProperty("server.static", "/static");
+        if (basePath.startsWith("/"))
+            basePath = basePath.substring(1);
+    }
+
     @Override
     public boolean handler(FinalServerContext context) throws Exception {
         if (context.getRequest().getPath().contains(".")) {
-            URL resource = StaticRequestHandler.class.getClassLoader().getResource("static" + context.getRequest().getPath());
+            URL resource = StaticRequestHandler.class.getClassLoader().getResource(basePath + context.getRequest().getPath());
             if (resource != null) {
-                context.getResponse().returnFile(resource.getPath());
+                context.getResponse().returnFile(URLDecoder.decode(resource.getPath(),"UTF-8"));
                 return true;
             }
         }

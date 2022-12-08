@@ -6,6 +6,7 @@ import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpMethod;
 
 import java.net.InetSocketAddress;
+import java.net.URLDecoder;
 
 /**
  * @author lingkang
@@ -27,7 +28,11 @@ public class HttpRequest implements Request {
 
     @Override
     public String getPath() {
-        return msg.uri();
+        try {
+            return URLDecoder.decode(msg.uri(), "UTF-8");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

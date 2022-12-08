@@ -49,7 +49,7 @@ public class FinalServerWeb {
         ControllerRequestHandler controller = new BuildControllerHandler(applicationContext).build();
 
         filterChain = setFilterChain(new RequestHandler[]{
-                new StaticRequestHandler(),
+                new StaticRequestHandler(environment),
                 controller
         });
     }

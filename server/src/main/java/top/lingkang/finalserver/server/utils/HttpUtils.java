@@ -23,13 +23,13 @@ public class HttpUtils {
         ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
     }
 
-    public static void sendString(ChannelHandlerContext ctx, HttpResponse httpResponse, int status) {
+    public static void sendResponse(ChannelHandlerContext ctx, HttpResponse httpResponse, int status) {
         FullHttpResponse response = new DefaultFullHttpResponse(
                 HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(status),
-                Unpooled.copiedBuffer(httpResponse.getContent(), CharsetUtil.UTF_8)
+                Unpooled.copiedBuffer(httpResponse.getContent())
         );
         response.headers().set(httpResponse.getHeaders());
-        response.headers().set(HttpHeaderNames.CONTENT_LENGTH, httpResponse.getContent().getBytes().length);
+        response.headers().set(HttpHeaderNames.CONTENT_LENGTH, httpResponse.getContent().length);
         ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
     }
 

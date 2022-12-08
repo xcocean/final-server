@@ -16,7 +16,7 @@ public class HandlerHttpWrapper extends SimpleChannelInboundHandler<FullHttpRequ
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest msg) throws Exception {
         FinalServerContext context = new FinalServerContext(ctx);
         context.setRequest(new HttpRequest(ctx, msg));
-        context.setResponse(new HttpResponse(ctx, msg));
+        context.setResponse(new HttpResponse(ctx));
         ctx.fireChannelRead(context);
     }
 }
