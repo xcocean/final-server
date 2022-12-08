@@ -16,7 +16,9 @@ import top.lingkang.finalserver.server.FinalServerApplication;
 import top.lingkang.finalserver.server.core.impl.ShutdownEventWeb;
 import top.lingkang.finalserver.server.utils.ProxyBeanUtils;
 import top.lingkang.finalserver.server.web.handler.BuildControllerHandler;
-import top.lingkang.finalserver.server.web.handler.ControllerHandler;
+import top.lingkang.finalserver.server.web.handler.ControllerRequestHandler;
+import top.lingkang.finalserver.server.web.handler.RequestHandler;
+import top.lingkang.finalserver.server.web.handler.StaticRequestHandler;
 import top.lingkang.finalserver.server.web.http.Filter;
 import top.lingkang.finalserver.server.web.http.FilterChain;
 import top.lingkang.finalserver.server.web.nio.FinalServerNioServerSocketChannel;
@@ -32,11 +34,8 @@ import java.util.List;
  * Created by 2022/12/6
  */
 public class FinalServerWeb {
-
     private static final Logger log = LoggerFactory.getLogger(FinalServerWeb.class);
-
     private EventLoopGroup mainGroup, subGroup;
-
     @Autowired
     private Environment environment;
     @Autowired
@@ -47,15 +46,19 @@ public class FinalServerWeb {
 
     @PostConstruct
     private void init() {
-        ControllerHandler controller = new BuildControllerHandler(applicationContext).build();
-        filterChain = setFilterChain(controller);
+        ControllerRequestHandler controller = new BuildControllerHandler(applicationContext).build();
+
+        filterChain = setFilterChain(new RequestHandler[]{
+                new StaticRequestHandler(),
+                controller
+        });
     }
 
     public void run() {
         int port = Integer.valueOf(environment.getProperty("server.port"));
         log.info("FinalServer start web service port: {}", port);
         if (!NetUtil.isUsableLocalPort(port)) {
-            log.info("FinalServer start fail 端口被占用: {}", port);
+            log.error("FinalServer start fail 端口被占用: {}", port);
             System.exit(0);
         }
 
@@ -100,7 +103,7 @@ public class FinalServerWeb {
         }
     }
 
-    private FilterChain setFilterChain(ControllerHandler controller) {
+    private FilterChain setFilterChain(RequestHandler[] requestHandlers) {
         // 过滤类
         String[] filters = applicationContext.getBeanNamesForType(Filter.class);
         if (filters.length > 0) {
@@ -128,10 +131,10 @@ public class FinalServerWeb {
                 }
             });
 
-            return new FilterChain(list.toArray(new Filter[]{}), controller);
+            return new FilterChain(list.toArray(new Filter[]{}), requestHandlers);
         }
 
-        return new FilterChain(new Filter[0], controller);
+        return new FilterChain(new Filter[0], requestHandlers);
     }
 
 }

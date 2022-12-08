@@ -5,8 +5,8 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
+import io.netty.handler.stream.ChunkedWriteHandler;
 import org.springframework.context.ApplicationContext;
-import top.lingkang.finalserver.server.web.handler.ControllerHandler;
 import top.lingkang.finalserver.server.web.http.FilterChain;
 import top.lingkang.finalserver.server.web.http.HandlerHttpRequest;
 
@@ -29,6 +29,7 @@ public class ServerInitializer extends ChannelInitializer<Channel> {
         pipeline.addLast(new HttpServerCodec());
         pipeline.addLast(new HttpObjectAggregator(1024));
         pipeline.addLast(new HandlerHttpWrapper());
+        pipeline.addLast(new ChunkedWriteHandler());
         pipeline.addLast(new HandlerHttpRequest(filterChain));
     }
 

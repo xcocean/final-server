@@ -2,15 +2,23 @@ package top.lingkang.finalserver.server.web.http;
 
 
 import io.netty.buffer.Unpooled;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.handler.codec.http.*;
-import io.netty.util.CharsetUtil;
+import io.netty.handler.codec.http.DefaultHttpResponse;
+import io.netty.handler.codec.http.HttpHeaderNames;
+import io.netty.handler.codec.http.HttpResponseStatus;
+import io.netty.handler.codec.http.HttpVersion;
+import io.netty.handler.stream.ChunkedFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import top.lingkang.finalserver.server.annotation.NotNull;
+import top.lingkang.finalserver.server.core.FinalServerConfiguration;
+import top.lingkang.finalserver.server.utils.CommonUtils;
+import top.lingkang.finalserver.server.utils.HttpUtils;
 import top.lingkang.finalserver.server.utils.NetUtils;
+
+import java.io.RandomAccessFile;
 
 
 /**
@@ -32,10 +40,15 @@ public class HandlerHttpRequest extends SimpleChannelInboundHandler<FinalServerC
 
         filterChain.doFilter(context);
         if (context.getResponse().isReady()) {
-            sendString(ctx, (HttpResponse) context.getResponse(), 200);
+            HttpResponse res = (HttpResponse) context.getResponse();
+            if (res.isStatic()) {
+                staticFile(res.getFilePath(), ctx);
+                return;
+            }
+            HttpUtils.sendString(ctx, res, 200);
         } else {// 返回空值
             log.warn("此请求未做处理，将返回空值: " + NetUtils.getRequestPathInfo(context.getRequest()));
-            sendString(ctx, "", 200);
+            HttpUtils.sendString(ctx, "", 200);
         }
     }
 
@@ -46,28 +59,32 @@ public class HandlerHttpRequest extends SimpleChannelInboundHandler<FinalServerC
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        sendString(ctx, "后台异常", 500);
-        cause.printStackTrace();
+        FinalServerConfiguration.webExceptionHandler.exception(ctx, cause);
     }
 
-    private void sendString(ChannelHandlerContext ctx, @NotNull String context, int status) {
-        FullHttpResponse response = new DefaultFullHttpResponse(
-                HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(status),
-                Unpooled.copiedBuffer(context, CharsetUtil.UTF_8)
-        );
-        response.headers().set(HttpHeaderNames.CONTENT_LENGTH, context.getBytes().length);
-        response.headers().set(HttpHeaderNames.CONTENT_TYPE, HttpHeaderValues.TEXT_PLAIN);
-        ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
+    private void staticFile(String filePath, ChannelHandlerContext ctx) throws Exception {
+        RandomAccessFile randomAccessFile = new RandomAccessFile(filePath, "r");
+        DefaultHttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
+        response.headers().set(FinalServerConfiguration.defaultResponseHeaders);
+        response.headers().set(HttpHeaderNames.CONTENT_LENGTH, randomAccessFile.length());
+        response.headers().set(HttpHeaderNames.CONTENT_TYPE, CommonUtils.getResponseHeadName(filePath));
+        ctx.write(response);
+        ctx.write(
+                new ChunkedFile(randomAccessFile, 0, randomAccessFile.length(), 1024),
+                ctx.newProgressivePromise());
+        flushAndClose(ctx);
     }
 
-    private void sendString(ChannelHandlerContext ctx, HttpResponse httpResponse, int status) {
-        FullHttpResponse response = new DefaultFullHttpResponse(
-                HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(status),
-                Unpooled.copiedBuffer(httpResponse.getContent(), CharsetUtil.UTF_8)
-        );
-        response.headers().set(httpResponse.getHeaders());
-        response.headers().set(HttpHeaderNames.CONTENT_LENGTH, httpResponse.getContent().getBytes().length);
-        ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
+    private void flushAndClose(ChannelHandlerContext ctx) {
+        if (ctx.channel().isActive()) {
+            ctx.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
+        }
+    }
+
+    private void flushAndClose(Channel channel) {
+        if (channel.isActive()) {
+            channel.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
+        }
     }
 
 }

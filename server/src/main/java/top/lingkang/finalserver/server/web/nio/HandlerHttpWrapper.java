@@ -14,7 +14,7 @@ import top.lingkang.finalserver.server.web.http.HttpResponse;
 public class HandlerHttpWrapper extends SimpleChannelInboundHandler<FullHttpRequest> {
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest msg) throws Exception {
-        FinalServerContext context = new FinalServerContext();
+        FinalServerContext context = new FinalServerContext(ctx);
         context.setRequest(new HttpRequest(ctx, msg));
         context.setResponse(new HttpResponse(ctx, msg));
         ctx.fireChannelRead(context);

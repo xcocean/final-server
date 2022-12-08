@@ -5,6 +5,7 @@ import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaderValues;
 import io.netty.handler.codec.http.HttpHeaders;
+import top.lingkang.finalserver.server.core.FinalServerConfiguration;
 
 import java.util.Map;
 
@@ -15,10 +16,11 @@ import java.util.Map;
 public class HttpResponse implements Response {
     private ChannelHandlerContext ctx;
     private FullHttpRequest msg;
-    private HttpHeaders headers = new DefaultHttpHeader();
+    private HttpHeaders headers = FinalServerConfiguration.defaultResponseHeaders;
 
     private boolean isReady;
-    private String content;
+    private boolean isStatic;
+    private String content, filePath;
     private int code;
 
     public HttpResponse(ChannelHandlerContext ctx, FullHttpRequest msg) {
@@ -56,6 +58,21 @@ public class HttpResponse implements Response {
     }
 
     @Override
+    public void returnFile(String filePath) {
+        returnFile(filePath, null);
+
+    }
+
+    @Override
+    public void returnFile(String filePath, HttpHeaders headers) {
+        isReady = true;
+        isStatic = true;
+        this.filePath = filePath;
+        if (headers != null)
+            this.headers.add(headers);
+    }
+
+    @Override
     public void setStatusCode(int code) {
         this.code = code;
     }
@@ -68,6 +85,18 @@ public class HttpResponse implements Response {
 
     // get
 
+
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public boolean isStatic() {
+        return isStatic;
+    }
+
+    public void setStatic(boolean aStatic) {
+        isStatic = aStatic;
+    }
 
     public ChannelHandlerContext getCtx() {
         return ctx;

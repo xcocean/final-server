@@ -17,5 +17,7 @@ public class FilterDemo01 implements Filter {
     @Override
     public void doFilter(FinalServerContext context, FilterChain filterChain) throws Exception {
         filterChain.doFilter(context);
+//        if (1==1)
+//            throw new RuntimeException("1==1");
     }
 }

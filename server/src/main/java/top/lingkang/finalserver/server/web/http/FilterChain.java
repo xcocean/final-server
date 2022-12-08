@@ -1,6 +1,7 @@
 package top.lingkang.finalserver.server.web.http;
 
-import top.lingkang.finalserver.server.web.handler.ControllerHandler;
+import top.lingkang.finalserver.server.web.handler.ControllerRequestHandler;
+import top.lingkang.finalserver.server.web.handler.RequestHandler;
 
 /**
  * @author lingkang
@@ -9,11 +10,11 @@ import top.lingkang.finalserver.server.web.handler.ControllerHandler;
 public class FilterChain {
     private Filter[] filters;
     private int length = 0, current = 0;
-    private ControllerHandler controllerHandler;
+    private RequestHandler[] requestHandler;
 
-    public FilterChain(Filter[] filters, ControllerHandler controllerHandler) {
+    public FilterChain(Filter[] filters, RequestHandler[] requestHandler) {
         this.filters = filters;
-        this.controllerHandler = controllerHandler;
+        this.requestHandler = requestHandler;
         length = filters.length;
     }
 
@@ -23,7 +24,9 @@ public class FilterChain {
             filters[current - 1].doFilter(context, this);
         } else {
             // 在此处调用处理逻辑方法
-            controllerHandler.handler(context);
+            for (RequestHandler handler : requestHandler) {
+                if (handler.handler(context)) break;
+            }
         }
     }
 }
