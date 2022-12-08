@@ -9,7 +9,6 @@ import org.springframework.context.annotation.ComponentScan;
 import top.lingkang.finalserver.server.FinalServerApplication;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
@@ -22,7 +21,7 @@ import java.util.Properties;
 public class InitAppConfig {
     private static final Logger log = LoggerFactory.getLogger(InitAppConfig.class);
 
-    public static void initProperties() {
+    public static void initProperties(String[] args) {
         try {
             Properties app = new Properties();
             app.load(InitAppConfig.class.getClassLoader().getResourceAsStream("final-server-application.properties"));
@@ -42,20 +41,7 @@ public class InitAppConfig {
         }
     }
 
-    private static File xmlFile = new File(
-            System.getProperty("java.io.tmpdir") + File.separator
-                    + "final-server-spring" + IdUtil.objectId() + ".xml"
-    );
-
-    static {
-        if (!xmlFile.exists()) {
-            try {
-                xmlFile.createNewFile();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
+    private static File xmlFile;
 
     public static void initXml(Class<?> mainClass) {
         String packageName = mainClass.getPackage().getName();
@@ -75,12 +61,11 @@ public class InitAppConfig {
         xml = xml.replace("#componentScan", packageName);
 
         try {
-
+            xmlFile = File.createTempFile("final-server-spring" + IdUtil.objectId(), ".xml");
             FileUtil.writeString(xml, xmlFile, StandardCharsets.UTF_8);
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     public static String getXmlPage() {

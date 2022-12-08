@@ -16,10 +16,9 @@ import top.lingkang.finalserver.server.FinalServerApplication;
 import top.lingkang.finalserver.server.core.impl.ShutdownEventWeb;
 import top.lingkang.finalserver.server.utils.ProxyBeanUtils;
 import top.lingkang.finalserver.server.web.handler.BuildControllerHandler;
-import top.lingkang.finalserver.server.web.handler.ControllerHandlerChain;
-import top.lingkang.finalserver.server.web.handler.FilterHandlerChain;
+import top.lingkang.finalserver.server.web.handler.ControllerHandler;
 import top.lingkang.finalserver.server.web.http.Filter;
-import top.lingkang.finalserver.server.web.http.HandlerChain;
+import top.lingkang.finalserver.server.web.http.FilterChain;
 import top.lingkang.finalserver.server.web.nio.FinalServerNioServerSocketChannel;
 import top.lingkang.finalserver.server.web.nio.ServerInitializer;
 
@@ -43,14 +42,13 @@ public class FinalServerWeb {
     @Autowired
     private ApplicationContext applicationContext;
 
-    private Filter[] filter;
-    private ControllerHandlerChain controller;
+    private FilterChain filterChain;
 
 
     @PostConstruct
     private void init() {
-        controller = new BuildControllerHandler(applicationContext).build();
-        filter=setFilterHandlerChain();
+        ControllerHandler controller = new BuildControllerHandler(applicationContext).build();
+        filterChain = setFilterChain(controller);
     }
 
     public void run() {
@@ -79,7 +77,7 @@ public class FinalServerWeb {
                 //置连接为保持活动的状态
                 .childOption(ChannelOption.SO_KEEPALIVE, true);
         // 子处理器
-        serverBootstrap.childHandler(new ServerInitializer(applicationContext, filter, controller));
+        serverBootstrap.childHandler(new ServerInitializer(applicationContext, filterChain));
         //启动server并绑定端口监听和设置同步方式
         try {
             ChannelFuture channelFuture = serverBootstrap.bind(port).sync();
@@ -102,8 +100,7 @@ public class FinalServerWeb {
         }
     }
 
-    private Filter[] setFilterHandlerChain() {
-
+    private FilterChain setFilterChain(ControllerHandler controller) {
         // 过滤类
         String[] filters = applicationContext.getBeanNamesForType(Filter.class);
         if (filters.length > 0) {
@@ -131,11 +128,10 @@ public class FinalServerWeb {
                 }
             });
 
-            return list.toArray(new Filter[]{});
+            return new FilterChain(list.toArray(new Filter[]{}), controller);
         }
 
-
-        return new Filter[0];
+        return new FilterChain(new Filter[0], controller);
     }
 
 }

@@ -7,10 +7,10 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.*;
 import io.netty.util.CharsetUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import top.lingkang.finalserver.server.annotation.NotNull;
-import top.lingkang.finalserver.server.web.FinalServerWeb;
-import top.lingkang.finalserver.server.web.handler.ControllerHandlerChain;
-import top.lingkang.finalserver.server.web.handler.FilterHandlerChain;
+import top.lingkang.finalserver.server.utils.NetUtils;
 
 
 /**
@@ -18,24 +18,23 @@ import top.lingkang.finalserver.server.web.handler.FilterHandlerChain;
  * Created by 2022/12/6
  */
 public class HandlerHttpRequest extends SimpleChannelInboundHandler<FinalServerContext> {
+    private static final Logger log = LoggerFactory.getLogger(HandlerHttpRequest.class);
 
-    private Filter[] filter;
-    private ControllerHandlerChain controller;
+    private FilterChain filterChain;
 
-    public HandlerHttpRequest(Filter[] filter, ControllerHandlerChain controller) {
-        this.filter = filter;
-        this.controller = controller;
+    public HandlerHttpRequest(FilterChain filterChain) {
+        this.filterChain = filterChain;
     }
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FinalServerContext context) throws Exception {
         System.out.println(context.getRequest().getHttpMethod().name() + "  path=" + context.getRequest().getPath());
 
-        filter[0].doFilter(context,filter[1].doFilter(context,filter[2].doFilter(context,controller.doFilter(context))));
-
+        filterChain.doFilter(context);
         if (context.getResponse().isReady()) {
             sendString(ctx, (HttpResponse) context.getResponse(), 200);
         } else {// 返回空值
+            log.warn("此请求未做处理，将返回空值: " + NetUtils.getRequestPathInfo(context.getRequest()));
             sendString(ctx, "", 200);
         }
     }

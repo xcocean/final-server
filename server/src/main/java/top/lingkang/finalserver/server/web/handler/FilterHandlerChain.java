@@ -3,8 +3,6 @@ package top.lingkang.finalserver.server.web.handler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.lingkang.finalserver.server.web.http.Filter;
-import top.lingkang.finalserver.server.web.http.FinalServerContext;
-import top.lingkang.finalserver.server.web.http.HandlerChain;
 
 /**
  * @author lingkang
@@ -12,7 +10,7 @@ import top.lingkang.finalserver.server.web.http.HandlerChain;
  */
 public class FilterHandlerChain   {
     private static final Logger log= LoggerFactory.getLogger(FilterHandlerChain.class);
-    private ControllerHandlerChain controllerHandlerChain;
+    private ControllerHandler controllerHandler;
 
     private Filter[] filters;
 

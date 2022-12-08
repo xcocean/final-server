@@ -7,7 +7,7 @@ import org.springframework.context.support.FileSystemXmlApplicationContext;
 import top.lingkang.finalserver.server.annotation.FinalServerBoot;
 import top.lingkang.finalserver.server.core.InitAppConfig;
 import top.lingkang.finalserver.server.core.ShutdownEvent;
-import top.lingkang.finalserver.server.core.impl.ShutdownEventRemoveConfigFile;
+import top.lingkang.finalserver.server.core.impl.ShutdownEventRemoveTempConfigFile;
 import top.lingkang.finalserver.server.log.FinalServerLogConfig;
 import top.lingkang.finalserver.server.log.FinalSystemOut;
 
@@ -38,10 +38,10 @@ public class FinalServerApplication {
         finalServerLogConfig = new FinalServerLogConfig();
 
         log.info("FinalServer 开始加载配置");
-        InitAppConfig.initProperties();
+        InitAppConfig.initProperties(args);
         try {
             InitAppConfig.initXml(mainClass);
-            addShutdownHook(new ShutdownEventRemoveConfigFile());
+            addShutdownHook(new ShutdownEventRemoveTempConfigFile());
             addShutdownHook();
             applicationContext = new FileSystemXmlApplicationContext(InitAppConfig.getXmlPage());
         } catch (Exception e) {

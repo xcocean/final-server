@@ -14,34 +14,33 @@ import java.util.HashMap;
  * @author lingkang
  * Created by 2022/12/7
  */
-public class ControllerHandlerChain  {
-    private static final Logger log = LoggerFactory.getLogger(ControllerHandlerChain.class);
+public class ControllerHandler {
+    private static final Logger log = LoggerFactory.getLogger(ControllerHandler.class);
     private HashMap<String, RequestHandler> handler = new HashMap<>();
     private ApplicationContext applicationContext;
     private MethodHandlerParam handlerParam = new MethodHandlerParam();
 
-    public ControllerHandlerChain(HashMap<String, RequestHandler> handler, ApplicationContext applicationContext) {
+    public ControllerHandler(HashMap<String, RequestHandler> handler, ApplicationContext applicationContext) {
         this.handler = handler;
         this.applicationContext = applicationContext;
     }
 
-    public Filter doFilter(FinalServerContext context) throws Exception {
+    public void handler(FinalServerContext context) throws Exception {
         RequestHandler requestHandler = handler.get(context.getRequest().getPath());
         if (requestHandler != null) {
             Object bean = applicationContext.getBean(requestHandler.getBeanName());
             Method method = bean.getClass().getDeclaredMethod(requestHandler.getMethodName(), requestHandler.getParamType());
             Object result = method.invoke(bean, joinParam(requestHandler, context));
             if (result == null)
-                return null;
+                return ;
             if (context.getResponse().isReady()) {
                 log.warn("已经处理了输出流，本次忽略return值： " + bean.getClass().getSimpleName() + " " + method.getName());
-                return null;
+                return ;
             }
             if (result.getClass() == String.class) {
                 context.getResponse().returnString(result.toString());
             }
         }
-        return null;
     }
 
     private Object[] joinParam(RequestHandler handler, FinalServerContext context) {

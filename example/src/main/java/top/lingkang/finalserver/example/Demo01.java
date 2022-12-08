@@ -18,13 +18,12 @@ import top.lingkang.finalserver.server.web.http.Response;
 @Controller
 public class Demo01 {
     @Autowired
-    private static Environment environment;
+    private Environment environment;
 
     public static void main(String[] args) {
         FinalServerApplication.run(Demo01.class, args);
         StandardEnvironment bean = FinalServerApplication.applicationContext.getBean(StandardEnvironment.class);
         System.out.println(bean.getProperty("server.port"));
-        System.out.println(FinalServerApplication.applicationContext.containsBean("demo01"));
     }
 
     @GET

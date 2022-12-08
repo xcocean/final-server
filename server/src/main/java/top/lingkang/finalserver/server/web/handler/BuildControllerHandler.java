@@ -9,7 +9,6 @@ import top.lingkang.finalserver.server.annotation.GET;
 import top.lingkang.finalserver.server.utils.MatchUtils;
 import top.lingkang.finalserver.server.utils.ProxyBeanUtils;
 import top.lingkang.finalserver.server.web.entity.RequestHandler;
-import top.lingkang.finalserver.server.web.http.HandlerChain;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -29,7 +28,7 @@ public class BuildControllerHandler {
 
     private HashMap<String, RequestHandler> map = new HashMap<>();
 
-    public ControllerHandlerChain build() {
+    public ControllerHandler build() {
         log.debug("开始加载 Controller 请求处理");
         String[] allName = applicationContext.getBeanDefinitionNames();
         for (String name : allName) {
@@ -58,16 +57,14 @@ public class BuildControllerHandler {
                     handler.setMethodName(method.getName());
                     handler.setReturnType(method.getReturnType());
                     handler.setParamName(toParamName(method.getParameters()));
-                    Class<?>[] parameterTypes = method.getParameterTypes();
-                    System.out.println(parameterTypes);
-                    handler.setParamType(parameterTypes);
+                    handler.setParamType(method.getParameterTypes());
                     map.put(path, handler);
                 }
 
             }
         }
         log.debug("Controller 请求处理加载完成");
-        return new ControllerHandlerChain(map, applicationContext);
+        return new ControllerHandler(map, applicationContext);
     }
 
     private String[] toParamName(Parameter[] parameters) {
