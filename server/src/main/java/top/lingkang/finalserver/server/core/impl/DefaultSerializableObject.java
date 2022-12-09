@@ -8,6 +8,7 @@ import java.nio.charset.StandardCharsets;
 /**
  * @author lingkang
  * Created by 2022/12/8
+ * @since 1.0.0
  */
 public class DefaultSerializableObject implements SerializableObject {
     @Override

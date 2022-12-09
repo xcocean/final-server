@@ -15,6 +15,7 @@ import java.util.List;
 /**
  * @author lingkang
  * Created by 2022/12/6
+ * @since 1.0.0
  * 自定义id生成
  * MongoDB数据库的一种唯一ID生成策略，是UUID version1的变种
  */

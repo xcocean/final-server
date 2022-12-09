@@ -3,6 +3,7 @@ package top.lingkang.finalserver.server.log;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
+import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.impl.StaticLoggerBinder;
@@ -12,23 +13,32 @@ import java.io.InputStream;
 /**
  * @author lingkang
  * Created by 2022/12/6
+ * @since 1.0.0
  */
 public class FinalServerLogConfig {
     private static final Logger log = LoggerFactory.getLogger(FinalServerLogConfig.class);
 
     public FinalServerLogConfig() {
         try {
-            InputStream in = FinalServerLogConfig.class.getClassLoader().getResourceAsStream("logback.xml");
-            if (in == null)
-                in = FinalServerLogConfig.class.getClassLoader().getResourceAsStream("final-server-logback.xml");
-
-            LoggerContext loggerContext = (LoggerContext) StaticLoggerBinder.getSingleton().getLoggerFactory();
-            loggerContext.stop();
-            loggerContext.reset();
-            JoranConfigurator configurator = new ch.qos.logback.classic.joran.JoranConfigurator();
-            configurator.setContext(loggerContext);
-            configurator.doConfigure(in);
-            in.close();
+            ILoggerFactory loggerFactory = StaticLoggerBinder.getSingleton().getLoggerFactory();
+            if (loggerFactory instanceof LoggerContext) {
+                String logFile = System.getProperty("log.file");
+                InputStream in = null;
+                if (logFile == null) {
+                    log.warn("未找到logback.xml日志配置，将使用默认");
+                } else {
+                    in = FinalServerLogConfig.class.getClassLoader().getResourceAsStream("logback.xml");
+                }
+                if (in == null)
+                    in = FinalServerLogConfig.class.getClassLoader().getResourceAsStream("final-server-logback.xml");
+                LoggerContext loggerContext = (LoggerContext) loggerFactory;
+                loggerContext.stop();
+                loggerContext.reset();
+                JoranConfigurator configurator = new ch.qos.logback.classic.joran.JoranConfigurator();
+                configurator.setContext(loggerContext);
+                configurator.doConfigure(in);
+                in.close();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

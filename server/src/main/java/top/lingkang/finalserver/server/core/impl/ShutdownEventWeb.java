@@ -8,6 +8,7 @@ import top.lingkang.finalserver.server.core.ShutdownEvent;
 /**
  * @author lingkang
  * Created by 2022/12/6
+ * @since 1.0.0
  */
 public class ShutdownEventWeb implements ShutdownEvent {
     private static final Logger log= LoggerFactory.getLogger(ShutdownEventWeb.class);

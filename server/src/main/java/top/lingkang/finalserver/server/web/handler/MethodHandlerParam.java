@@ -7,6 +7,7 @@ import java.util.HashMap;
 /**
  * @author lingkang
  * Created by 2022/12/7
+ * @since 1.0.0
  */
 public class MethodHandlerParam {
     public static final HashMap<Class<?>, HandlerParam> handlerMap = new HashMap<>();

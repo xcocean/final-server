@@ -9,6 +9,7 @@ import top.lingkang.finalserver.server.utils.HttpUtils;
 /**
  * @author lingkang
  * Created by 2022/12/8
+ * @since 1.0.0
  */
 public class DefaultWebExceptionHandler implements WebExceptionHandler {
     private static final Logger log = LoggerFactory.getLogger(DefaultWebExceptionHandler.class);

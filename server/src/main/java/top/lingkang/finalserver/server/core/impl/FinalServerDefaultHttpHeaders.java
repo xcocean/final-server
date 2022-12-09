@@ -8,6 +8,7 @@ import top.lingkang.finalserver.server.constant.FinalServerConstants;
 /**
  * @author lingkang
  * Created by 2022/12/8
+ * @since 1.0.0
  */
 public class FinalServerDefaultHttpHeaders extends DefaultHttpHeaders {
     public FinalServerDefaultHttpHeaders() {

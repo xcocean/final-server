@@ -9,6 +9,7 @@ import top.lingkang.finalserver.server.core.impl.FinalServerDefaultHttpHeaders;
 /**
  * @author lingkang
  * Created by 2022/12/7
+ * @since 1.0.0
  */
 public class FinalServerConfiguration {
     public static HttpHeaders defaultResponseHeaders=new FinalServerDefaultHttpHeaders();

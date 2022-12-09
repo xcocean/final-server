@@ -8,6 +8,7 @@ import java.io.File;
 /**
  * @author lingkang
  * Created by 2022/12/6
+ * @since 1.0.0
  */
 public class ShutdownEventRemoveTempConfigFile implements ShutdownEvent {
     @Override

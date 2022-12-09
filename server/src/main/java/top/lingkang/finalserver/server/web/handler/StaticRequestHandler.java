@@ -9,6 +9,7 @@ import java.net.URLDecoder;
 /**
  * @author lingkang
  * Created by 2022/12/8
+ * @since 1.0.0
  */
 public class StaticRequestHandler implements RequestHandler {
 
@@ -25,7 +26,7 @@ public class StaticRequestHandler implements RequestHandler {
         if (context.getRequest().getPath().contains(".")) {
             URL resource = StaticRequestHandler.class.getClassLoader().getResource(basePath + context.getRequest().getPath());
             if (resource != null) {
-                context.getResponse().returnFile(URLDecoder.decode(resource.getPath(),"UTF-8"));
+                context.getResponse().returnFile(URLDecoder.decode(resource.getPath(), "UTF-8"));
                 return true;
             }
         }

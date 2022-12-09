@@ -10,6 +10,7 @@ import top.lingkang.finalserver.server.web.http.Request;
 /**
  * @author lingkang
  * Created by 2022/12/6
+ * @since 1.0.0
  */
 public class NetUtils {
     public static boolean isHttp(byte magic1, byte magic2) {

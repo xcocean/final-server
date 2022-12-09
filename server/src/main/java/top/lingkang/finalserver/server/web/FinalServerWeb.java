@@ -15,10 +15,7 @@ import org.springframework.core.env.Environment;
 import top.lingkang.finalserver.server.FinalServerApplication;
 import top.lingkang.finalserver.server.core.impl.ShutdownEventWeb;
 import top.lingkang.finalserver.server.utils.ProxyBeanUtils;
-import top.lingkang.finalserver.server.web.handler.BuildControllerHandler;
-import top.lingkang.finalserver.server.web.handler.ControllerRequestHandler;
-import top.lingkang.finalserver.server.web.handler.RequestHandler;
-import top.lingkang.finalserver.server.web.handler.StaticRequestHandler;
+import top.lingkang.finalserver.server.web.handler.*;
 import top.lingkang.finalserver.server.web.http.Filter;
 import top.lingkang.finalserver.server.web.http.FilterChain;
 import top.lingkang.finalserver.server.web.nio.FinalServerNioServerSocketChannel;
@@ -32,6 +29,7 @@ import java.util.List;
 /**
  * @author lingkang
  * Created by 2022/12/6
+ * @since 1.0.0
  */
 public class FinalServerWeb {
     private static final Logger log = LoggerFactory.getLogger(FinalServerWeb.class);
@@ -46,12 +44,21 @@ public class FinalServerWeb {
 
     @PostConstruct
     private void init() {
-        ControllerRequestHandler controller = new BuildControllerHandler(applicationContext).build();
+        List<RequestHandler> handlers = new ArrayList<>();
+        String[] beanNamesForType = applicationContext.getBeanNamesForType(LocalStaticMapping.class);
+        if (beanNamesForType != null && beanNamesForType.length > 0) {
+            for (String name : beanNamesForType) {
 
-        filterChain = setFilterChain(new RequestHandler[]{
-                new StaticRequestHandler(environment),
-                controller
-        });
+                LocalStaticMapping bean = (LocalStaticMapping) applicationContext.getBean(name);
+                for (String path : bean.getPaths()) {
+                    handlers.add(new LocalStaticRequestHandler(path));
+                    log.info("本地静态文件映射：" + path);
+                }
+            }
+        }
+        handlers.add(new StaticRequestHandler(environment));// 项目静态文件
+        handlers.add(new BuildControllerHandler(applicationContext).build());// controller转发
+        filterChain = setFilterChain(handlers.toArray(new RequestHandler[0]));
     }
 
     public void run() {
