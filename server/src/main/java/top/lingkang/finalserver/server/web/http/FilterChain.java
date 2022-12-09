@@ -1,6 +1,5 @@
 package top.lingkang.finalserver.server.web.http;
 
-import top.lingkang.finalserver.server.web.handler.ControllerRequestHandler;
 import top.lingkang.finalserver.server.web.handler.RequestHandler;
 
 /**
@@ -29,5 +28,9 @@ public class FilterChain {
                 if (handler.handler(context)) break;
             }
         }
+    }
+
+    public RequestHandler[] getRequestHandler() {
+        return requestHandler;
     }
 }

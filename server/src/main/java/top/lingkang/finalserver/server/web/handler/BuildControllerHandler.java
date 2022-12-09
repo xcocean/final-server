@@ -1,17 +1,18 @@
 package top.lingkang.finalserver.server.web.handler;
 
-import cn.hutool.core.util.StrUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
-import top.lingkang.finalserver.server.annotation.Controller;
-import top.lingkang.finalserver.server.annotation.GET;
-import top.lingkang.finalserver.server.utils.MatchUtils;
+import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
+import top.lingkang.finalserver.server.annotation.*;
 import top.lingkang.finalserver.server.utils.ProxyBeanUtils;
+import top.lingkang.finalserver.server.web.entity.RequestInfo;
+import top.lingkang.finalserver.server.web.http.RequestMethod;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author lingkang
@@ -26,7 +27,7 @@ public class BuildControllerHandler {
         this.applicationContext = applicationContext;
     }
 
-    private HashMap<String, top.lingkang.finalserver.server.web.entity.RequestHandler> map = new HashMap<>();
+    private HashMap<String, RequestInfo> absolutePath = new HashMap<>();
 
     public ControllerRequestHandler build() {
         log.debug("开始加载 Controller 请求处理");
@@ -38,40 +39,104 @@ public class BuildControllerHandler {
                 continue;
             log.debug(ProxyBeanUtils.getSpringProxyBeanName(bean.getClass()));
 
+            String basePath = "/";
+            // 判断类上是否有@RequestMapping注解
+            RequestMapping requestMapping = bean.getClass().getAnnotation(RequestMapping.class);
+            if (requestMapping != null) {
+                basePath = checkPrefixAndSuffix(requestMapping.value());
+            }
+
             Method[] methods = bean.getClass().getDeclaredMethods();
             for (Method method : methods) {
+                RequestInfo info = new RequestInfo();
+                RequestType requestType = getValue(method);
+                if (requestType != null) {
+                    String path = basePath + checkMapping(requestType.value);
+                    if (path.length() > 1 && path.endsWith("/"))
+                        throw new IllegalArgumentException("Controller处理的URL不能以 '/' 作为结尾  class:" + bean.getClass().getName() + " 方法:" + method.getName());
 
-                top.lingkang.finalserver.server.web.entity.RequestHandler handler = new top.lingkang.finalserver.server.web.entity.RequestHandler();
-                String path = null;
-                String matchPath = null;
-                GET get = method.getAnnotation(GET.class);
-                if (get != null) {
-                    if (StrUtil.isNotBlank(get.path()) && !MatchUtils.hasMatching(get.path()))
-                        path = get.path();
-                    else if (MatchUtils.hasMatching(get.path()))
-                        matchPath = get.path();
-                    else
-                        path = "/";
+                    if (absolutePath.containsKey(requestType.requestMethod.name() + "_" + path)) {// GET_/index
+                        throw new IllegalArgumentException("存在重复的URL处理：" + path + "  " + requestType.requestMethod.name() + "  " + bean.getClass().getName());
+                    }
 
-                    handler.setBeanName(name);
-                    handler.setMethodName(method.getName());
-                    handler.setReturnType(method.getReturnType());
-                    handler.setParamName(toParamName(method.getParameters()));
-                    handler.setParamType(method.getParameterTypes());
-                    map.put(path, handler);
+                    path = requestType.requestMethod.name() + "_" + path;
+                    info.setBeanName(name);
+                    info.setMethodName(method.getName());
+                    info.setReturnType(method.getReturnType());
+                    info.setParamName(getParamNames(method.getName(), bean.getClass(), method.getParameterTypes()));
+                    info.setParamType(method.getParameterTypes());
+                    absolutePath.put(path, info);
                 }
-
             }
         }
+        if (log.isDebugEnabled()) {
+            for (Map.Entry<String, RequestInfo> entry : absolutePath.entrySet())
+                log.debug(entry.getKey());
+        }
         log.debug("Controller 请求处理加载完成");
-        return new ControllerRequestHandler(map, applicationContext);
+        return new ControllerRequestHandler(absolutePath, applicationContext);
     }
 
-    private String[] toParamName(Parameter[] parameters) {
-        String[] strings = new String[parameters.length];
-        for (int i = 0; i < strings.length; i++) {
-            strings[i] = parameters[i].getName();
+    // @RequestMapping 检查前后缀
+    private String checkPrefixAndSuffix(String path) {
+        if (!path.startsWith("/"))
+            path = "/" + path;
+        if (!path.endsWith("/"))
+            path = path + "/";
+        return path;
+    }
+
+    private String checkMapping(String path) {
+        if (path.length() > 1 && path.startsWith("/")) {
+            path = path.substring(1);
         }
-        return strings;
+        return path;
+    }
+
+    private String[] getParamNames(String methodName, Class<?> clazz, Class<?>... parameterTypes) {
+        try {
+            Method method = clazz.getMethod(methodName, parameterTypes);
+            String[] parameterNames = new LocalVariableTableParameterNameDiscoverer().getParameterNames(method);
+            System.out.println(Arrays.toString(parameterNames));
+            return parameterNames;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new String[0];
+    }
+
+    private RequestType getValue(Method method) {
+        GET get = method.getAnnotation(GET.class);
+        if (get != null)
+            return new RequestType(get.value(), RequestMethod.GET);
+
+        POST post = method.getAnnotation(POST.class);
+        if (post != null)
+            return new RequestType(post.value(), RequestMethod.POST);
+
+        RequestMapping requestMapping = method.getAnnotation(RequestMapping.class);
+        if (requestMapping != null)
+            return new RequestType(requestMapping.value(), requestMapping.method());
+
+
+        DELETE delete = method.getAnnotation(DELETE.class);
+        if (delete != null)
+            return new RequestType(delete.value(), RequestMethod.DELETE);
+
+        PUT put = method.getAnnotation(PUT.class);
+        if (put != null)
+            return new RequestType(put.value(), RequestMethod.PUT);
+
+        return null;
+    }
+
+    class RequestType {
+        public RequestType(String value, RequestMethod requestMethod) {
+            this.value = value;
+            this.requestMethod = requestMethod;
+        }
+
+        public String value;
+        public RequestMethod requestMethod;
     }
 }

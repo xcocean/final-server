@@ -8,7 +8,7 @@ import top.lingkang.finalserver.server.annotation.Controller;
 import top.lingkang.finalserver.server.annotation.FinalServerBoot;
 import top.lingkang.finalserver.server.annotation.GET;
 import top.lingkang.finalserver.server.web.http.HttpResponse;
-import top.lingkang.finalserver.server.web.http.Response;
+import top.lingkang.finalserver.server.web.http.RequestMethod;
 
 /**
  * @author lingkang
@@ -27,9 +27,17 @@ public class Demo01 {
     }
 
     @GET
-    public void index(HttpResponse response){
-        System.out.println("123");
+    public void index(HttpResponse response,String name,int a){
+        System.out.println(name);
+        System.out.println(a);
         // response.returnString("hi你好啊");
         response.returnTemplate("index.html");
+    }
+    @GET("/test")
+    public void test() throws Exception {
+        FinalServerApplication.addRequestHandler("/a", RequestMethod.GET,context -> {
+            System.out.println(context.getRequest().getParam("name"));
+            context.getResponse().returnString("自定义custom");
+        });
     }
 }

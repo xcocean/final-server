@@ -1,7 +1,5 @@
 package top.lingkang.finalserver.server.annotation;
 
-import top.lingkang.finalserver.server.web.http.RequestMethod;
-
 import java.lang.annotation.*;
 
 /**
@@ -9,11 +7,9 @@ import java.lang.annotation.*;
  * Created by 2022/12/7
  * @since 1.0.0
  */
-@Target({ElementType.TYPE, ElementType.METHOD})
+@Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface RequestMapping {
+public @interface DELETE {
     String value() default "";
-
-    RequestMethod method() default RequestMethod.GET;
 }
