@@ -1,5 +1,7 @@
 package top.lingkang.finalserver.server.utils;
 
+import io.netty.handler.codec.http.HttpHeaderNames;
+import io.netty.handler.codec.http.HttpHeaders;
 import top.lingkang.finalserver.server.web.http.StaticMimes;
 
 /**
@@ -7,10 +9,12 @@ import top.lingkang.finalserver.server.web.http.StaticMimes;
  * Created by 2022/12/8
  */
 public class CommonUtils {
-    public static String getResponseHeadName(String filePath) {
+    public static void setResponseHeadName(String filePath, HttpHeaders headers) {
         int index = filePath.lastIndexOf(".");
         if (index == -1)
-            return null;
-        return StaticMimes.get(filePath.substring(index));
+            return;
+        String type = StaticMimes.get(filePath.substring(index));
+        if (type != null)
+            headers.set(HttpHeaderNames.CONTENT_TYPE, type);
     }
 }

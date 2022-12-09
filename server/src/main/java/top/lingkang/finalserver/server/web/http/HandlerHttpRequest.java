@@ -1,15 +1,13 @@
 package top.lingkang.finalserver.server.web.http;
 
 
+import cn.hutool.core.util.StrUtil;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.handler.codec.http.DefaultHttpResponse;
-import io.netty.handler.codec.http.HttpHeaderNames;
-import io.netty.handler.codec.http.HttpResponseStatus;
-import io.netty.handler.codec.http.HttpVersion;
+import io.netty.handler.codec.http.*;
 import io.netty.handler.stream.ChunkedFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +16,7 @@ import top.lingkang.finalserver.server.utils.CommonUtils;
 import top.lingkang.finalserver.server.utils.HttpUtils;
 import top.lingkang.finalserver.server.utils.NetUtils;
 
+import java.io.InputStream;
 import java.io.RandomAccessFile;
 
 
@@ -42,7 +41,7 @@ public class HandlerHttpRequest extends SimpleChannelInboundHandler<FinalServerC
         if (context.getResponse().isReady()) {
             HttpResponse res = (HttpResponse) context.getResponse();
             if (res.isStatic()) {
-                staticFile(res.getFilePath(), ctx);
+                staticFile(res.getFilePath(), ctx, context.getRequest());
                 return;
             }
             HttpUtils.sendResponse(ctx, res, 200);
@@ -62,15 +61,45 @@ public class HandlerHttpRequest extends SimpleChannelInboundHandler<FinalServerC
         FinalServerConfiguration.webExceptionHandler.exception(ctx, cause);
     }
 
-    private void staticFile(String filePath, ChannelHandlerContext ctx) throws Exception {
+    private void staticFile(String filePath, ChannelHandlerContext ctx, Request request) throws Exception {
         RandomAccessFile randomAccessFile = new RandomAccessFile(filePath, "r");
-        DefaultHttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
-        response.headers().set(FinalServerConfiguration.defaultResponseHeaders);
-        response.headers().set(HttpHeaderNames.CONTENT_LENGTH, randomAccessFile.length());
-        response.headers().set(HttpHeaderNames.CONTENT_TYPE, CommonUtils.getResponseHeadName(filePath));
+        HttpResponseStatus status = HttpResponseStatus.OK;
+        HttpHeaders headers = new DefaultHttpHeaders();
+        headers.set(FinalServerConfiguration.defaultResponseHeaders);
+        headers.set(HttpHeaderNames.ACCEPT_RANGES, HttpHeaderValues.BYTES);
+        headers.set(HttpHeaderNames.CONTENT_LENGTH, randomAccessFile.length());
+        CommonUtils.setResponseHeadName(filePath, headers);
+
+        // 静态文件需要做到断点续传
+        String range = request.getHeaders().get(HttpHeaderNames.RANGE);
+        Long offset = 0L, length = randomAccessFile.length();
+        if (StrUtil.isNotBlank(range)) {// Range: bytes=1900544-  Range: bytes=1900544-6666666
+            range = range.substring(6);
+            String[] split = range.split("-");
+            try {
+                offset = Long.parseLong(split[0]);
+                if (split.length > 1 && StrUtil.isNotEmpty(split[1])) {
+                    long end = Long.parseLong(split[1]);
+                    if (end <= length && offset >= end) {
+                        long endIndex = end - offset;
+                        headers.set(HttpHeaderNames.CONTENT_RANGE, "bytes " + offset + "-" + endIndex + "/" + length);
+                        length = endIndex - offset;
+                    }
+                } else {
+                    headers.set(HttpHeaderNames.CONTENT_RANGE, "bytes " + offset + "-" + (length + offset - 1) + "/" + (offset + length));
+                    length = length - offset;
+                }
+                headers.set(HttpHeaderNames.CONTENT_LENGTH, length);// 重写响应长度
+                status = HttpResponseStatus.PARTIAL_CONTENT;
+            } catch (Exception e) {
+                log.warn("断点续传解析错误", e);
+            }
+        }
+        DefaultHttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, status);
+        response.headers().set(headers);
         ctx.write(response);
         ctx.write(
-                new ChunkedFile(randomAccessFile, 0, randomAccessFile.length(), 1024),
+                new ChunkedFile(randomAccessFile, offset, length, 1024),
                 ctx.newProgressivePromise());
         flushAndClose(ctx);
     }
