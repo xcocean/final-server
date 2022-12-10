@@ -1,4 +1,4 @@
-package top.lingkang.finalserver.server.web.nio;
+package top.lingkang.finalserver.server.web;
 
 import top.lingkang.finalserver.server.web.http.Request;
 import top.lingkang.finalserver.server.web.http.Response;
@@ -19,7 +19,7 @@ public class FinalServerHttpContext {
         return res.get();
     }
 
-    static void init(Request request,Response response){
+    public static void init(Request request,Response response){
         req.set(request);
         res.set(response);
     }

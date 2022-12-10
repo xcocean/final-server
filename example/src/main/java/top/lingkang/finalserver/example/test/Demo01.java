@@ -2,7 +2,6 @@ package top.lingkang.finalserver.example.test;
 
 import io.netty.handler.codec.http.cookie.Cookie;
 import io.netty.handler.codec.http.cookie.DefaultCookie;
-import io.netty.handler.codec.http.cookie.ServerCookieDecoder;
 import top.lingkang.finalserver.server.FinalServerApplication;
 import top.lingkang.finalserver.server.annotation.Controller;
 import top.lingkang.finalserver.server.annotation.FinalServerBoot;
@@ -10,9 +9,8 @@ import top.lingkang.finalserver.server.annotation.GET;
 import top.lingkang.finalserver.server.web.http.FinalServerContext;
 import top.lingkang.finalserver.server.web.http.HttpResponse;
 import top.lingkang.finalserver.server.web.http.RequestMethod;
-import top.lingkang.finalserver.server.web.nio.FinalServerHttpContext;
+import top.lingkang.finalserver.server.web.FinalServerHttpContext;
 
-import java.net.URLDecoder;
 import java.util.Set;
 
 /**

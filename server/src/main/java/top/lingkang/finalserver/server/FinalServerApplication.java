@@ -38,11 +38,16 @@ public class FinalServerApplication {
 
     public static FinalServerLogConfig finalServerLogConfig;
 
+    public static long startTime=0L;
+    public static Class<?> mainClass;
+
     public static void run(Class<?> mainClass, String[] args) {
         run(mainClass, 7070, args);
     }
 
     public static void run(Class<?> mainClass, int port, String[] args) {
+        startTime=System.currentTimeMillis();
+        FinalServerApplication.mainClass=mainClass;
         FinalServerBoot mainClassAnnotation = mainClass.getAnnotation(FinalServerBoot.class);
         if (mainClassAnnotation == null) {
             FinalSystemOut.error("启动类未添加@FinalServerBoot，未执行相关功能");
@@ -52,7 +57,7 @@ public class FinalServerApplication {
         finalServerLogConfig = new FinalServerLogConfig();
 
         // 加载配置
-        log.info("FinalServer 开始加载配置");
+        log.debug("FinalServer 开始加载配置");
         InitAppConfig.initProperties(args, port);
 
         // 检查端口
@@ -65,6 +70,7 @@ public class FinalServerApplication {
         try {
             // 配置spring xml
             InitAppConfig.initXml(mainClass);
+            log.debug("FinalServer 配置加载完成");
 
             // 添加钩子
             addShutdownHook(new ShutdownEventRemoveTempConfigFile());

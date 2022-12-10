@@ -23,6 +23,7 @@ import top.lingkang.finalserver.server.web.nio.FinalServerNioServerSocketChannel
 import top.lingkang.finalserver.server.web.nio.ServerInitializer;
 
 import javax.annotation.PostConstruct;
+import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -107,7 +108,13 @@ public class FinalServerWeb {
         //启动server并绑定端口监听和设置同步方式
         try {
             ChannelFuture channelFuture = serverBootstrap.bind(port).sync();
-            log.info("web start success , website: http://localhost:" + port);
+            log.info(
+                    "Started {} in {} seconds (JVM running for {})",
+                    FinalServerApplication.mainClass.getSimpleName(),
+                    new Double((System.currentTimeMillis() - FinalServerApplication.startTime)) / 1000.0,
+                    new Double(ManagementFactory.getRuntimeMXBean().getUptime()) / 1000.0
+            );
+            log.info("website: http://localhost:" + port);
 
             new Thread(() -> {
                 //关闭监听方式

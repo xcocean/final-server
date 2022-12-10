@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 import top.lingkang.finalserver.server.core.WebExceptionHandler;
 import top.lingkang.finalserver.server.utils.HttpUtils;
 import top.lingkang.finalserver.server.utils.NetUtils;
-import top.lingkang.finalserver.server.web.nio.FinalServerHttpContext;
+import top.lingkang.finalserver.server.web.FinalServerHttpContext;
 
 /**
  * @author lingkang

@@ -4,6 +4,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.FullHttpRequest;
 import top.lingkang.finalserver.server.constant.FinalServerConstants;
+import top.lingkang.finalserver.server.web.FinalServerHttpContext;
 import top.lingkang.finalserver.server.web.http.FinalServerContext;
 import top.lingkang.finalserver.server.web.http.HttpRequest;
 import top.lingkang.finalserver.server.web.http.HttpResponse;
@@ -15,7 +16,7 @@ import java.net.URLDecoder;
  * Created by 2022/12/6
  * @since 1.0.0
  */
-public class HandlerHttpWrapper extends SimpleChannelInboundHandler<FullHttpRequest> {
+class HandlerHttpWrapper extends SimpleChannelInboundHandler<FullHttpRequest> {
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest msg) throws Exception {
         // 提前将url解码，防止中文乱码
