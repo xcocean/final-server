@@ -1,12 +1,12 @@
 package top.lingkang.finalserver.server.web.http;
 
+import cn.hutool.core.lang.Assert;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaderValues;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.cookie.Cookie;
 import top.lingkang.finalserver.server.core.FinalServerConfiguration;
-import top.lingkang.finalserver.server.core.HttpParseTemplate;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
@@ -20,19 +20,20 @@ import java.util.TreeSet;
  */
 public class HttpResponse implements Response {
     private ChannelHandlerContext ctx;
-    private HttpParseTemplate parseTemplate;
     private HttpHeaders headers = FinalServerConfiguration.defaultResponseHeaders.get();
 
     private boolean isReady;
     private boolean isStatic;
+    private boolean isTemplate;
+    private String templatePath;
+    private Map<String, Object> map;
     private String filePath;
     private byte[] content;
     private int code;
     private Set<Cookie> cookies = new TreeSet<>();
 
-    public HttpResponse(ChannelHandlerContext ctx, HttpParseTemplate parseTemplate) {
+    public HttpResponse(ChannelHandlerContext ctx) {
         this.ctx = ctx;
-        this.parseTemplate = parseTemplate;
     }
 
     @Override
@@ -68,16 +69,15 @@ public class HttpResponse implements Response {
     }
 
     @Override
-    public void returnTemplate(String template, Map<String, Object> map) {
+    public void returnTemplate(String templatePath, Map<String, Object> map) {
+        Assert.notEmpty(templatePath, "templatePath 模板不能为空");
         checkReady();
-        try {
-            content = parseTemplate.getTemplate(template, map);
-            if (!headers.contains(HttpHeaderNames.CONTENT_TYPE))
-                headers.set(HttpHeaderNames.CONTENT_TYPE, HttpHeaderValues.TEXT_HTML);
-        } catch (Exception e) {
-            throw new RuntimeException("解析模板异常：", e);
-        }
+        this.templatePath = templatePath;
+        this.map = map;
+        isTemplate = true;
         isReady = true;
+        if (!headers.contains(HttpHeaderNames.CONTENT_TYPE))
+            headers.set(HttpHeaderNames.CONTENT_TYPE, HttpHeaderValues.TEXT_HTML);
     }
 
     @Override
@@ -99,6 +99,11 @@ public class HttpResponse implements Response {
     }
 
     @Override
+    public boolean isTemplate() {
+        return isTemplate;
+    }
+
+    @Override
     public void addCookie(Cookie cookie) {
         cookies.add(cookie);
     }
@@ -106,6 +111,16 @@ public class HttpResponse implements Response {
     @Override
     public Set<Cookie> getCookies() {
         return cookies;
+    }
+
+    @Override
+    public String getTemplatePath() {
+        return templatePath;
+    }
+
+    @Override
+    public Map<String, Object> getTemplateMap() {
+        return map;
     }
 
     private void checkReady() {

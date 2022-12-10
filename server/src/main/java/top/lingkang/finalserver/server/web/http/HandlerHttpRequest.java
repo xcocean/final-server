@@ -6,6 +6,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.lingkang.finalserver.server.core.FinalServerConfiguration;
+import top.lingkang.finalserver.server.core.HttpParseTemplate;
 import top.lingkang.finalserver.server.utils.HttpUtils;
 import top.lingkang.finalserver.server.utils.NetUtils;
 
@@ -19,9 +20,11 @@ public class HandlerHttpRequest extends SimpleChannelInboundHandler<FinalServerC
     private static final Logger log = LoggerFactory.getLogger(HandlerHttpRequest.class);
 
     private FilterChain filterChain;
+    private HttpParseTemplate parseTemplate;
 
-    public HandlerHttpRequest(FilterChain filterChain) {
+    public HandlerHttpRequest(FilterChain filterChain, HttpParseTemplate parseTemplate) {
         this.filterChain = filterChain;
+        this.parseTemplate = parseTemplate;
     }
 
     @Override
@@ -37,9 +40,14 @@ public class HandlerHttpRequest extends SimpleChannelInboundHandler<FinalServerC
             HttpResponse res = (HttpResponse) context.getResponse();
             if (res.isStatic()) {
                 HttpHandler.returnStaticFile(res.getFilePath(), ctx, context);
-                return;
-            }
-            HttpUtils.sendResponse(ctx, res, 200);
+            } else if (res.isTemplate()) {
+                HttpUtils.sendResponse(
+                        ctx,
+                        parseTemplate.getTemplate(res.getTemplatePath(), res.getTemplateMap()),
+                        res.getHeaders(),
+                        200);
+            } else
+                HttpUtils.sendResponse(ctx, res, 200);
         } else {// 返回空值
             FinalServerConfiguration.webExceptionHandler.notHandler(ctx);
         }

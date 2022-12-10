@@ -36,8 +36,8 @@ public class ServerInitializer extends ChannelInitializer<Channel> {
         // pipeline.addLast(new HttpRequestEncoder());// http 编码
         pipeline.addLast(new HttpObjectAggregator(1024));
         pipeline.addLast(new ChunkedWriteHandler());// 写内容
-        pipeline.addLast(new HandlerHttpWrapper(parseTemplate));// 进行一次包装
-        pipeline.addLast(new HandlerHttpRequest(filterChain));
+        pipeline.addLast(new HandlerHttpWrapper());// 进行一次包装
+        pipeline.addLast(new HandlerHttpRequest(filterChain, parseTemplate));
     }
 
 }

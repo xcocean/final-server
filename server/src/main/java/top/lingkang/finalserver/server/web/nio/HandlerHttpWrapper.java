@@ -4,7 +4,6 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.FullHttpRequest;
 import top.lingkang.finalserver.server.constant.FinalServerConstants;
-import top.lingkang.finalserver.server.core.HttpParseTemplate;
 import top.lingkang.finalserver.server.web.FinalServerHttpContext;
 import top.lingkang.finalserver.server.web.http.FinalServerContext;
 import top.lingkang.finalserver.server.web.http.HttpRequest;
@@ -18,11 +17,6 @@ import java.net.URLDecoder;
  * @since 1.0.0
  */
 class HandlerHttpWrapper extends SimpleChannelInboundHandler<FullHttpRequest> {
-    private HttpParseTemplate parseTemplate;
-
-    public HandlerHttpWrapper(HttpParseTemplate parseTemplate) {
-        this.parseTemplate = parseTemplate;
-    }
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest msg) throws Exception {
@@ -33,7 +27,7 @@ class HandlerHttpWrapper extends SimpleChannelInboundHandler<FullHttpRequest> {
         // 构建上下文
         FinalServerContext context = new FinalServerContext(ctx);
         context.setRequest(new HttpRequest(ctx, msg));
-        context.setResponse(new HttpResponse(ctx, parseTemplate));
+        context.setResponse(new HttpResponse(ctx));
 
         // 初始化上下文中的请求与响应
         FinalServerHttpContext.init(context.getRequest(), context.getResponse());

@@ -25,7 +25,7 @@ public interface Response {
 
     void returnTemplate(String template);
 
-    void returnTemplate(String template, Map<String, Object> map);
+    void returnTemplate(String templatePath, Map<String, Object> map);
 
     void returnFile(String filePath);
 
@@ -35,10 +35,15 @@ public interface Response {
     // 是否已经准备好响应，不能重复return
     boolean isReady();
 
+    boolean isTemplate();
+
     // 对当前会话响应添加cookie
     void addCookie(Cookie cookie);
 
     // 只能获取到本次会话响应添加的cookie
     Set<Cookie> getCookies();
 
+    String getTemplatePath();
+
+    Map<String,Object> getTemplateMap();
 }
