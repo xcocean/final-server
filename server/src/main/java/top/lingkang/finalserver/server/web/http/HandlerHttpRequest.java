@@ -26,13 +26,17 @@ public class HandlerHttpRequest extends SimpleChannelInboundHandler<FinalServerC
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FinalServerContext context) throws Exception {
-        System.out.println(context.getRequest().getHttpMethod().name() + "  path=" + context.getRequest().getPath());
+        System.out.println(context.getRequest().getHttpMethod().name() + " path=" + context.getRequest().getPath());
 
         filterChain.doFilter(context);
+
+        // 添加cookie
+        HttpUtils.addHeaderCookie(context.getResponse());
+
         if (context.getResponse().isReady()) {
             HttpResponse res = (HttpResponse) context.getResponse();
             if (res.isStatic()) {
-                HttpHandler.returnStaticFile(res.getFilePath(), ctx, context.getRequest());
+                HttpHandler.returnStaticFile(res.getFilePath(), ctx, context);
                 return;
             }
             HttpUtils.sendResponse(ctx, res, 200);

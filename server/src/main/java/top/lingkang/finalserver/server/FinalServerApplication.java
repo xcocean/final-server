@@ -1,6 +1,7 @@
 package top.lingkang.finalserver.server;
 
 import cn.hutool.core.lang.Assert;
+import cn.hutool.core.net.NetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -29,6 +30,7 @@ import java.util.List;
  * @author lingkang
  * Created by 2022/12/6
  * @since 1.0.0
+ * 启动入口主类
  */
 public class FinalServerApplication {
     public static ApplicationContext applicationContext;
@@ -49,15 +51,30 @@ public class FinalServerApplication {
         // 初始化日志配置
         finalServerLogConfig = new FinalServerLogConfig();
 
+        // 加载配置
         log.info("FinalServer 开始加载配置");
-        InitAppConfig.initProperties(args);
+        InitAppConfig.initProperties(args, port);
+
+        // 检查端口
+        if (!NetUtil.isUsableLocalPort(Integer.parseInt(System.getProperty("server.port")))) {
+            log.error("FinalServer start fail  启动失败，端口被占用: {}", System.getProperty("server.port"));
+            System.exit(0);
+            return;
+        }
+
         try {
+            // 配置spring xml
             InitAppConfig.initXml(mainClass);
+
+            // 添加钩子
             addShutdownHook(new ShutdownEventRemoveTempConfigFile());
             addShutdownHook();
+
+            // 启动spring
             applicationContext = new FileSystemXmlApplicationContext(InitAppConfig.getXmlPage());
         } catch (Exception e) {
             log.error("FinalServer 启动失败: ", e);
+            System.exit(0);
         }
     }
 
@@ -89,7 +106,7 @@ public class FinalServerApplication {
         Assert.notNull(method, "请求方法不能为空");
         Assert.notNull(customRequestHandler, "自定义处理不能为空");
         if (!path.startsWith("/"))
-            path="/"+path;
+            path = "/" + path;
 
         FinalServerWeb serverWeb = applicationContext.getBean(FinalServerWeb.class);
         Field field = serverWeb.getClass().getDeclaredField("filterChain");

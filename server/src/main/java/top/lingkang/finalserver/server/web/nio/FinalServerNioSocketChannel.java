@@ -1,9 +1,9 @@
 package top.lingkang.finalserver.server.web.nio;
 
-import cn.hutool.core.util.IdUtil;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelId;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import top.lingkang.finalserver.server.core.FinalServerConfiguration;
 
 import java.nio.channels.SocketChannel;
 
@@ -22,7 +22,7 @@ public class FinalServerNioSocketChannel extends NioSocketChannel {
     @Override
     protected ChannelId newId() {
         return new ChannelId() {
-            private String id = IdUtil.objectId();
+            private String id = FinalServerConfiguration.serverGenerateId.generateId();
 
             @Override
             public String asShortText() {

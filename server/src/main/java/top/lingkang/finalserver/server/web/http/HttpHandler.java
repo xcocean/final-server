@@ -19,22 +19,24 @@ import java.io.RandomAccessFile;
  * @since 1.0.0
  */
 class HttpHandler {
-    private static final Logger log= LoggerFactory.getLogger(HttpHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(HttpHandler.class);
 
     /**
      * 处理静态文件返回
      */
-    public static void returnStaticFile(String filePath, ChannelHandlerContext ctx, Request request) throws Exception {
+    public static void returnStaticFile(String filePath, ChannelHandlerContext ctx, FinalServerContext context) throws Exception {
         RandomAccessFile randomAccessFile = new RandomAccessFile(filePath, "r");
         HttpResponseStatus status = HttpResponseStatus.OK;
         HttpHeaders headers = new DefaultHttpHeaders();
-        headers.set(FinalServerConfiguration.defaultResponseHeaders);
         headers.set(HttpHeaderNames.ACCEPT_RANGES, HttpHeaderValues.BYTES);
         headers.set(HttpHeaderNames.CONTENT_LENGTH, randomAccessFile.length());
+        // 设置文件请求头
         CommonUtils.setResponseHeadName(filePath, headers);
+        // 设置用户设置的请求头，可以覆盖上面的设置
+        headers.setAll(context.getResponse().getHeaders());
 
         // 静态文件需要做到断点续传
-        String range = request.getHeaders().get(HttpHeaderNames.RANGE);
+        String range = context.getRequest().getHeaders().get(HttpHeaderNames.RANGE);
         Long offset = 0L, length = randomAccessFile.length();
         if (StrUtil.isNotBlank(range)) {// Range: bytes=1900544-  Range: bytes=1900544-6666666
             range = range.substring(6);

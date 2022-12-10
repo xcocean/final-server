@@ -4,9 +4,14 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.*;
+import io.netty.handler.codec.http.cookie.Cookie;
+import io.netty.handler.codec.http.cookie.ServerCookieEncoder;
 import io.netty.util.CharsetUtil;
 import top.lingkang.finalserver.server.annotation.NotNull;
 import top.lingkang.finalserver.server.web.http.HttpResponse;
+import top.lingkang.finalserver.server.web.http.Response;
+
+import java.util.Set;
 
 /**
  * @author lingkang
@@ -34,5 +39,13 @@ public class HttpUtils {
         ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
     }
 
+    public static void addHeaderCookie(Response response) {
+        if (!response.getCookies().isEmpty()) {
+            Set<Cookie> cookies = response.getCookies();
+            for (Cookie cookie : cookies) {
+                response.setHeader("Set-Cookie", ServerCookieEncoder.STRICT.encode(cookie));
+            }
+        }
+    }
 
 }

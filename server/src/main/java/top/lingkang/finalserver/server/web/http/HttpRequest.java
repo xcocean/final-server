@@ -1,18 +1,18 @@
 package top.lingkang.finalserver.server.web.http;
 
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.http.FullHttpRequest;
-import io.netty.handler.codec.http.HttpHeaders;
-import io.netty.handler.codec.http.HttpMethod;
-import io.netty.handler.codec.http.QueryStringDecoder;
+import io.netty.handler.codec.http.*;
+import io.netty.handler.codec.http.cookie.Cookie;
 import io.netty.handler.codec.http.multipart.Attribute;
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder;
 import io.netty.handler.codec.http.multipart.InterfaceHttpData;
+import top.lingkang.finalserver.server.core.FinalServerConfiguration;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.net.URLDecoder;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * @author lingkang
@@ -39,11 +39,7 @@ public class HttpRequest implements Request {
 
     @Override
     public String getPath() {
-        try {
-            return URLDecoder.decode(queryUri.path(), "UTF-8");
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return queryUri.path();
     }
 
     @Override
@@ -89,5 +85,17 @@ public class HttpRequest implements Request {
     @Override
     public HttpMethod getHttpMethod() {
         return msg.method();
+    }
+
+    @Override
+    public Set<Cookie> getCookies() {
+        String cookie = msg.headers().get(HttpHeaderNames.COOKIE);
+        if (cookie != null) {
+            try {
+                return FinalServerConfiguration.cookieDecoder.decode(cookie);
+            } catch (Exception e) {
+            }
+        }
+        return new TreeSet<>();
     }
 }

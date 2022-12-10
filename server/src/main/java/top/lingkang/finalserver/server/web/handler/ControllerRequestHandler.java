@@ -7,7 +7,6 @@ import top.lingkang.finalserver.server.web.entity.RequestInfo;
 import top.lingkang.finalserver.server.web.http.FinalServerContext;
 
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.HashMap;
 
 /**
@@ -29,7 +28,7 @@ public class ControllerRequestHandler implements RequestHandler {
     public boolean handler(FinalServerContext context) throws Exception {
         RequestInfo requestInfo = absolutePath.get(context.getRequest().getHttpMethod().name() + "_" + context.getRequest().getPath());
         if (requestInfo != null) {
-            if (requestInfo.getBeanName()==null){// 自定义的请求处理
+            if (requestInfo.getBeanName() == null) {// 自定义的请求处理
                 requestInfo.getCustomRequestHandler().handler(context);
                 return true;
             }
@@ -37,14 +36,15 @@ public class ControllerRequestHandler implements RequestHandler {
             Method method = bean.getClass().getDeclaredMethod(requestInfo.getMethodName(), requestInfo.getParamType());
             Object[] param = joinParam(requestInfo, context);
             Object result = method.invoke(bean, param);
-            if (result == null)
+            if (context.getResponse().isReady())
                 return true;
-            if (context.getResponse().isReady()) {
-                log.warn("已经处理了输出流，本次忽略return值： " + bean.getClass().getSimpleName() + " " + method.getName());
-                return true;
+            if (result == null) {
+                // 返回空时，直接输出空字符串
+                context.getResponse().returnString("");
+            } else {
+                // 其他结果返回toString
+                context.getResponse().returnString(result.toString());
             }
-            // 其他结果返回toString
-            context.getResponse().returnString(result.toString());
         }
         return true;
     }

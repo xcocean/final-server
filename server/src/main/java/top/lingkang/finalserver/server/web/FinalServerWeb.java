@@ -1,6 +1,5 @@
 package top.lingkang.finalserver.server.web;
 
-import cn.hutool.core.net.NetUtil;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
@@ -33,7 +32,7 @@ import java.util.List;
  */
 public class FinalServerWeb {
     private static final Logger log = LoggerFactory.getLogger(FinalServerWeb.class);
-    private EventLoopGroup mainGroup, subGroup;
+    private EventLoopGroup bossGroup, workGroup;
     @Autowired
     private Environment environment;
     @Autowired
@@ -46,7 +45,7 @@ public class FinalServerWeb {
     private void init() {
         List<RequestHandler> handlers = new ArrayList<>();
         String[] beanNamesForType = applicationContext.getBeanNamesForType(LocalStaticMapping.class);
-        if (beanNamesForType != null && beanNamesForType.length > 0) {
+        if (beanNamesForType.length > 0) {
             for (String name : beanNamesForType) {
 
                 LocalStaticMapping bean = (LocalStaticMapping) applicationContext.getBean(name);
@@ -64,26 +63,38 @@ public class FinalServerWeb {
     public void run() {
         int port = Integer.valueOf(environment.getProperty("server.port"));
         log.info("FinalServer start web service port: {}", port);
-        if (!NetUtil.isUsableLocalPort(port)) {
-            log.error("FinalServer start fail 端口被占用: {}", port);
-            System.exit(0);
-        }
 
         web(port);
     }
 
     private void web(int port) {
-        //创建 主线程组，主线程接收并把任务丢给从线程，从线程做处理
-        mainGroup = new NioEventLoopGroup();
-        //从线程组
-        subGroup = new NioEventLoopGroup();
-        FinalServerApplication.addShutdownHook(new ShutdownEventWeb(mainGroup, subGroup));
+        int pro = Runtime.getRuntime().availableProcessors();
+        int boss = pro * 2, work = pro * 25;
+        int receive = Integer.parseInt(environment.getProperty("server.thread.maxReceive", "0"));
+        if (receive != 0)
+            boss = receive;
+        int handler = Integer.parseInt(environment.getProperty("server.thread.maxHandler", "0"));
+        if (handler != 0)
+            work = handler;
+        else if (work > 100)
+            work = 100;// 默认值不超过100
+
+        log.info("线程数 maxReceive={}  maxHandler={}", boss, work);
+
+        // 创建 主线程组，主线程接收并把任务丢给从线程，工作线程做处理
+        bossGroup = new NioEventLoopGroup(boss);
+        // 工作线程组
+        workGroup = new NioEventLoopGroup(work);
+        FinalServerApplication.addShutdownHook(new ShutdownEventWeb(bossGroup, workGroup));
         // netty服务器创建，ServerBootstrap是一个启动类
         ServerBootstrap serverBootstrap = new ServerBootstrap();
-        serverBootstrap.group(mainGroup, subGroup)      //设置主从线程
+        serverBootstrap.group(bossGroup, workGroup)      //设置主从线程
                 .channel(FinalServerNioServerSocketChannel.class) //  设置nio的双向管道
                 //当连接被阻塞时BACKLOG代表的是阻塞队列的长度
-                .option(ChannelOption.SO_BACKLOG, 256)
+                .option(
+                        ChannelOption.SO_BACKLOG,
+                        Integer.parseInt(environment.getProperty("server.thread.backlog", "256"))
+                )
                 //置连接为保持活动的状态
                 .childOption(ChannelOption.SO_KEEPALIVE, true);
         // 子处理器
@@ -101,8 +112,8 @@ public class FinalServerWeb {
                     log.info("FinalServer web 启动异常: ", e);
                     System.exit(0);
                 } finally {
-                    mainGroup.shutdownGracefully();
-                    subGroup.shutdownGracefully();
+                    bossGroup.shutdownGracefully();
+                    workGroup.shutdownGracefully();
                 }
             }).start();
         } catch (InterruptedException e) {

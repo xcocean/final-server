@@ -1,4 +1,4 @@
-package top.lingkang.finalserver.example.config;
+package top.lingkang.finalserver.example.test.config;
 
 import org.springframework.stereotype.Component;
 import top.lingkang.finalserver.server.web.handler.LocalStaticMapping;

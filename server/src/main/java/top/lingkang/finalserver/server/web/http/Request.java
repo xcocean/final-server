@@ -2,6 +2,9 @@ package top.lingkang.finalserver.server.web.http;
 
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpMethod;
+import io.netty.handler.codec.http.cookie.Cookie;
+
+import java.util.Set;
 
 /**
  * @author lingkang
@@ -25,4 +28,5 @@ public interface Request {
 
     HttpMethod getHttpMethod();
 
+    Set<Cookie> getCookies();
 }

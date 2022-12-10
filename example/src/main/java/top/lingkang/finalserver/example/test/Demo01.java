@@ -1,13 +1,19 @@
-package top.lingkang.finalserver.example;
+package top.lingkang.finalserver.example.test;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
+import io.netty.handler.codec.http.cookie.Cookie;
+import io.netty.handler.codec.http.cookie.DefaultCookie;
+import io.netty.handler.codec.http.cookie.ServerCookieDecoder;
 import top.lingkang.finalserver.server.FinalServerApplication;
 import top.lingkang.finalserver.server.annotation.Controller;
 import top.lingkang.finalserver.server.annotation.FinalServerBoot;
 import top.lingkang.finalserver.server.annotation.GET;
+import top.lingkang.finalserver.server.web.http.FinalServerContext;
 import top.lingkang.finalserver.server.web.http.HttpResponse;
 import top.lingkang.finalserver.server.web.http.RequestMethod;
+import top.lingkang.finalserver.server.web.nio.FinalServerHttpContext;
+
+import java.net.URLDecoder;
+import java.util.Set;
 
 /**
  * @author lingkang
@@ -25,6 +31,7 @@ public class Demo01 {
         System.out.println(name);
         System.out.println(a);
         // response.returnString("hi你好啊");
+        System.out.println(FinalServerHttpContext.getRequest().id());
         response.returnTemplate("index.html");
     }
 
@@ -34,5 +41,17 @@ public class Demo01 {
             System.out.println(context.getRequest().getParam("name"));
             context.getResponse().returnString("自定义custom");
         });
+    }
+
+    @GET("/c")
+    public void cookie(FinalServerContext context) throws Exception {
+        Set<Cookie> cookies = context.getRequest().getCookies();
+        for (Cookie cookie : cookies)
+            System.out.println(cookie.name() + "   " + cookie.value());
+        // 添加cookie
+        DefaultCookie lk = new DefaultCookie("lk", System.currentTimeMillis() + "");
+        lk.setMaxAge(666);
+        lk.setPath("/");
+        context.getResponse().addCookie(lk);
     }
 }

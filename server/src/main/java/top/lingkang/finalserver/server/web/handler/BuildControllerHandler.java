@@ -17,6 +17,7 @@ import java.util.Map;
  * @author lingkang
  * Created by 2022/12/7
  * @since 1.0.0
+ * spring初始化完成后，将会在此构建静态资源文件映射、controller请求处理等
  */
 public class BuildControllerHandler {
     private static final Logger log = LoggerFactory.getLogger(BuildControllerHandler.class);

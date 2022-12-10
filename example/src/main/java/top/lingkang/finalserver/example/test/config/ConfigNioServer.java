@@ -1,4 +1,4 @@
-package top.lingkang.finalserver.example.config;
+package top.lingkang.finalserver.example.test.config;
 
 import io.netty.channel.ChannelId;
 import io.netty.channel.socket.nio.NioServerSocketChannel;

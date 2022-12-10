@@ -22,7 +22,7 @@ import java.util.Properties;
 public class InitAppConfig {
     private static final Logger log = LoggerFactory.getLogger(InitAppConfig.class);
 
-    public static void initProperties(String[] args) {
+    public static void initProperties(String[] args, int port) {
         try {
             Properties app = new Properties();
             app.load(InitAppConfig.class.getClassLoader().getResourceAsStream("final-server-application.properties"));
@@ -30,6 +30,8 @@ public class InitAppConfig {
             if (in != null) {
                 app.load(in);
             }
+            if (port != 0)
+                app.setProperty("server.port", port + "");
             for (Map.Entry<Object, Object> entry : app.entrySet()) {
                 System.setProperty(entry.getKey().toString(), entry.getValue().toString());
             }
@@ -53,16 +55,15 @@ public class InitAppConfig {
                 packageName += pack;
 
             }
-            if (packageName.endsWith(",")) {
+            if (packageName.endsWith(","))
                 packageName = packageName.substring(0, packageName.length() - 1);
-            }
         }
 
         String xml = IoUtil.readUtf8(InitAppConfig.class.getClassLoader().getResourceAsStream("final-server-spring.xml"));
         xml = xml.replace("#componentScan", packageName);
 
         try {
-            xmlFile = File.createTempFile("final-server-spring" + IdUtil.objectId(), ".xml");
+            xmlFile = File.createTempFile("final-server-spring-" + IdUtil.objectId(), ".xml");
             FileUtil.writeString(xml, xmlFile, StandardCharsets.UTF_8);
         } catch (Exception e) {
             e.printStackTrace();
