@@ -29,7 +29,7 @@ public class HandlerHttpRequest extends SimpleChannelInboundHandler<FinalServerC
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FinalServerContext context) throws Exception {
-        System.out.println(context.getRequest().getHttpMethod().name() + " path=" + context.getRequest().getPath());
+        log.info(context.getRequest().getHttpMethod().name() + " path=" + context.getRequest().getPath());
 
         filterChain.doFilter(context);
 

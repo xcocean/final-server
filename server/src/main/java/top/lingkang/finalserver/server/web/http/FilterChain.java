@@ -23,6 +23,7 @@ public class FilterChain {
             current++;// 自增
             filters[current - 1].doFilter(context, this);
         } else {
+            current=0;//reset
             // 在此处调用处理逻辑方法
             for (RequestHandler handler : requestHandler) {
                 if (handler.handler(context)) break;
