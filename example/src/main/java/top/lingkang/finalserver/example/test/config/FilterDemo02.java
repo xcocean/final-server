@@ -11,11 +11,12 @@ import top.lingkang.finalserver.server.web.http.FinalServerContext;
  * Created by 2022/12/6
  */
 @Order(66)
-@Configuration
+// @Configuration
 public class FilterDemo02 implements Filter {
 
     @Override
     public void doFilter(FinalServerContext context, FilterChain filterChain) throws Exception {
+        System.out.println("FilterDemo02");
         filterChain.doFilter(context);
     }
 }

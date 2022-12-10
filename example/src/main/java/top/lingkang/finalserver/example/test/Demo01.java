@@ -26,10 +26,8 @@ public class Demo01 {
 
     @GET
     public void index(HttpResponse response, String name, int a) {
-        System.out.println(name);
-        System.out.println(a);
         // response.returnString("hi你好啊");
-        System.out.println(FinalServerHttpContext.getRequest().requestId());
+       // System.out.println(FinalServerHttpContext.getRequest().requestId());
         response.returnTemplate("index.html");
     }
 
