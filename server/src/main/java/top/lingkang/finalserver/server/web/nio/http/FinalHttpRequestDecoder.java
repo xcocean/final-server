@@ -9,7 +9,7 @@ import io.netty.handler.codec.http.*;
  * 对此类的复制，无任何改动 {@link io.netty.handler.codec.http.HttpRequestDecoder}
  * @since 1.0.0
  */
-public class FinalHttpRequestDecoder extends FinalHttpObjectDecoder {
+class FinalHttpRequestDecoder extends FinalHttpObjectDecoder {
 
     /**
      * Creates a new instance with the default

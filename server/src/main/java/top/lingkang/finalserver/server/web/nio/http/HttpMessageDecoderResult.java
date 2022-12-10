@@ -11,7 +11,7 @@ import io.netty.handler.codec.http.HttpObjectDecoder;
  * io.netty.handler.codec.http.HttpMessageDecoderResult}. It may simply produce a regular {@link DecoderResult}. This result is intended for
  * successful {@link HttpMessage} decoder results.
  */
-public final class HttpMessageDecoderResult extends DecoderResult {
+class HttpMessageDecoderResult extends DecoderResult {
 
     private final int initialLineLength;
     private final int headerSize;

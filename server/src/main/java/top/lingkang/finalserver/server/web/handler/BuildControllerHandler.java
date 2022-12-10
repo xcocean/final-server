@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 import top.lingkang.finalserver.server.annotation.*;
-import top.lingkang.finalserver.server.utils.ProxyBeanUtils;
+import top.lingkang.finalserver.server.utils.BeanUtils;
 import top.lingkang.finalserver.server.web.entity.RequestInfo;
 import top.lingkang.finalserver.server.web.http.RequestMethod;
 
@@ -37,7 +37,7 @@ public class BuildControllerHandler {
             Controller annotation = bean.getClass().getAnnotation(Controller.class);
             if (annotation == null)
                 continue;
-            log.debug(ProxyBeanUtils.getSpringProxyBeanName(bean.getClass()));
+            log.debug(BeanUtils.getSpringProxyBeanName(bean.getClass()));
 
             String basePath = "/";
             // 判断类上是否有@RequestMapping注解

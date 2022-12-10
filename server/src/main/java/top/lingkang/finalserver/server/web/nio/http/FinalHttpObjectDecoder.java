@@ -41,7 +41,7 @@ import java.util.List;
  * 搜索 “此处为修改部分” 即可找到修改部分
  * @since 1.0.0
  */
-public abstract class FinalHttpObjectDecoder extends ByteToMessageDecoder {
+abstract class FinalHttpObjectDecoder extends ByteToMessageDecoder {
     public static final int DEFAULT_MAX_INITIAL_LINE_LENGTH = 4096;
     public static final int DEFAULT_MAX_HEADER_SIZE = 8192;
     public static final boolean DEFAULT_CHUNKED_SUPPORTED = true;

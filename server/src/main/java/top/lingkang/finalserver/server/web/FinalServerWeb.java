@@ -15,7 +15,7 @@ import top.lingkang.finalserver.server.FinalServerApplication;
 import top.lingkang.finalserver.server.core.FinalServerConfiguration;
 import top.lingkang.finalserver.server.core.WebExceptionHandler;
 import top.lingkang.finalserver.server.core.impl.ShutdownEventWeb;
-import top.lingkang.finalserver.server.utils.ProxyBeanUtils;
+import top.lingkang.finalserver.server.utils.BeanUtils;
 import top.lingkang.finalserver.server.web.handler.*;
 import top.lingkang.finalserver.server.web.http.Filter;
 import top.lingkang.finalserver.server.web.http.FilterChain;
@@ -62,7 +62,7 @@ public class FinalServerWeb {
         filterChain = setFilterChain(handlers.toArray(new RequestHandler[0]));
 
         // 初始化异常处理
-        WebExceptionHandler exceptionHandler = applicationContext.getBean(WebExceptionHandler.class);
+        WebExceptionHandler exceptionHandler = BeanUtils.getBean(WebExceptionHandler.class, applicationContext);
         if (exceptionHandler != null)
             FinalServerConfiguration.webExceptionHandler = exceptionHandler;
     }
@@ -86,7 +86,8 @@ public class FinalServerWeb {
         else if (work > 100)
             work = 100;// 默认值不超过100
 
-        log.info("线程数 maxReceive={}  maxHandler={}", boss, work);
+        String backlog = environment.getProperty("server.thread.backlog", "256");
+        log.info("线程数配置 maxReceive={}  maxHandler={}  backlog={}", boss, work, backlog);
 
         // 创建 主线程组，主线程接收并把任务丢给从线程，工作线程做处理
         bossGroup = new NioEventLoopGroup(boss);
@@ -98,10 +99,7 @@ public class FinalServerWeb {
         serverBootstrap.group(bossGroup, workGroup)      //设置主从线程
                 .channel(FinalServerNioServerSocketChannel.class) //  设置nio的双向管道
                 //当连接被阻塞时BACKLOG代表的是阻塞队列的长度
-                .option(
-                        ChannelOption.SO_BACKLOG,
-                        Integer.parseInt(environment.getProperty("server.thread.backlog", "256"))
-                )
+                .option(ChannelOption.SO_BACKLOG, Integer.parseInt(backlog))
                 //置连接为保持活动的状态
                 .childOption(ChannelOption.SO_KEEPALIVE, true);
         // 子处理器
@@ -142,10 +140,10 @@ public class FinalServerWeb {
                 public int compare(Filter o1, Filter o2) {
                     Class<? extends Filter> aClass = o1.getClass();
                     int v1 = 0, v2 = 0;
-                    Order order = ProxyBeanUtils.getSpringProxyToClass(o1.getClass()).getAnnotation(Order.class);
+                    Order order = BeanUtils.getSpringProxyToClass(o1.getClass()).getAnnotation(Order.class);
                     if (order != null)
                         v1 = order.value();
-                    order = ProxyBeanUtils.getSpringProxyToClass(o2.getClass()).getAnnotation(Order.class);
+                    order = BeanUtils.getSpringProxyToClass(o2.getClass()).getAnnotation(Order.class);
                     if (order != null)
                         v2 = order.value();
 
