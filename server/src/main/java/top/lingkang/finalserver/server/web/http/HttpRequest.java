@@ -24,26 +24,27 @@ public class HttpRequest implements Request {
     private FullHttpRequest msg;
     private QueryStringDecoder queryUri;
     private HttpPostRequestDecoder queryBody;
+    private Set<Cookie> cookies;
 
     public HttpRequest(ChannelHandlerContext ctx, FullHttpRequest msg) {
         this.ctx = ctx;
         this.msg = msg;
-        queryUri = new QueryStringDecoder(msg.uri());
-        queryBody = new HttpPostRequestDecoder(msg);
     }
 
     @Override
-    public String id() {
+    public String requestId() {
         return ctx.channel().id().asLongText();
     }
 
     @Override
     public String getPath() {
+        checkQueryUri();
         return queryUri.path();
     }
 
     @Override
     public String getParam(String name) {
+        checkQueryUri();
         List<String> put = queryUri.parameters().get(name);
         if (msg.method() == HttpMethod.GET) {
             if (put == null)
@@ -52,6 +53,7 @@ public class HttpRequest implements Request {
         }
         if (put != null)
             return put.get(0);
+        checkQueryBody();
         InterfaceHttpData data = queryBody.getBodyHttpData(name);
         if (data.getHttpDataType() == InterfaceHttpData.HttpDataType.Attribute && data != null) {
             try {
@@ -89,13 +91,29 @@ public class HttpRequest implements Request {
 
     @Override
     public Set<Cookie> getCookies() {
+        if (cookies != null)
+            return cookies;
         String cookie = msg.headers().get(HttpHeaderNames.COOKIE);
         if (cookie != null) {
             try {
-                return FinalServerConfiguration.cookieDecoder.decode(cookie);
+                cookies = FinalServerConfiguration.cookieDecoder.decode(cookie);
+                return cookies;
             } catch (Exception e) {
             }
         }
         return new TreeSet<>();
+    }
+
+
+    // 首次获取时再实例化，提升性能
+    private void checkQueryUri() {
+        if (queryUri == null)
+            queryUri = new QueryStringDecoder(msg.uri());
+    }
+
+    // 首次获取时再实例化，提升性能
+    private void checkQueryBody() {
+        if (queryBody == null)
+            queryBody = new HttpPostRequestDecoder(msg);
     }
 }

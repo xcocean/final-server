@@ -12,7 +12,7 @@ import java.util.Set;
  * @since 1.0.0
  */
 public interface Request {
-    String id();
+    String requestId();
 
     String getPath();
 

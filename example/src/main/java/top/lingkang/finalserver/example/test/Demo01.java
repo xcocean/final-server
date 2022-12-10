@@ -29,7 +29,7 @@ public class Demo01 {
         System.out.println(name);
         System.out.println(a);
         // response.returnString("hi你好啊");
-        System.out.println(FinalServerHttpContext.getRequest().id());
+        System.out.println(FinalServerHttpContext.getRequest().requestId());
         response.returnTemplate("index.html");
     }
 
