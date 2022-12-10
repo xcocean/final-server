@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.lingkang.finalserver.server.core.FinalServerConfiguration;
 import top.lingkang.finalserver.server.utils.HttpUtils;
-import top.lingkang.finalserver.server.utils.NetUtils;
 
 
 /**
@@ -41,8 +40,7 @@ public class HandlerHttpRequest extends SimpleChannelInboundHandler<FinalServerC
             }
             HttpUtils.sendResponse(ctx, res, 200);
         } else {// 返回空值
-            log.warn("此请求未做处理，将返回空值: " + NetUtils.getRequestPathInfo(context.getRequest()));
-            HttpUtils.sendString(ctx, "404", 404);
+            FinalServerConfiguration.webExceptionHandler.notHandler(ctx);
         }
     }
 

@@ -12,6 +12,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
 import top.lingkang.finalserver.server.FinalServerApplication;
+import top.lingkang.finalserver.server.core.FinalServerConfiguration;
+import top.lingkang.finalserver.server.core.WebExceptionHandler;
 import top.lingkang.finalserver.server.core.impl.ShutdownEventWeb;
 import top.lingkang.finalserver.server.utils.ProxyBeanUtils;
 import top.lingkang.finalserver.server.web.handler.*;
@@ -58,6 +60,11 @@ public class FinalServerWeb {
         handlers.add(new StaticRequestHandler(environment));// 项目静态文件
         handlers.add(new BuildControllerHandler(applicationContext).build());// controller转发
         filterChain = setFilterChain(handlers.toArray(new RequestHandler[0]));
+
+        // 初始化异常处理
+        WebExceptionHandler exceptionHandler = applicationContext.getBean(WebExceptionHandler.class);
+        if (exceptionHandler != null)
+            FinalServerConfiguration.webExceptionHandler = exceptionHandler;
     }
 
     public void run() {

@@ -9,6 +9,8 @@ import top.lingkang.finalserver.server.web.http.FinalServerContext;
  * @since 1.0.0
  */
 public interface WebExceptionHandler {
-
     void exception(ChannelHandlerContext context, Throwable e)throws Exception;
+
+    // 请求未找到handler时，即为 404 请求
+    void notHandler(ChannelHandlerContext context)throws Exception;
 }
