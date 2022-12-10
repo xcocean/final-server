@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.lingkang.finalserver.server.core.FinalServerConfiguration;
 import top.lingkang.finalserver.server.utils.HttpUtils;
+import top.lingkang.finalserver.server.utils.NetUtils;
 
 
 /**
@@ -52,5 +53,8 @@ public class HandlerHttpRequest extends SimpleChannelInboundHandler<FinalServerC
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         FinalServerConfiguration.webExceptionHandler.exception(ctx, cause);
+        if (ctx.channel().isActive()) {// 未关闭时手动关闭
+            NetUtils.send(ctx, "", 500);
+        }
     }
 }
