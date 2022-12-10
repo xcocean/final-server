@@ -6,6 +6,7 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.stream.ChunkedWriteHandler;
 import org.springframework.context.ApplicationContext;
+import top.lingkang.finalserver.server.core.HttpParseTemplate;
 import top.lingkang.finalserver.server.web.http.FilterChain;
 import top.lingkang.finalserver.server.web.http.HandlerHttpRequest;
 import top.lingkang.finalserver.server.web.nio.http.FinalHttpServerCodec;
@@ -18,10 +19,12 @@ import top.lingkang.finalserver.server.web.nio.http.FinalHttpServerCodec;
 public class ServerInitializer extends ChannelInitializer<Channel> {
     private ApplicationContext applicationContext;
     private FilterChain filterChain;
+    private HttpParseTemplate parseTemplate;
 
-    public ServerInitializer(ApplicationContext applicationContext, FilterChain filterChain) {
+    public ServerInitializer(ApplicationContext applicationContext, FilterChain filterChain, HttpParseTemplate parseTemplate) {
         this.applicationContext = applicationContext;
         this.filterChain = filterChain;
+        this.parseTemplate = parseTemplate;
     }
 
     @Override
@@ -33,7 +36,7 @@ public class ServerInitializer extends ChannelInitializer<Channel> {
         // pipeline.addLast(new HttpRequestEncoder());// http 编码
         pipeline.addLast(new HttpObjectAggregator(1024));
         pipeline.addLast(new ChunkedWriteHandler());// 写内容
-        pipeline.addLast(new HandlerHttpWrapper());// 进行一次包装
+        pipeline.addLast(new HandlerHttpWrapper(parseTemplate));// 进行一次包装
         pipeline.addLast(new HandlerHttpRequest(filterChain));
     }
 

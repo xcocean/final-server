@@ -6,6 +6,7 @@ import io.netty.handler.codec.http.HttpHeaderValues;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.cookie.Cookie;
 import top.lingkang.finalserver.server.core.FinalServerConfiguration;
+import top.lingkang.finalserver.server.core.HttpParseTemplate;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
@@ -19,6 +20,7 @@ import java.util.TreeSet;
  */
 public class HttpResponse implements Response {
     private ChannelHandlerContext ctx;
+    private HttpParseTemplate parseTemplate;
     private HttpHeaders headers = FinalServerConfiguration.defaultResponseHeaders.get();
 
     private boolean isReady;
@@ -28,8 +30,9 @@ public class HttpResponse implements Response {
     private int code;
     private Set<Cookie> cookies = new TreeSet<>();
 
-    public HttpResponse(ChannelHandlerContext ctx) {
+    public HttpResponse(ChannelHandlerContext ctx, HttpParseTemplate parseTemplate) {
         this.ctx = ctx;
+        this.parseTemplate = parseTemplate;
     }
 
     @Override
@@ -68,7 +71,7 @@ public class HttpResponse implements Response {
     public void returnTemplate(String template, Map<String, Object> map) {
         checkReady();
         try {
-            content = TemplateUtils.getTemplate(template, map);
+            content = parseTemplate.getTemplate(template, map);
             if (!headers.contains(HttpHeaderNames.CONTENT_TYPE))
                 headers.set(HttpHeaderNames.CONTENT_TYPE, HttpHeaderValues.TEXT_HTML);
         } catch (Exception e) {

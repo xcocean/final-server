@@ -13,7 +13,9 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
 import top.lingkang.finalserver.server.FinalServerApplication;
 import top.lingkang.finalserver.server.core.FinalServerConfiguration;
+import top.lingkang.finalserver.server.core.HttpParseTemplate;
 import top.lingkang.finalserver.server.core.WebExceptionHandler;
+import top.lingkang.finalserver.server.core.impl.DefaultHttpParseTemplate;
 import top.lingkang.finalserver.server.core.impl.ShutdownEventWeb;
 import top.lingkang.finalserver.server.utils.BeanUtils;
 import top.lingkang.finalserver.server.web.handler.*;
@@ -40,6 +42,7 @@ public class FinalServerWeb {
     private Environment environment;
     @Autowired
     private ApplicationContext applicationContext;
+    private HttpParseTemplate parseTemplate;
 
     private FilterChain filterChain;
 
@@ -66,6 +69,12 @@ public class FinalServerWeb {
         WebExceptionHandler exceptionHandler = BeanUtils.getBean(WebExceptionHandler.class, applicationContext);
         if (exceptionHandler != null)
             FinalServerConfiguration.webExceptionHandler = exceptionHandler;
+
+        // 初始化模板解析
+        parseTemplate = BeanUtils.getBean(HttpParseTemplate.class, applicationContext);
+        if (parseTemplate == null)// 使用默认模板解析
+            parseTemplate = BeanUtils.getBean(DefaultHttpParseTemplate.class, applicationContext);
+        parseTemplate.init(environment.getProperty("server.template", "/template"));
     }
 
     public void run() {
@@ -104,7 +113,9 @@ public class FinalServerWeb {
                 //置连接为保持活动的状态
                 .childOption(ChannelOption.SO_KEEPALIVE, true);
         // 子处理器
-        serverBootstrap.childHandler(new ServerInitializer(applicationContext, filterChain));
+        serverBootstrap.childHandler(
+                new ServerInitializer(applicationContext, filterChain, parseTemplate)
+        );
         //启动server并绑定端口监听和设置同步方式
         try {
             ChannelFuture channelFuture = serverBootstrap.bind(port).sync();
