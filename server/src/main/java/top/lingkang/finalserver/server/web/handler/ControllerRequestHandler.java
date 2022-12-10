@@ -7,6 +7,7 @@ import top.lingkang.finalserver.server.web.entity.RequestInfo;
 import top.lingkang.finalserver.server.web.http.FinalServerContext;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashMap;
 
 /**
@@ -34,7 +35,8 @@ public class ControllerRequestHandler implements RequestHandler {
             }
             Object bean = applicationContext.getBean(requestInfo.getBeanName());
             Method method = bean.getClass().getDeclaredMethod(requestInfo.getMethodName(), requestInfo.getParamType());
-            Object result = method.invoke(bean, joinParam(requestInfo, context));
+            Object[] param = joinParam(requestInfo, context);
+            Object result = method.invoke(bean, param);
             if (result == null)
                 return true;
             if (context.getResponse().isReady()) {

@@ -10,7 +10,6 @@ import top.lingkang.finalserver.server.web.entity.RequestInfo;
 import top.lingkang.finalserver.server.web.http.RequestMethod;
 
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -96,9 +95,7 @@ public class BuildControllerHandler {
     private String[] getParamNames(String methodName, Class<?> clazz, Class<?>... parameterTypes) {
         try {
             Method method = clazz.getMethod(methodName, parameterTypes);
-            String[] parameterNames = new LocalVariableTableParameterNameDiscoverer().getParameterNames(method);
-            System.out.println(Arrays.toString(parameterNames));
-            return parameterNames;
+            return new LocalVariableTableParameterNameDiscoverer().getParameterNames(method);
         } catch (Exception e) {
             e.printStackTrace();
         }
