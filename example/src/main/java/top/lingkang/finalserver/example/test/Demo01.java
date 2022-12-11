@@ -2,6 +2,7 @@ package top.lingkang.finalserver.example.test;
 
 import io.netty.handler.codec.http.cookie.Cookie;
 import io.netty.handler.codec.http.cookie.DefaultCookie;
+import top.lingkang.finalserver.example.test.ws.MyWebsocket;
 import top.lingkang.finalserver.server.FinalServerApplication;
 import top.lingkang.finalserver.server.annotation.Controller;
 import top.lingkang.finalserver.server.annotation.FinalServerBoot;
@@ -11,6 +12,7 @@ import top.lingkang.finalserver.server.web.http.HttpResponse;
 import top.lingkang.finalserver.server.web.http.RequestMethod;
 import top.lingkang.finalserver.server.web.FinalServerHttpContext;
 
+import java.util.Arrays;
 import java.util.Set;
 
 /**
@@ -22,6 +24,9 @@ import java.util.Set;
 public class Demo01 {
     public static void main(String[] args) {
         FinalServerApplication.run(Demo01.class, args);
+        System.out.println(
+                Arrays.toString(FinalServerApplication.applicationContext.getBeanNamesForType(MyWebsocket.class))
+        );
     }
 
     @GET
@@ -29,6 +34,10 @@ public class Demo01 {
         // response.returnString("hi你好啊");
        // System.out.println(FinalServerHttpContext.getRequest().requestId());
         response.returnTemplate("index.html");
+    }
+    @GET("/w")
+    public void w(HttpResponse response){
+        response.returnTemplate("ws.html");
     }
 
     @GET("/test")

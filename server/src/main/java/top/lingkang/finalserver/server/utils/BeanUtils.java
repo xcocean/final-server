@@ -1,6 +1,7 @@
 package top.lingkang.finalserver.server.utils;
 
 import org.springframework.context.ApplicationContext;
+import top.lingkang.finalserver.server.FinalServerApplication;
 
 /**
  * @author lingkang
@@ -23,6 +24,14 @@ public class BeanUtils {
     public static <T> T getBean(Class<T> clazz, ApplicationContext applicationContext){
         try {
             return applicationContext.getBean(clazz);
+        }catch (Exception e){
+            return null;
+        }
+    }
+
+    public static <T> T getBean(Class<T> clazz){
+        try {
+            return FinalServerApplication.applicationContext.getBean(clazz);
         }catch (Exception e){
             return null;
         }
