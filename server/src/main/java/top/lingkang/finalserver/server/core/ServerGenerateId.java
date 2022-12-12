@@ -6,7 +6,7 @@ import top.lingkang.finalserver.server.web.http.Request;
 /**
  * @author lingkang
  * Created by 2022/12/11
- * 默认的id生成
+ * 默认的id生成器
  */
 public interface ServerGenerateId {
     String generateNettyId();

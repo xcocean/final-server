@@ -67,11 +67,6 @@ public class HandlerHttpRequest extends SimpleChannelInboundHandler<FinalServerC
     }
 
     @Override
-    public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
-        super.channelReadComplete(ctx);
-    }
-
-    @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         FinalServerConfiguration.webExceptionHandler.exception(ctx, cause);
         if (ctx.channel().isActive()) {// 未关闭时手动关闭

@@ -7,6 +7,7 @@ import top.lingkang.finalserver.server.web.http.FinalServerContext;
  * @author lingkang
  * Created by 2022/12/8
  * @since 1.0.0
+ * 异常处理
  */
 public interface WebExceptionHandler {
     void exception(ChannelHandlerContext context, Throwable e)throws Exception;

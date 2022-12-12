@@ -72,6 +72,24 @@ public class FinalServerWeb {
         if (parseTemplate == null)// 使用默认模板解析
             parseTemplate = BeanUtils.getBean(DefaultHttpParseTemplate.class, applicationContext);
         parseTemplate.init(FinalServerProperties.server_template);
+
+        // 初始化会话管理
+        String[] sessionManage = applicationContext.getBeanNamesForType(HttpSessionManage.class);
+        if (sessionManage.length>0){
+            FinalServerConfiguration.httpSessionManage=applicationContext.getBean(sessionManage[0],HttpSessionManage.class);
+            if (sessionManage.length>1)
+                log.warn("存在多个会话管理，应用了首个：{}",sessionManage[0]);
+        }
+
+        // id生成
+        String[] generateId = applicationContext.getBeanNamesForType(ServerGenerateId.class);
+        if (generateId.length>0){
+            FinalServerConfiguration.serverGenerateId=applicationContext.getBean(generateId[0],ServerGenerateId.class);
+            if (generateId.length>1)
+                log.warn("存在多个Id生成器，应用了首个：{}",generateId[0]);
+        }
+
+
     }
 
     @Order(Integer.MAX_VALUE)// 最后加载
@@ -116,7 +134,7 @@ public class FinalServerWeb {
                 .childOption(ChannelOption.SO_KEEPALIVE, true);
         // 子处理器
         serverBootstrap.childHandler(
-                new ServerInitializer(applicationContext, filterChain, parseTemplate)
+                new ServerInitializer(filterChain, parseTemplate)
         );
         //启动server并绑定端口监听和设置同步方式
         try {

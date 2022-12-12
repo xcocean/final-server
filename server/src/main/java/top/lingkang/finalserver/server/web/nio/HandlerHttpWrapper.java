@@ -34,34 +34,15 @@ class HandlerHttpWrapper extends SimpleChannelInboundHandler<FullHttpRequest> {
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest msg) throws Exception {
-        /*if ("websocket".equals(msg.headers().get("Upgrade"))){// 将url设置成一致的
-            System.out.println(msg.uri());
-            int index = msg.uri().indexOf("?");
-            if (index!=-1)
-            msg.setUri("/ws");
-            msg.setUri("/ws");
-            ctx.pipeline().addLast(new WebSocketServerCompressionHandler());
-            ctx.pipeline().addLast(new WebSocketServerProtocolHandler(
-                    "/ws", //路径
-                    null,
-                    true,
-                    65536, //最大处理数据内容
-                    false,  //掩码加密
-                    true //允许 websocketPath 路径匹配，否则走全匹配，例如 websocketPath=/ws request=/ws?user=zhangsan 将匹配不上，无法处理
-            ));
-            //websocket 处理
-            ctx.pipeline().addLast(new WebsocketServer());
-
-            ctx.fireChannelRead(msg.retain());
-            return;
-        }*/
         // 提前将url解码，防止中文乱码
         msg.setUri(URLDecoder.decode(msg.uri(), FinalServerConstants.encoding));
 
+        // websocket处理
         if ("websocket".equals(msg.headers().get("Upgrade"))) {
             webSocketHandler(ctx, msg);
             return;
         }
+
         // http
         httpHandler(ctx, msg);
     }
@@ -77,6 +58,7 @@ class HandlerHttpWrapper extends SimpleChannelInboundHandler<FullHttpRequest> {
 
         // http 处理
         ctx.pipeline().addLast(new HandlerHttpRequest(filterChain, parseTemplate));
+
         // next
         ctx.fireChannelRead(context);
     }

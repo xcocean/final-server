@@ -16,12 +16,10 @@ import top.lingkang.finalserver.server.web.http.FilterChain;
  * @since 1.0.0
  */
 public class ServerInitializer extends ChannelInitializer<Channel> {
-    private ApplicationContext applicationContext;
     private FilterChain filterChain;
     private HttpParseTemplate parseTemplate;
 
-    public ServerInitializer(ApplicationContext applicationContext, FilterChain filterChain, HttpParseTemplate parseTemplate) {
-        this.applicationContext = applicationContext;
+    public ServerInitializer(FilterChain filterChain, HttpParseTemplate parseTemplate) {
         this.filterChain = filterChain;
         this.parseTemplate = parseTemplate;
     }
