@@ -82,9 +82,9 @@ public class FinalServerWeb {
         }
 
         // id生成
-        String[] generateId = applicationContext.getBeanNamesForType(ServerGenerateId.class);
+        String[] generateId = applicationContext.getBeanNamesForType(IdGenerateFactory.class);
         if (generateId.length>0){
-            FinalServerConfiguration.serverGenerateId=applicationContext.getBean(generateId[0],ServerGenerateId.class);
+            FinalServerConfiguration.idGenerateFactory =applicationContext.getBean(generateId[0], IdGenerateFactory.class);
             if (generateId.length>1)
                 log.warn("存在多个Id生成器，应用了首个：{}",generateId[0]);
         }

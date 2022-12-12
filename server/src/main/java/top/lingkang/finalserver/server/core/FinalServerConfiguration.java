@@ -17,7 +17,7 @@ public class FinalServerConfiguration {
 
     public static ServerCookieDecoder cookieDecoder=ServerCookieDecoder.LAX;
 
-    public static ServerGenerateId serverGenerateId =new DefaultServerGenerateId();
+    public static IdGenerateFactory idGenerateFactory =new DefaultIdGenerateFactory();
 
     public static HttpSessionManage httpSessionManage=new DefaultHttpSessionManage();
 }
