@@ -12,7 +12,7 @@ import top.lingkang.finalserver.server.web.http.FinalServerContext;
  * Created by 2022/12/6
  */
 @Order(-1)// 过滤器顺序，越小越优先
-// @Configuration
+//@Configuration
 public class FilterDemo01 implements Filter {
 
     @Override

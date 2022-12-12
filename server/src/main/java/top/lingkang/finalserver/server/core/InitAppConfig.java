@@ -10,6 +10,7 @@ import top.lingkang.finalserver.server.FinalServerApplication;
 
 import java.io.File;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Properties;
@@ -23,6 +24,13 @@ public class InitAppConfig {
     private static final Logger log = LoggerFactory.getLogger(InitAppConfig.class);
 
     public static void initProperties(String[] args, int port) {
+        InputStream banner = InitAppConfig.class.getClassLoader().getResourceAsStream("banner.txt");
+        if (banner != null) {
+            System.out.println();
+            System.out.println(IoUtil.read(banner, Charset.forName("UTF-8")));
+            System.out.println();
+            IoUtil.close(banner);
+        }
         try {
             Properties app = new Properties();
             app.load(InitAppConfig.class.getClassLoader().getResourceAsStream("final-server-application.properties"));
@@ -33,12 +41,17 @@ public class InitAppConfig {
             if (port != 0)
                 app.setProperty("server.port", port + "");
             for (Map.Entry<Object, Object> entry : app.entrySet()) {
+                // 环境已经存在的值，不应该将它覆盖
+                if (System.getProperties().getProperty(entry.getKey().toString()) != null)
+                    continue;
                 System.setProperty(entry.getKey().toString(), entry.getValue().toString());
             }
             if (app.getProperty("debug") != null && app.getProperty("debug").equals("true")) {
                 FinalServerApplication.finalServerLogConfig.setLogLevel("DEBUG");
             }
-            // System.out.println(app);
+
+            // load to
+            FinalServerProperties.load();
         } catch (Exception e) {
             log.error("初始化应用配置异常：", e);
         }

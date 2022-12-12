@@ -1,6 +1,6 @@
 package top.lingkang.finalserver.server.web.handler;
 
-import org.springframework.core.env.Environment;
+import top.lingkang.finalserver.server.core.FinalServerProperties;
 import top.lingkang.finalserver.server.web.http.FinalServerContext;
 
 import java.net.URL;
@@ -15,8 +15,8 @@ public class StaticRequestHandler implements RequestHandler {
 
     private String basePath = "";
 
-    public StaticRequestHandler(Environment environment) {
-        basePath = environment.getProperty("server.static", "/static");
+    public StaticRequestHandler() {
+        basePath = FinalServerProperties.server_static;
         if (basePath.startsWith("/"))
             basePath = basePath.substring(1);
     }

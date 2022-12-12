@@ -5,7 +5,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.lingkang.finalserver.server.core.WebExceptionHandler;
 import top.lingkang.finalserver.server.utils.HttpUtils;
-import top.lingkang.finalserver.server.utils.NetUtils;
 import top.lingkang.finalserver.server.web.FinalServerHttpContext;
 
 /**
@@ -24,7 +23,7 @@ public class DefaultWebExceptionHandler implements WebExceptionHandler {
 
     @Override
     public void notHandler(ChannelHandlerContext context) throws Exception {
-        log.warn("此请求未做处理，将返回空值: " + NetUtils.getRequestPathInfo(FinalServerHttpContext.getRequest()));
+        log.warn("此请求未做处理，将返回空值: " + HttpUtils.getRequestPathInfo(FinalServerHttpContext.getRequest()));
         HttpUtils.sendString(context, "404", 404);
     }
 }

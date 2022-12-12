@@ -3,7 +3,6 @@ package top.lingkang.finalserver.server.web.http;
 import cn.hutool.core.lang.Assert;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.HttpHeaderNames;
-import io.netty.handler.codec.http.HttpHeaderValues;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.cookie.Cookie;
 import top.lingkang.finalserver.server.core.FinalServerConfiguration;
@@ -47,7 +46,7 @@ public class HttpResponse implements Response {
         if (obj != null) {
             content = obj.getBytes(StandardCharsets.UTF_8);
             if (!headers.contains(HttpHeaderNames.CONTENT_TYPE))
-                headers.set(HttpHeaderNames.CONTENT_TYPE, HttpHeaderValues.TEXT_PLAIN);
+                headers.set(HttpHeaderNames.CONTENT_TYPE, "text/plain; charset=UTF-8");
         }
         isReady = true;
     }
@@ -58,7 +57,7 @@ public class HttpResponse implements Response {
         if (json != null) {
             content = FinalServerConfiguration.serializable.jsonTo(json);
             if (!headers.contains(HttpHeaderNames.CONTENT_TYPE))
-                headers.set(HttpHeaderNames.CONTENT_TYPE, HttpHeaderValues.APPLICATION_JSON);
+                headers.set(HttpHeaderNames.CONTENT_TYPE, "application/json; charset=UTF-8");
         }
         isReady = true;
     }
@@ -77,7 +76,7 @@ public class HttpResponse implements Response {
         isTemplate = true;
         isReady = true;
         if (!headers.contains(HttpHeaderNames.CONTENT_TYPE))
-            headers.set(HttpHeaderNames.CONTENT_TYPE, HttpHeaderValues.TEXT_HTML);
+            headers.set(HttpHeaderNames.CONTENT_TYPE, "text/html; charset=UTF-8");
     }
 
     @Override

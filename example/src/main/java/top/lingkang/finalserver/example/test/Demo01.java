@@ -2,17 +2,15 @@ package top.lingkang.finalserver.example.test;
 
 import io.netty.handler.codec.http.cookie.Cookie;
 import io.netty.handler.codec.http.cookie.DefaultCookie;
-import top.lingkang.finalserver.example.test.ws.MyWebsocket;
 import top.lingkang.finalserver.server.FinalServerApplication;
 import top.lingkang.finalserver.server.annotation.Controller;
 import top.lingkang.finalserver.server.annotation.FinalServerBoot;
 import top.lingkang.finalserver.server.annotation.GET;
 import top.lingkang.finalserver.server.web.http.FinalServerContext;
 import top.lingkang.finalserver.server.web.http.HttpResponse;
+import top.lingkang.finalserver.server.web.http.Request;
 import top.lingkang.finalserver.server.web.http.RequestMethod;
-import top.lingkang.finalserver.server.web.FinalServerHttpContext;
 
-import java.util.Arrays;
 import java.util.Set;
 
 /**
@@ -24,19 +22,19 @@ import java.util.Set;
 public class Demo01 {
     public static void main(String[] args) {
         FinalServerApplication.run(Demo01.class, args);
-        System.out.println(
-                Arrays.toString(FinalServerApplication.applicationContext.getBeanNamesForType(MyWebsocket.class))
-        );
     }
 
     @GET
-    public void index(HttpResponse response, String name, int a) {
+    public void index(HttpResponse response, String name, Request request) {
         // response.returnString("hi你好啊");
-       // System.out.println(FinalServerHttpContext.getRequest().requestId());
+        // System.out.println(FinalServerHttpContext.getRequest().requestId());
+        System.out.println(request.getCookies());
+        request.getSession().setAttribute("vv", "你好啊666");
         response.returnTemplate("index.html");
     }
+
     @GET("/w")
-    public void w(HttpResponse response){
+    public void w(HttpResponse response) {
         response.returnTemplate("ws.html");
     }
 
@@ -50,6 +48,7 @@ public class Demo01 {
 
     @GET("/c")
     public void cookie(FinalServerContext context) throws Exception {
+        System.out.println(context.getRequest().getSession().getAttribute("vv"));
         Set<Cookie> cookies = context.getRequest().getCookies();
         for (Cookie cookie : cookies)
             System.out.println(cookie.name() + "   " + cookie.value());

@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import top.lingkang.finalserver.server.core.FinalServerConfiguration;
 import top.lingkang.finalserver.server.core.HttpParseTemplate;
 import top.lingkang.finalserver.server.utils.HttpUtils;
-import top.lingkang.finalserver.server.utils.NetUtils;
+import top.lingkang.finalserver.server.web.FinalServerHttpContext;
 
 
 /**
@@ -30,26 +30,39 @@ public class HandlerHttpRequest extends SimpleChannelInboundHandler<FinalServerC
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FinalServerContext context) throws Exception {
         log.info(context.getRequest().getHttpMethod().name() + " path=" + context.getRequest().getPath());
+        try {
+            filterChain.doFilter(context);
 
-        filterChain.doFilter(context);
+            if (context.getResponse().isReady()) {
+                HttpResponse res = (HttpResponse) context.getResponse();
+                if (res.isStatic()) {
+                    HttpHandler.returnStaticFile(res.getFilePath(), ctx, context);
+                    return;
+                }
 
-        // 添加cookie
-        HttpUtils.addHeaderCookie(context.getResponse());
+                // 添加会话到cookie
+                FinalServerConfiguration.httpSessionManage.addSessionIdToCurrentHttp(context);
 
-        if (context.getResponse().isReady()) {
-            HttpResponse res = (HttpResponse) context.getResponse();
-            if (res.isStatic()) {
-                HttpHandler.returnStaticFile(res.getFilePath(), ctx, context);
-            } else if (res.isTemplate()) {
-                HttpUtils.sendResponse(
-                        ctx,
-                        parseTemplate.getTemplate(res.getTemplatePath(), res.getTemplateMap()),
-                        res.getHeaders(),
-                        200);
-            } else
-                HttpUtils.sendResponse(ctx, res, 200);
-        } else {// 返回空值
-            FinalServerConfiguration.webExceptionHandler.notHandler(ctx);
+                // 添加cookie
+                HttpUtils.addHeaderCookie(context.getResponse());
+
+                if (res.isTemplate()) {
+                    HttpUtils.sendResponse(
+                            ctx,
+                            parseTemplate.getTemplate(res.getTemplatePath(), res.getTemplateMap()),
+                            res.getHeaders(),
+                            200);
+                } else
+                    HttpUtils.sendResponse(ctx, res, 200);
+            } else {// 返回 404
+                FinalServerConfiguration.webExceptionHandler.notHandler(ctx);
+            }
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            // 在此更新会话访问
+            FinalServerConfiguration.httpSessionManage.updateSessionAccessTime(FinalServerHttpContext.getRequest().getSession());
+            FinalServerHttpContext.remove();
         }
     }
 
@@ -62,7 +75,7 @@ public class HandlerHttpRequest extends SimpleChannelInboundHandler<FinalServerC
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         FinalServerConfiguration.webExceptionHandler.exception(ctx, cause);
         if (ctx.channel().isActive()) {// 未关闭时手动关闭
-            NetUtils.send(ctx, "", 500);
+            HttpUtils.sendString(ctx, "", 500);
         }
     }
 }

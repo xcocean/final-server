@@ -28,5 +28,9 @@ public interface Request {
 
     HttpMethod getHttpMethod();
 
+    Cookie getCookie(String name);
+
     Set<Cookie> getCookies();
+
+    Session getSession();
 }

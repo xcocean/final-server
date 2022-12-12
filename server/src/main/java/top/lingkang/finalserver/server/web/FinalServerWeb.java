@@ -9,12 +9,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
-import org.springframework.core.env.Environment;
 import top.lingkang.finalserver.server.FinalServerApplication;
-import top.lingkang.finalserver.server.core.FinalServerConfiguration;
-import top.lingkang.finalserver.server.core.HttpParseTemplate;
-import top.lingkang.finalserver.server.core.WebExceptionHandler;
+import top.lingkang.finalserver.server.core.*;
 import top.lingkang.finalserver.server.core.impl.DefaultHttpParseTemplate;
 import top.lingkang.finalserver.server.core.impl.ShutdownEventWeb;
 import top.lingkang.finalserver.server.utils.BeanUtils;
@@ -23,6 +21,7 @@ import top.lingkang.finalserver.server.web.http.Filter;
 import top.lingkang.finalserver.server.web.http.FilterChain;
 import top.lingkang.finalserver.server.web.nio.FinalServerNioServerSocketChannel;
 import top.lingkang.finalserver.server.web.nio.ServerInitializer;
+import top.lingkang.finalserver.server.web.nio.ws.WebSocketManage;
 
 import javax.annotation.PostConstruct;
 import java.lang.management.ManagementFactory;
@@ -38,8 +37,6 @@ import java.util.List;
 public class FinalServerWeb {
     private static final Logger log = LoggerFactory.getLogger(FinalServerWeb.class);
     private EventLoopGroup bossGroup, workGroup;
-    @Autowired
-    private Environment environment;
     @Autowired
     private ApplicationContext applicationContext;
     private HttpParseTemplate parseTemplate;
@@ -61,7 +58,7 @@ public class FinalServerWeb {
                 }
             }
         }
-        handlers.add(new StaticRequestHandler(environment));// 项目静态文件
+        handlers.add(new StaticRequestHandler());// 项目静态文件
         handlers.add(new BuildControllerHandler(applicationContext).build());// controller转发
         filterChain = setFilterChain(handlers.toArray(new RequestHandler[0]));
 
@@ -74,11 +71,17 @@ public class FinalServerWeb {
         parseTemplate = BeanUtils.getBean(HttpParseTemplate.class, applicationContext);
         if (parseTemplate == null)// 使用默认模板解析
             parseTemplate = BeanUtils.getBean(DefaultHttpParseTemplate.class, applicationContext);
-        parseTemplate.init(environment.getProperty("server.template", "/template"));
+        parseTemplate.init(FinalServerProperties.server_template);
+    }
+
+    @Order(Integer.MAX_VALUE)// 最后加载
+    @Bean
+    public WebSocketManage websocketManage() {
+        return new WebSocketManage(applicationContext);
     }
 
     public void run() {
-        int port = Integer.valueOf(environment.getProperty("server.port"));
+        int port = FinalServerProperties.server_port;
         log.info("FinalServer start web service port: {}", port);
 
         web(port);
@@ -87,29 +90,28 @@ public class FinalServerWeb {
     private void web(int port) {
         int pro = Runtime.getRuntime().availableProcessors();
         int boss = pro * 2, work = pro * 25;
-        int receive = Integer.parseInt(environment.getProperty("server.thread.maxReceive", "0"));
+        int receive = FinalServerProperties.server_thread_maxReceive;
         if (receive != 0)
             boss = receive;
-        int handler = Integer.parseInt(environment.getProperty("server.thread.maxHandler", "0"));
+        int handler = FinalServerProperties.server_thread_maxHandler;
         if (handler != 0)
             work = handler;
         else if (work > 100)
             work = 100;// 默认值不超过100
 
-        String backlog = environment.getProperty("server.thread.backlog", "256");
-        log.info("线程数配置 maxReceive={}  maxHandler={}  backlog={}", boss, work, backlog);
+        log.info("线程数配置 maxReceive={}  maxHandler={}  backlog={}", boss, work, FinalServerProperties.server_thread_backlog);
 
         // 创建 主线程组，主线程接收并把任务丢给从线程，工作线程做处理
-        bossGroup = new NioEventLoopGroup(boss);
+        bossGroup = new NioEventLoopGroup(boss, new FinalThreadFactory("receive"));
         // 工作线程组
-        workGroup = new NioEventLoopGroup(work);
+        workGroup = new NioEventLoopGroup(work, new FinalThreadFactory("handler"));
         FinalServerApplication.addShutdownHook(new ShutdownEventWeb(bossGroup, workGroup));
         // netty服务器创建，ServerBootstrap是一个启动类
         ServerBootstrap serverBootstrap = new ServerBootstrap();
         serverBootstrap.group(bossGroup, workGroup)      //设置主从线程
                 .channel(FinalServerNioServerSocketChannel.class) //  设置nio的双向管道
                 //当连接被阻塞时BACKLOG代表的是阻塞队列的长度
-                .option(ChannelOption.SO_BACKLOG, Integer.parseInt(backlog))
+                .option(ChannelOption.SO_BACKLOG, FinalServerProperties.server_thread_backlog)
                 //置连接为保持活动的状态
                 .childOption(ChannelOption.SO_KEEPALIVE, true);
         // 子处理器

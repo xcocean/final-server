@@ -7,6 +7,8 @@ import io.netty.handler.codec.http.multipart.Attribute;
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder;
 import io.netty.handler.codec.http.multipart.InterfaceHttpData;
 import top.lingkang.finalserver.server.core.FinalServerConfiguration;
+import top.lingkang.finalserver.server.core.FinalServerProperties;
+import top.lingkang.finalserver.server.web.FinalServerHttpContext;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -25,6 +27,7 @@ public class HttpRequest implements Request {
     private QueryStringDecoder queryUri;
     private HttpPostRequestDecoder queryBody;
     private Set<Cookie> cookies;
+    private Session session;
 
     public HttpRequest(ChannelHandlerContext ctx, FullHttpRequest msg) {
         this.ctx = ctx;
@@ -90,6 +93,15 @@ public class HttpRequest implements Request {
     }
 
     @Override
+    public Cookie getCookie(String name) {
+        for (Cookie cookie : getCookies()) {
+            if (cookie.name().equals(name))
+                return cookie;
+        }
+        return null;
+    }
+
+    @Override
     public Set<Cookie> getCookies() {
         if (cookies != null)
             return cookies;
@@ -104,6 +116,12 @@ public class HttpRequest implements Request {
         return new TreeSet<>();
     }
 
+    @Override
+    public Session getSession() {
+        if (session == null || System.currentTimeMillis() - session.lastAccessTime() > FinalServerProperties.server_session_age * 1000)
+            session = FinalServerConfiguration.httpSessionManage.getSession(FinalServerHttpContext.getRequest(), FinalServerHttpContext.getResponse());
+        return session;
+    }
 
     // 首次获取时再实例化，提升性能
     private void checkQueryUri() {

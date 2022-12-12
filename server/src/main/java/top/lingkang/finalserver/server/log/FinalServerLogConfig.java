@@ -7,6 +7,7 @@ import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.impl.StaticLoggerBinder;
+import top.lingkang.finalserver.server.core.FinalServerProperties;
 
 import java.io.InputStream;
 
@@ -22,9 +23,8 @@ public class FinalServerLogConfig {
         try {
             ILoggerFactory loggerFactory = StaticLoggerBinder.getSingleton().getLoggerFactory();
             if (loggerFactory instanceof LoggerContext) {
-                String logFile = System.getProperty("log.file");
                 InputStream in = null;
-                if (logFile == null) {
+                if (FinalServerProperties.log_file == null) {
                     log.warn("未找到logback.xml日志配置，将使用默认");
                 } else {
                     in = FinalServerLogConfig.class.getClassLoader().getResourceAsStream("logback.xml");

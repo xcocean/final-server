@@ -22,7 +22,7 @@ class FinalServerNioSocketChannel extends NioSocketChannel {
     @Override
     protected ChannelId newId() {
         return new ChannelId() {
-            private String id = FinalServerConfiguration.serverGenerateId.generateId();
+            private String id = FinalServerConfiguration.serverGenerateId.generateNettyId();
 
             @Override
             public String asShortText() {

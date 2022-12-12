@@ -8,10 +8,14 @@ import io.netty.handler.codec.http.cookie.Cookie;
 import io.netty.handler.codec.http.cookie.ServerCookieEncoder;
 import io.netty.util.CharsetUtil;
 import top.lingkang.finalserver.server.annotation.NotNull;
+import top.lingkang.finalserver.server.core.FinalServerConfiguration;
 import top.lingkang.finalserver.server.web.http.HttpResponse;
+import top.lingkang.finalserver.server.web.http.Request;
 import top.lingkang.finalserver.server.web.http.Response;
 
 import java.util.Set;
+
+import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 /**
  * @author lingkang
@@ -24,8 +28,9 @@ public class HttpUtils {
                 HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(status),
                 Unpooled.copiedBuffer(context, CharsetUtil.UTF_8)
         );
+        response.headers().set(FinalServerConfiguration.defaultResponseHeaders.get());
         response.headers().set(HttpHeaderNames.CONTENT_LENGTH, context.getBytes().length);
-        response.headers().set(HttpHeaderNames.CONTENT_TYPE, HttpHeaderValues.TEXT_PLAIN);
+        response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain; charset=UTF-8");
         ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
     }
 
@@ -58,4 +63,14 @@ public class HttpUtils {
         }
     }
 
+    public static String getRequestPathInfo(Request request) {
+        return request.getHttpMethod().name() + "  path=" + request.getPath();
+    }
+
+    public static void closeHttpWebsocket(ChannelHandlerContext ctx, String msg) {
+        FullHttpResponse response = new DefaultFullHttpResponse(
+                HTTP_1_1, HttpResponseStatus.BAD_REQUEST, Unpooled.wrappedBuffer(msg.getBytes()));
+        response.headers().set(response.headers().set(FinalServerConfiguration.defaultResponseHeaders.get()));
+        ctx.channel().writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
+    }
 }

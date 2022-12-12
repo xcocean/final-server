@@ -9,7 +9,7 @@ import top.lingkang.finalserver.server.web.handler.RequestHandler;
  */
 public class FilterChain {
     private Filter[] filters;
-    private int length = 0, current = 0;
+    private int length, current = 0;
     private RequestHandler[] requestHandler;
 
     public FilterChain(Filter[] filters, RequestHandler[] requestHandler) {
@@ -24,8 +24,9 @@ public class FilterChain {
             try {
                 filters[current - 1].doFilter(context, this);
             } catch (Exception e) {
-                current = 0;//reset
                 throw e;
+            } finally {
+                current = 0;//reset
             }
         } else {
             current = 0;//reset

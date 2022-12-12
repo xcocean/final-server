@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 import top.lingkang.finalserver.server.annotation.FinalServerBoot;
+import top.lingkang.finalserver.server.core.FinalServerProperties;
 import top.lingkang.finalserver.server.core.InitAppConfig;
 import top.lingkang.finalserver.server.core.ShutdownEvent;
 import top.lingkang.finalserver.server.core.impl.ShutdownEventRemoveTempConfigFile;
@@ -61,8 +62,8 @@ public class FinalServerApplication {
         InitAppConfig.initProperties(args, port);
 
         // 检查端口
-        if (!NetUtil.isUsableLocalPort(Integer.parseInt(System.getProperty("server.port")))) {
-            log.error("FinalServer start fail  启动失败，端口被占用: {}", System.getProperty("server.port"));
+        if (!NetUtil.isUsableLocalPort(FinalServerProperties.server_port)) {
+            log.error("FinalServer start fail  启动失败，端口被占用: {}", FinalServerProperties.server_port);
             System.exit(0);
             return;
         }
