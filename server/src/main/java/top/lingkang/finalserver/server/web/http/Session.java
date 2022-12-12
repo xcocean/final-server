@@ -1,6 +1,7 @@
 package top.lingkang.finalserver.server.web.http;
 
 import java.util.Enumeration;
+import java.util.HashMap;
 
 /**
  * @author lingkang
@@ -22,6 +23,8 @@ public interface Session {
     void removeAllAttribute(String name);
 
     Enumeration<String> getAttributeNames();
+
+    HashMap<String,Object> getAttributeMap();
 
     boolean hasAttribute();
 

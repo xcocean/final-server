@@ -107,15 +107,15 @@ public class FinalServerWeb {
 
     private void web(int port) {
         int pro = Runtime.getRuntime().availableProcessors();
-        int boss = pro * 2, work = pro * 25;
+        int boss = pro * 2, work = pro * 50;
         int receive = FinalServerProperties.server_thread_maxReceive;
         if (receive != 0)
             boss = receive;
         int handler = FinalServerProperties.server_thread_maxHandler;
         if (handler != 0)
             work = handler;
-        else if (work > 100)
-            work = 100;// 默认值不超过100
+        else if (work > 200)
+            work = 200;// 默认值不超过200
 
         log.info("线程数配置 maxReceive={}  maxHandler={}  backlog={}", boss, work, FinalServerProperties.server_thread_backlog);
 

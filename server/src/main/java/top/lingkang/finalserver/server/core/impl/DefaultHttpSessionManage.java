@@ -17,7 +17,7 @@ public class DefaultHttpSessionManage implements HttpSessionManage {
     private final static HashMap<String, Session> sessionMap = new HashMap<>();
 
     @Override
-    public Session getSession(Request request, Response response) {
+    public Session getSession(Request request) {
         Cookie cookie = request.getCookie(FinalServerProperties.server_session_name);
         Session session;
         if (cookie == null) {
@@ -43,6 +43,11 @@ public class DefaultHttpSessionManage implements HttpSessionManage {
     public void updateSessionAccessTime(Session session) {
         if (session != null)
             ((HttpSession) session).access();
+    }
+
+    @Override
+    public HashMap<String, Object> getSessionAttribute(Request request) {
+        return request.getSession().getAttributeMap();
     }
 
     @Override

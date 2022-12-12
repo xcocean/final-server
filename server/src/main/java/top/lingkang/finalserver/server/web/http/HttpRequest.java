@@ -119,7 +119,7 @@ public class HttpRequest implements Request {
     @Override
     public Session getSession() {
         if (session == null || System.currentTimeMillis() - session.lastAccessTime() > FinalServerProperties.server_session_age * 1000)
-            session = FinalServerConfiguration.httpSessionManage.getSession(FinalServerHttpContext.getRequest(), FinalServerHttpContext.getResponse());
+            session = FinalServerConfiguration.httpSessionManage.getSession(FinalServerHttpContext.getRequest());
         return session;
     }
 

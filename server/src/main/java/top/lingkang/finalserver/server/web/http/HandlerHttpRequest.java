@@ -10,6 +10,8 @@ import top.lingkang.finalserver.server.core.HttpParseTemplate;
 import top.lingkang.finalserver.server.utils.HttpUtils;
 import top.lingkang.finalserver.server.web.FinalServerHttpContext;
 
+import java.util.HashMap;
+
 
 /**
  * @author lingkang
@@ -47,9 +49,18 @@ public class HandlerHttpRequest extends SimpleChannelInboundHandler<FinalServerC
                 HttpUtils.addHeaderCookie(context.getResponse());
 
                 if (res.isTemplate()) {
+                    // 将会话的值追加到目标渲染
+                    HashMap<String, Object> attribute = FinalServerConfiguration.httpSessionManage.getSessionAttribute(context.getRequest());
+                    if (attribute != null) {
+                        if (res.getTemplateMap() != null)
+                            attribute.putAll(res.getTemplateMap());
+                    } else if (res.getTemplateMap() != null) {
+                        attribute = res.getTemplateMap();
+                    }
+
                     HttpUtils.sendResponse(
                             ctx,
-                            parseTemplate.getTemplate(res.getTemplatePath(), res.getTemplateMap()),
+                            parseTemplate.getTemplate(res.getTemplatePath(), attribute),
                             res.getHeaders(),
                             200);
                 } else

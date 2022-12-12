@@ -8,6 +8,7 @@ import io.netty.handler.codec.http.cookie.Cookie;
 import top.lingkang.finalserver.server.core.FinalServerConfiguration;
 
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -25,7 +26,7 @@ public class HttpResponse implements Response {
     private boolean isStatic;
     private boolean isTemplate;
     private String templatePath;
-    private Map<String, Object> map;
+    private HashMap<String, Object> map;
     private String filePath;
     private byte[] content;
     private int code;
@@ -68,7 +69,7 @@ public class HttpResponse implements Response {
     }
 
     @Override
-    public void returnTemplate(String templatePath, Map<String, Object> map) {
+    public void returnTemplate(String templatePath, HashMap<String, Object> map) {
         Assert.notEmpty(templatePath, "templatePath 模板不能为空");
         checkReady();
         this.templatePath = templatePath;
@@ -118,7 +119,7 @@ public class HttpResponse implements Response {
     }
 
     @Override
-    public Map<String, Object> getTemplateMap() {
+    public HashMap<String, Object> getTemplateMap() {
         return map;
     }
 

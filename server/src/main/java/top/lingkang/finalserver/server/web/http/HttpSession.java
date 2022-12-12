@@ -11,7 +11,7 @@ import java.util.*;
 public class HttpSession implements Session {
     private long createTime = System.currentTimeMillis(), lastAccessTime = createTime;
     private String id;
-    private final Map<String, Object> attributes = new LinkedHashMap();
+    private final HashMap<String, Object> attributes = new HashMap<>();
 
     public HttpSession(String id) {
         this.id = id;
@@ -65,6 +65,11 @@ public class HttpSession implements Session {
                 return i.next();
             }
         };
+    }
+
+    @Override
+    public HashMap<String, Object> getAttributeMap() {
+        return attributes;
     }
 
     @Override

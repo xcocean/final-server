@@ -3,9 +3,7 @@ package top.lingkang.finalserver.server.web.http;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.cookie.Cookie;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Map;
+import java.util.HashMap;
 import java.util.Set;
 
 /**
@@ -15,7 +13,7 @@ import java.util.Set;
  */
 public interface Response {
     // 设置请求头
-    void setHeader(String name,String value);
+    void setHeader(String name, String value);
 
     HttpHeaders getHeaders();
 
@@ -25,7 +23,7 @@ public interface Response {
 
     void returnTemplate(String template);
 
-    void returnTemplate(String templatePath, Map<String, Object> map);
+    void returnTemplate(String templatePath, HashMap<String, Object> map);
 
     void returnFile(String filePath);
 
@@ -45,5 +43,5 @@ public interface Response {
 
     String getTemplatePath();
 
-    Map<String,Object> getTemplateMap();
+    HashMap<String, Object> getTemplateMap();
 }
