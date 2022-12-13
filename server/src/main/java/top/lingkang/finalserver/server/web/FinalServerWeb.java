@@ -13,8 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
 import top.lingkang.finalserver.server.FinalServerApplication;
 import top.lingkang.finalserver.server.core.*;
-import top.lingkang.finalserver.server.core.impl.DefaultHttpParseTemplate;
-import top.lingkang.finalserver.server.core.impl.ShutdownEventWeb;
+import top.lingkang.finalserver.server.core.impl.*;
 import top.lingkang.finalserver.server.utils.BeanUtils;
 import top.lingkang.finalserver.server.web.handler.*;
 import top.lingkang.finalserver.server.web.http.Filter;
@@ -66,6 +65,8 @@ public class FinalServerWeb {
         WebExceptionHandler exceptionHandler = BeanUtils.getBean(WebExceptionHandler.class, applicationContext);
         if (exceptionHandler != null)
             FinalServerConfiguration.webExceptionHandler = exceptionHandler;
+        else
+            FinalServerConfiguration.webExceptionHandler = new DefaultWebExceptionHandler();
 
         // 初始化模板解析
         parseTemplate = BeanUtils.getBean(HttpParseTemplate.class, applicationContext);
@@ -75,19 +76,21 @@ public class FinalServerWeb {
 
         // 初始化会话管理
         String[] sessionManage = applicationContext.getBeanNamesForType(HttpSessionManage.class);
-        if (sessionManage.length>0){
-            FinalServerConfiguration.httpSessionManage=applicationContext.getBean(sessionManage[0],HttpSessionManage.class);
-            if (sessionManage.length>1)
-                log.warn("存在多个会话管理，应用了首个：{}",sessionManage[0]);
-        }
+        if (sessionManage.length > 0) {
+            FinalServerConfiguration.httpSessionManage = applicationContext.getBean(sessionManage[0], HttpSessionManage.class);
+            if (sessionManage.length > 1)
+                log.warn("存在多个会话管理，应用了首个：{}", sessionManage[0]);
+        } else
+            FinalServerConfiguration.httpSessionManage = new DefaultHttpSessionManage();
 
         // id生成
         String[] generateId = applicationContext.getBeanNamesForType(IdGenerateFactory.class);
-        if (generateId.length>0){
-            FinalServerConfiguration.idGenerateFactory =applicationContext.getBean(generateId[0], IdGenerateFactory.class);
-            if (generateId.length>1)
-                log.warn("存在多个Id生成器，应用了首个：{}",generateId[0]);
-        }
+        if (generateId.length > 0) {
+            FinalServerConfiguration.idGenerateFactory = applicationContext.getBean(generateId[0], IdGenerateFactory.class);
+            if (generateId.length > 1)
+                log.warn("存在多个Id生成器，应用了首个：{}", generateId[0]);
+        } else
+            FinalServerConfiguration.idGenerateFactory = new DefaultIdGenerateFactory();
 
 
     }

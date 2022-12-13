@@ -2,12 +2,17 @@ package top.lingkang.finalserver.server.core.impl;
 
 import io.netty.handler.codec.http.cookie.Cookie;
 import io.netty.handler.codec.http.cookie.DefaultCookie;
+import top.lingkang.finalserver.server.FinalServerApplication;
 import top.lingkang.finalserver.server.core.FinalServerConfiguration;
 import top.lingkang.finalserver.server.core.FinalServerProperties;
 import top.lingkang.finalserver.server.core.HttpSessionManage;
-import top.lingkang.finalserver.server.web.http.*;
+import top.lingkang.finalserver.server.core.ShutdownEvent;
+import top.lingkang.finalserver.server.web.http.FinalServerContext;
+import top.lingkang.finalserver.server.web.http.HttpSession;
+import top.lingkang.finalserver.server.web.http.Request;
+import top.lingkang.finalserver.server.web.http.Session;
 
-import java.util.HashMap;
+import java.util.*;
 
 /**
  * @author lingkang
@@ -15,6 +20,36 @@ import java.util.HashMap;
  */
 public class DefaultHttpSessionManage implements HttpSessionManage {
     private final static HashMap<String, Session> sessionMap = new HashMap<>();
+    private Timer timer = new Timer();
+
+    public DefaultHttpSessionManage() {
+        FinalServerApplication.addShutdownHook(new ShutdownEvent() {
+            @Override
+            public void shutdown() throws Exception {
+                timer.cancel();
+            }
+        });
+
+        // 会话淘汰机制
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if (sessionMap.isEmpty())
+                    return;
+                // 预留10分钟
+                long removeTime = System.currentTimeMillis() - FinalServerProperties.server_session_age * 1000L - 600000L;
+                List<String> removeList = new ArrayList<>();
+                HashMap<String, Session> temp = new HashMap<>(sessionMap);
+                for (Map.Entry<String, Session> entry : temp.entrySet()) {
+                    if (entry.getValue().lastAccessTime() < removeTime) {
+                        removeList.add(entry.getKey());
+                    }
+                }
+                for (String key : removeList)
+                    sessionMap.remove(key);
+            }
+        }, 600000, 1800000);// 启动后10分钟执行一次，之后每30分钟执行一次
+    }
 
     @Override
     public Session getSession(Request request) {

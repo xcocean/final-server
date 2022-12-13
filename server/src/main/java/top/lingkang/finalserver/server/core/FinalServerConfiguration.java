@@ -13,11 +13,14 @@ public class FinalServerConfiguration {
 
     public static SerializableObject serializable=new DefaultSerializableObject();
 
-    public static WebExceptionHandler webExceptionHandler=new DefaultWebExceptionHandler();
+    // new DefaultWebExceptionHandler();
+    public static WebExceptionHandler webExceptionHandler;
 
     public static ServerCookieDecoder cookieDecoder=ServerCookieDecoder.LAX;
 
-    public static IdGenerateFactory idGenerateFactory =new DefaultIdGenerateFactory();
+    // 默认 new DefaultIdGenerateFactory();
+    public static IdGenerateFactory idGenerateFactory;
 
-    public static HttpSessionManage httpSessionManage=new DefaultHttpSessionManage();
+    // DefaultHttpSessionManage
+    public static HttpSessionManage httpSessionManage;
 }

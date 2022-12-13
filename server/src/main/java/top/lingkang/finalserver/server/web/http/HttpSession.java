@@ -79,7 +79,7 @@ public class HttpSession implements Session {
 
     @Override
     public boolean isExpire() {
-        return System.currentTimeMillis() - lastAccessTime > FinalServerProperties.server_session_age * 1000;
+        return System.currentTimeMillis() - lastAccessTime > FinalServerProperties.server_session_age * 1000L;
     }
 
     public void access() {
