@@ -80,6 +80,7 @@ public class FinalServerWeb {
             FinalServerConfiguration.httpSessionManage = applicationContext.getBean(sessionManage[0], HttpSessionManage.class);
             if (sessionManage.length > 1)
                 log.warn("存在多个会话管理，应用了首个：{}", sessionManage[0]);
+            log.info("use redis store session.");
         } else
             FinalServerConfiguration.httpSessionManage = new DefaultHttpSessionManage();
 
@@ -93,6 +94,8 @@ public class FinalServerWeb {
             FinalServerConfiguration.idGenerateFactory = new DefaultIdGenerateFactory();
 
 
+        // 运行
+        run();
     }
 
     @Order(Integer.MAX_VALUE)// 最后加载

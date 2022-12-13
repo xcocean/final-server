@@ -8,6 +8,6 @@
         https://www.springframework.org/schema/context/spring-context.xsd">
     <context:component-scan base-package="#componentScan"/>
     <context:annotation-config/>
-    <bean id="finalServerWeb" class="top.lingkang.finalserver.server.web.FinalServerWeb" init-method="run"></bean>
+    <bean id="finalServerWeb" class="top.lingkang.finalserver.server.web.FinalServerWeb" init-method="init"></bean>
     <bean id="templateUtils" class="top.lingkang.finalserver.server.core.impl.DefaultHttpParseTemplate"></bean>
 </beans>

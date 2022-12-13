@@ -2,6 +2,8 @@ package top.lingkang.finalserver.server.core.impl;
 
 import io.netty.handler.codec.http.cookie.Cookie;
 import io.netty.handler.codec.http.cookie.DefaultCookie;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import top.lingkang.finalserver.server.FinalServerApplication;
 import top.lingkang.finalserver.server.core.FinalServerConfiguration;
 import top.lingkang.finalserver.server.core.FinalServerProperties;
@@ -19,6 +21,7 @@ import java.util.*;
  * Created by 2022/12/12
  */
 public class DefaultHttpSessionManage implements HttpSessionManage {
+    private static final Logger log = LoggerFactory.getLogger(DefaultHttpSessionManage.class);
     private final static HashMap<String, Session> sessionMap = new HashMap<>();
     private Timer timer = new Timer();
 
@@ -36,6 +39,7 @@ public class DefaultHttpSessionManage implements HttpSessionManage {
             public void run() {
                 if (sessionMap.isEmpty())
                     return;
+                log.info("自动session清理，当前session个数：{}", sessionMap.size());
                 // 预留10分钟
                 long removeTime = System.currentTimeMillis() - FinalServerProperties.server_session_age * 1000L - 600000L;
                 List<String> removeList = new ArrayList<>();
@@ -47,6 +51,9 @@ public class DefaultHttpSessionManage implements HttpSessionManage {
                 }
                 for (String key : removeList)
                     sessionMap.remove(key);
+                log.info("自动session清理完成，清理session个数：{}", removeList.size());
+                temp=null;
+                removeList=null;
             }
         }, 600000, 1800000);// 启动后10分钟执行一次，之后每30分钟执行一次
     }
@@ -77,7 +84,7 @@ public class DefaultHttpSessionManage implements HttpSessionManage {
     @Override
     public void updateSessionAccessTime(Session session) {
         if (session != null)
-            ((HttpSession) session).access();
+            ((HttpSession) session).updateLastAccessTime();
     }
 
     @Override

@@ -9,10 +9,10 @@ import java.util.HashMap;
  * @author lingkang
  * Created by 2022/12/12
  */
-public class NotHttpSessionManage implements HttpSessionManage {
+public class EmptyHttpSessionManage implements HttpSessionManage {
     @Override
     public Session getSession(Request request) {
-        return new HttpSession("NotHttpSessionManage");
+        return new HttpSession("EmptyHttpSessionManage");
     }
 
     @Override
