@@ -12,7 +12,7 @@ import top.lingkang.finalserver.server.core.impl.RedisHttpSessionManage;
  * @author lingkang
  * Created by 2022/12/13
  */
-@Configuration
+// @Configuration
 public class MyRedisHttpSessionManage {
 
     @Bean

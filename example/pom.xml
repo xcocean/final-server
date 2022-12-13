@@ -23,10 +23,10 @@
         </dependency>
 
         <!--使用redisson时，需要手动引入netty-->
-        <dependency>
+        <!--<dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>org.redisson</groupId>
             <artifactId>redisson</artifactId>

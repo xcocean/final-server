@@ -20,6 +20,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring.version>5.3.24</spring.version>
         <logback.version>1.2.11</logback.version>
+        <netty.version>4.1.85.Final</netty.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -38,7 +39,6 @@
             <dependency>
                 <groupId>io.netty</groupId>
                 <artifactId>netty-core</artifactId>
-                <version>4.1.85.Final</version>
             </dependency>
             <!-- https://mvnrepository.com/artifact/org.freemarker/freemarker -->
             <dependency>
@@ -82,7 +82,7 @@
             <dependency>
                 <groupId>org.redisson</groupId>
                 <artifactId>redisson</artifactId>
-                <version>3.16.8</version>
+                <version>3.18.1</version>
             </dependency>
 
         </dependencies>

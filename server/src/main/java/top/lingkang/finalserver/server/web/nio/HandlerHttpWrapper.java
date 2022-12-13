@@ -77,29 +77,5 @@ class HandlerHttpWrapper extends SimpleChannelInboundHandler<FullHttpRequest> {
                 ctx.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
             e.printStackTrace();
         }
-
-        /*
-        WebSocketHandler handler = manage.getHandler(path);
-        if (handler == null) {
-            log.warn("未找到websocket处理, 它将被直接关闭连接. path={}", path);
-            HttpUtils.closeHttpWebsocket(ctx, "404");
-            return;
-        }
-
-        // 开始握手连接
-        ctx.pipeline().addLast(new WebSocketServerCompressionHandler());
-        ctx.pipeline().addLast(new FinalWebSocketServerProtocolHandler(
-                msg.uri(), //路径
-                null,
-                true,
-                FinalServerProperties.websocket_maxMessage, //最大处理数据内容
-                false,  //掩码加密
-                true //允许 websocketPath 路径匹配，否则走全匹配，例如 websocketPath=/ws request=/ws?user=zhangsan 将匹配不上，无法处理
-        ));
-
-        //websocket 处理
-        ctx.pipeline().addLast(new WebSocketInitializer(handler, msg.headers()));
-
-        ctx.fireChannelRead(msg.retain());*/
     }
 }
