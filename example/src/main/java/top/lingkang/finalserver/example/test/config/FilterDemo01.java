@@ -21,4 +21,8 @@ public class FilterDemo01 implements Filter {
         filterChain.doFilter(context);
         System.out.println("FilterDemo01 过滤后");
     }
+
+    @Override
+    public void init() {
+    }
 }

@@ -19,5 +19,9 @@ public class FilterDemo02 implements Filter {
         System.out.println("FilterDemo02");
         filterChain.doFilter(context);
     }
+
+    @Override
+    public void init() {
+    }
 }
 

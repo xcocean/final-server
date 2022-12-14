@@ -174,8 +174,11 @@ public class FinalServerWeb {
         String[] filters = applicationContext.getBeanNamesForType(Filter.class);
         if (filters.length > 0) {
             List<Filter> list = new ArrayList<>();
-            for (String name : filters)
-                list.add((Filter) applicationContext.getBean(name));
+            for (String name : filters) {
+                Filter filter = (Filter) applicationContext.getBean(name);
+                filter.init();// 初始化
+                list.add(filter);
+            }
 
             // 排序
             list.sort(new Comparator<Filter>() {
@@ -194,6 +197,15 @@ public class FinalServerWeb {
                         return 0;
 
                     return v1 > v2 ? 1 : -1;
+                }
+            });
+
+            // 添加注销事件
+            FinalServerApplication.addShutdownHook(new ShutdownEvent() {
+                @Override
+                public void shutdown() throws Exception {
+                    for (Filter filter : list)
+                        filter.destroy();
                 }
             });
 

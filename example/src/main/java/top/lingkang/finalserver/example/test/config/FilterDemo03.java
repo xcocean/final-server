@@ -18,5 +18,9 @@ public class FilterDemo03 implements Filter {
     public void doFilter(FinalServerContext context, FilterChain filterChain) throws Exception {
         filterChain.doFilter(context);
     }
+
+    @Override
+    public void init() {
+    }
 }
 
