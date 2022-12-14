@@ -114,12 +114,10 @@ public class FinalServerWeb {
     private void web(int port) {
         int pro = Runtime.getRuntime().availableProcessors();
         int boss = pro * 2, work = pro * 50;
-        int receive = FinalServerProperties.server_thread_maxReceive;
-        if (receive != 0)
-            boss = receive;
-        int handler = FinalServerProperties.server_thread_maxHandler;
-        if (handler != 0)
-            work = handler;
+        if (FinalServerProperties.server_thread_maxReceive != 0)
+            boss = FinalServerProperties.server_thread_maxReceive;
+        if (FinalServerProperties.server_thread_maxHandler != 0)
+            work = FinalServerProperties.server_thread_maxHandler;
         else if (work > 200)
             work = 200;// 默认值不超过200
 

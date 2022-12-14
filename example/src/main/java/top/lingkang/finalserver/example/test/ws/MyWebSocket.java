@@ -22,6 +22,7 @@ public class MyWebSocket implements WebSocketHandler {
         if ("1".equals(message.getText())) {
             session.close();
         }
+        session.write(message);
 
     }
 

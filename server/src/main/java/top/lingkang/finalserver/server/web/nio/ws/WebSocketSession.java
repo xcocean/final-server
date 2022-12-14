@@ -32,6 +32,10 @@ public class WebSocketSession {
         context.writeAndFlush(new BinaryWebSocketFrame(Unpooled.wrappedBuffer(bytes)));
     }
 
+    public void write(Object obj) {
+        write(obj.toString());
+    }
+
     public void close() {
         if (context.channel().isActive()) {
             context.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);

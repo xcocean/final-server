@@ -9,5 +9,5 @@ import io.netty.handler.codec.http.FullHttpRequest;
  */
 public interface WsHandler {
     // 对 WebSocket 的处理
-    void handler(ChannelHandlerContext ctx, FullHttpRequest msg) throws Exception;
+    void handler(ChannelHandlerContext ctx, FullHttpRequest request) throws Exception;
 }
