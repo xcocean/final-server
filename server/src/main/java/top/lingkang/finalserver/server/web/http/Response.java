@@ -44,4 +44,8 @@ public interface Response {
     String getTemplatePath();
 
     HashMap<String, Object> getTemplateMap();
+
+    // 重定向
+    void sendRedirect(String url);
+
 }
