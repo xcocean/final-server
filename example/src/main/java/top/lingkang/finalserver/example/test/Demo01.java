@@ -58,4 +58,9 @@ public class Demo01 {
         lk.setPath("/");
         context.getResponse().addCookie(lk);
     }
+
+    @GET("/r")
+    public void r(HttpResponse response) {
+        response.sendRedirect("");
+    }
 }

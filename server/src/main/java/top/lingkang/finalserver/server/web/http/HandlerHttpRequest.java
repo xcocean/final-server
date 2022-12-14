@@ -64,7 +64,7 @@ public class HandlerHttpRequest extends SimpleChannelInboundHandler<FinalServerC
                             res.getHeaders(),
                             200);
                 } else
-                    HttpUtils.sendResponse(ctx, res, 200);
+                    HttpUtils.sendResponse(ctx, res, res.getCode());
             } else {// 返回 404
                 FinalServerConfiguration.webExceptionHandler.notHandler(ctx);
             }

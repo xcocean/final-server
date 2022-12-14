@@ -1,6 +1,7 @@
 package top.lingkang.finalserver.server.web.http;
 
 import cn.hutool.core.lang.Assert;
+import cn.hutool.core.util.StrUtil;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaders;
@@ -9,7 +10,6 @@ import top.lingkang.finalserver.server.core.FinalServerConfiguration;
 
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -29,7 +29,7 @@ public class HttpResponse implements Response {
     private HashMap<String, Object> map;
     private String filePath;
     private byte[] content;
-    private int code;
+    private int code = 200;
     private Set<Cookie> cookies = new TreeSet<>();
 
     public HttpResponse(ChannelHandlerContext ctx) {
@@ -121,6 +121,14 @@ public class HttpResponse implements Response {
     @Override
     public HashMap<String, Object> getTemplateMap() {
         return map;
+    }
+
+    @Override
+    public void sendRedirect(String url) {
+        code = 302;
+        if (StrUtil.isBlank(url))
+            url = "/";
+        headers.set(HttpHeaderNames.LOCATION, url);
     }
 
     private void checkReady() {
