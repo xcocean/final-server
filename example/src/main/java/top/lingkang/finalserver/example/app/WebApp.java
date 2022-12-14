@@ -12,7 +12,7 @@ import java.net.URLEncoder;
  * @author lingkang
  * Created by 2022/12/10
  */
-@Controller
+@Controller// 注解当前类为controller
 @FinalServerBoot
 public class WebApp {
     public static void main(String[] args) {

@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import top.lingkang.finalserver.server.core.FinalServerConfiguration;
 import top.lingkang.finalserver.server.utils.CommonUtils;
 
+import java.io.File;
 import java.io.RandomAccessFile;
 
 /**
@@ -25,7 +26,13 @@ class HttpHandler {
      * 处理静态文件返回
      */
     public static void returnStaticFile(String filePath, ChannelHandlerContext ctx, FinalServerContext context) throws Exception {
-        RandomAccessFile randomAccessFile = new RandomAccessFile(filePath, "r");
+        File file = new File(filePath);
+        if (!file.exists()) {
+            log.warn("文件不存在：{}", file.getAbsolutePath());
+            FinalServerConfiguration.webExceptionHandler.notHandler(ctx);
+            return;
+        }
+        RandomAccessFile randomAccessFile = new RandomAccessFile(file, "r");
         HttpResponseStatus status = HttpResponseStatus.OK;
         HttpHeaders headers = new DefaultHttpHeaders();
         headers.set(HttpHeaderNames.ACCEPT_RANGES, HttpHeaderValues.BYTES);
