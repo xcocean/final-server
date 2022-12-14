@@ -35,7 +35,8 @@ import java.util.List;
  */
 public class FinalServerWeb {
     private static final Logger log = LoggerFactory.getLogger(FinalServerWeb.class);
-    private EventLoopGroup bossGroup, workGroup;
+    private EventLoopGroup bossGroup;
+    public static EventLoopGroup workGroup;
     @Autowired
     private ApplicationContext applicationContext;
     private HttpParseTemplate parseTemplate;

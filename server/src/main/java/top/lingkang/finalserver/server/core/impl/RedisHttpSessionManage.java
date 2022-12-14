@@ -32,7 +32,7 @@ public class RedisHttpSessionManage implements HttpSessionManage {
         Cookie cookie = request.getCookie(FinalServerProperties.server_session_name);
         Session session = null;
         if (cookie == null) {
-            session = new HttpSession(FinalServerConfiguration.idGenerateFactory.generateHttpId(request));
+            session = new HttpSession(FinalServerConfiguration.idGenerateFactory.generateSessionId(request));
             setSession(session);
             return session;
         }
@@ -40,11 +40,11 @@ public class RedisHttpSessionManage implements HttpSessionManage {
         if (bucket != null)
             session = (Session) bucket;
         if (session == null) {
-            session = new HttpSession(FinalServerConfiguration.idGenerateFactory.generateHttpId(request));
+            session = new HttpSession(FinalServerConfiguration.idGenerateFactory.generateSessionId(request));
             setSession(session);
         } else if (session.isExpire()) {
             redissonClient.getBucket(session.getId()).delete();
-            session = new HttpSession(FinalServerConfiguration.idGenerateFactory.generateHttpId(request));
+            session = new HttpSession(FinalServerConfiguration.idGenerateFactory.generateSessionId(request));
             setSession(session);
         }
 

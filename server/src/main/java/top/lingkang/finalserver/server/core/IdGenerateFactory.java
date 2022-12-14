@@ -8,7 +8,16 @@ import top.lingkang.finalserver.server.web.http.Request;
  * 默认的id生成器
  */
 public interface IdGenerateFactory {
+    /**
+     * 生成netty的ID
+     * @return
+     */
     String generateNettyId();
 
-    String generateHttpId(Request httpRequest);
+    /**
+     * 生成 session ID
+     * @param httpRequest
+     * @return
+     */
+    String generateSessionId(Request httpRequest);
 }

@@ -15,7 +15,7 @@ public class DefaultIdGenerateFactory implements IdGenerateFactory {
     }
 
     @Override
-    public String generateHttpId(Request request) {
+    public String generateSessionId(Request request) {
         return IdUtil.fastUUID();
     }
 }

@@ -63,18 +63,18 @@ public class DefaultHttpSessionManage implements HttpSessionManage {
         Cookie cookie = request.getCookie(FinalServerProperties.server_session_name);
         Session session;
         if (cookie == null) {
-            session = new HttpSession(FinalServerConfiguration.idGenerateFactory.generateHttpId(request));
+            session = new HttpSession(FinalServerConfiguration.idGenerateFactory.generateSessionId(request));
             sessionMap.put(session.getId(), session);
             return session;
         }
 
         session = sessionMap.get(cookie.value());
         if (session == null) {
-            session = new HttpSession(FinalServerConfiguration.idGenerateFactory.generateHttpId(request));
+            session = new HttpSession(FinalServerConfiguration.idGenerateFactory.generateSessionId(request));
             sessionMap.put(session.getId(), session);
         } else if (session.isExpire()) {
             sessionMap.remove(cookie.value());
-            session = new HttpSession(FinalServerConfiguration.idGenerateFactory.generateHttpId(request));
+            session = new HttpSession(FinalServerConfiguration.idGenerateFactory.generateSessionId(request));
             sessionMap.put(session.getId(), session);
         }
 
