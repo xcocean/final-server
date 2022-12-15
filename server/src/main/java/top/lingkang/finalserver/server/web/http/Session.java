@@ -29,4 +29,6 @@ public interface Session {
     boolean hasAttribute();
 
     boolean isExpire();
+
+    boolean isNew();
 }

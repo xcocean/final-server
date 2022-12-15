@@ -6,11 +6,9 @@ import top.lingkang.finalserver.server.FinalServerApplication;
 import top.lingkang.finalserver.server.annotation.Controller;
 import top.lingkang.finalserver.server.annotation.FinalServerBoot;
 import top.lingkang.finalserver.server.annotation.GET;
-import top.lingkang.finalserver.server.web.http.FinalServerContext;
-import top.lingkang.finalserver.server.web.http.HttpResponse;
-import top.lingkang.finalserver.server.web.http.Request;
-import top.lingkang.finalserver.server.web.http.RequestMethod;
+import top.lingkang.finalserver.server.web.http.*;
 
+import java.util.Date;
 import java.util.Set;
 
 /**
@@ -71,5 +69,16 @@ public class Demo01 {
     @GET("t")
     public void t(HttpResponse response) {
         response.returnString("index");
+    }
+
+    @GET("s")
+    public String s(HttpResponse response, HttpRequest request) {
+        request.getSession().setAttribute("time", new Date());
+       return "session";
+    }
+
+    @GET("s1")
+    public Object s1(HttpRequest request){
+        return request.getSession().getAttribute("time");
     }
 }

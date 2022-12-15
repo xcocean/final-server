@@ -4,6 +4,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.websocketx.extensions.compression.WebSocketServerCompressionHandler;
+import io.netty.handler.stream.ChunkedWriteHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.lingkang.finalserver.server.constant.FinalServerConstants;
@@ -50,6 +51,8 @@ public class HandlerHttpWrapper extends SimpleChannelInboundHandler<FullHttpRequ
         // 初始化上下文中的请求与响应
         FinalServerHttpContext.init(context.getRequest(), context.getResponse());
 
+        // 写内容
+        ctx.pipeline().addLast(new ChunkedWriteHandler());
         // http 处理
         ctx.pipeline().addLast(new HandlerHttpRequest());
 

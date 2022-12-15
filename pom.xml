@@ -7,7 +7,7 @@
     <groupId>top.lingkang</groupId>
     <artifactId>final-server</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.7-SNAPSHOT</version>
 
     <!--基本开源信息-->
     <url>https://gitee.com/lingkang_top/final-security</url>
@@ -38,7 +38,7 @@
 
     <modules>
         <module>server</module>
-        <module>example</module>
+        <!--<module>example</module>-->
     </modules>
 
     <properties>
@@ -110,6 +110,13 @@
                 <groupId>org.redisson</groupId>
                 <artifactId>redisson</artifactId>
                 <version>3.18.1</version>
+            </dependency>
+
+            <!-- https://mvnrepository.com/artifact/org.aspectj/aspectjweaver -->
+            <dependency>
+                <groupId>org.aspectj</groupId>
+                <artifactId>aspectjweaver</artifactId>
+                <version>1.9.9.1</version>
             </dependency>
 
         </dependencies>

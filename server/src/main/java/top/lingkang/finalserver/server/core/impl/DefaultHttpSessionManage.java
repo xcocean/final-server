@@ -52,8 +52,8 @@ public class DefaultHttpSessionManage implements HttpSessionManage {
                 for (String key : removeList)
                     sessionMap.remove(key);
                 log.info("自动session清理完成，清理session个数：{}", removeList.size());
-                temp=null;
-                removeList=null;
+                temp = null;
+                removeList = null;
             }
         }, 600000, 1800000);// 启动后10分钟执行一次，之后每30分钟执行一次
     }
@@ -94,7 +94,8 @@ public class DefaultHttpSessionManage implements HttpSessionManage {
 
     @Override
     public void addSessionIdToCurrentHttp(FinalServerContext context) {
-        if (context.getRequest().getSession().hasAttribute() && !context.getRequest().getSession().isExpire()) {
+        Session session = context.getRequest().getSession();
+        if (session.isNew() && session.hasAttribute() && !session.isExpire()) {
             DefaultCookie cookie = new DefaultCookie(FinalServerProperties.server_session_name, context.getRequest().getSession().getId());
             cookie.setMaxAge(FinalServerProperties.server_session_age);
             cookie.setPath("/");

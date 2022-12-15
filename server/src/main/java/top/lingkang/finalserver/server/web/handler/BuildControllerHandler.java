@@ -37,7 +37,7 @@ public class BuildControllerHandler {
         tmp.addAll(Arrays.asList(names));
         allName = tmp.toArray(new String[]{});
         for (String name : allName) {
-            Object bean = applicationContext.getBean(name);
+            Object bean = BeanUtils.getTarget(applicationContext.getBean(name));
             Object annotation = bean.getClass().getAnnotation(Controller.class);
             if (annotation == null)
                 annotation = bean.getClass().getAnnotation(org.springframework.stereotype.Controller.class);

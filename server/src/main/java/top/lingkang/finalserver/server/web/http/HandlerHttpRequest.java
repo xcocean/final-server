@@ -39,21 +39,18 @@ class HandlerHttpRequest extends SimpleChannelInboundHandler<FinalServerContext>
                 FinalServerConfiguration.httpSessionManage.addSessionIdToCurrentHttp(context);
 
                 // 添加cookie
-                HttpUtils.addHeaderCookie(context.getResponse());
+                HttpUtils.addHeaderCookie(context);
 
                 if (res.isTemplate()) {
                     // 将会话的值追加到目标渲染
-                    HashMap<String, Object> attribute = FinalServerConfiguration.httpSessionManage.getSessionAttribute(context.getRequest());
-                    if (attribute != null) {
-                        if (res.getTemplateMap() != null)
-                            attribute.putAll(res.getTemplateMap());
-                    } else if (res.getTemplateMap() != null) {
-                        attribute = res.getTemplateMap();
-                    }
-
+                    HashMap<String, Object> templateMap = res.getTemplateMap();
+                    if (templateMap == null)
+                        templateMap = new HashMap<>();
+                    templateMap.put("request", context.getRequest());
+                    templateMap.put("session", FinalServerConfiguration.httpSessionManage.getSessionAttribute(context.getRequest()));
                     HttpUtils.sendResponse(
                             ctx,
-                            FinalServerInitializer.httpParseTemplate.getTemplate(res.getTemplatePath(), attribute),
+                            FinalServerInitializer.httpParseTemplate.getTemplate(res.getTemplatePath(), templateMap),
                             res.getHeaders(),
                             200);
                 } else

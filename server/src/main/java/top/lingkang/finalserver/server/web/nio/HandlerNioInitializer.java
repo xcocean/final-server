@@ -24,7 +24,6 @@ public class HandlerNioInitializer extends ChannelInitializer<Channel> {
         // pipeline.addLast(new FinalHttpRequestDecoder());// http 解码
         // pipeline.addLast(new HttpRequestEncoder());// http 编码
         pipeline.addLast(new HttpObjectAggregator(FinalServerProperties.server_maxContentLength));
-        pipeline.addLast(new ChunkedWriteHandler());// 写内容
         pipeline.addLast(new HandlerHttpWrapper());// 进行一次包装
     }
 

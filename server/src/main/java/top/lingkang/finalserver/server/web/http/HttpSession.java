@@ -3,16 +3,20 @@ package top.lingkang.finalserver.server.web.http;
 import top.lingkang.finalserver.server.core.FinalServerProperties;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
 
 /**
  * @author lingkang
  * Created by 2022/12/12
  */
-public class HttpSession implements Session , Serializable {
+public class HttpSession implements Session, Serializable {
     private long createTime = System.currentTimeMillis(), lastAccessTime = createTime;
     private String id;
     private final HashMap<String, Object> attributes = new HashMap<>();
+    private boolean isNew = true;
 
     public HttpSession() {
     }
@@ -83,10 +87,21 @@ public class HttpSession implements Session , Serializable {
 
     @Override
     public boolean isExpire() {
-        return System.currentTimeMillis() - lastAccessTime > FinalServerProperties.server_session_age * 1000L;
+        boolean is = System.currentTimeMillis() - lastAccessTime > FinalServerProperties.server_session_age * 1000L;
+        if (is) {
+            isNew = true;
+            attributes.clear();
+        }
+        return is;
+    }
+
+    @Override
+    public boolean isNew() {
+        return isNew;
     }
 
     public void updateLastAccessTime() {
         lastAccessTime = System.currentTimeMillis();
+        isNew = false;
     }
 }

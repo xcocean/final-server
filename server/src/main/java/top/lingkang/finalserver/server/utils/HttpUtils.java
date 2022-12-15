@@ -9,9 +9,9 @@ import io.netty.handler.codec.http.cookie.ServerCookieEncoder;
 import io.netty.util.CharsetUtil;
 import top.lingkang.finalserver.server.annotation.NotNull;
 import top.lingkang.finalserver.server.core.FinalServerConfiguration;
+import top.lingkang.finalserver.server.web.http.FinalServerContext;
 import top.lingkang.finalserver.server.web.http.HttpResponse;
 import top.lingkang.finalserver.server.web.http.Request;
-import top.lingkang.finalserver.server.web.http.Response;
 
 import java.util.Set;
 
@@ -54,11 +54,11 @@ public class HttpUtils {
         ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
     }
 
-    public static void addHeaderCookie(Response response) {
-        if (!response.getCookies().isEmpty()) {
-            Set<Cookie> cookies = response.getCookies();
+    public static void addHeaderCookie(FinalServerContext context) {
+        if (!context.getResponse().getCookies().isEmpty()) {
+            Set<Cookie> cookies = context.getResponse().getCookies();
             for (Cookie cookie : cookies) {
-                response.setHeader("Set-Cookie", ServerCookieEncoder.STRICT.encode(cookie));
+                context.getResponse().setHeader("Set-Cookie", ServerCookieEncoder.STRICT.encode(cookie));
             }
         }
     }
@@ -71,6 +71,6 @@ public class HttpUtils {
         FullHttpResponse response = new DefaultFullHttpResponse(
                 HTTP_1_1, HttpResponseStatus.BAD_REQUEST, Unpooled.wrappedBuffer(msg.getBytes()));
         response.headers().set(response.headers().set(FinalServerConfiguration.defaultResponseHeaders.get()));
-        ctx.channel().writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
+        ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
     }
 }
