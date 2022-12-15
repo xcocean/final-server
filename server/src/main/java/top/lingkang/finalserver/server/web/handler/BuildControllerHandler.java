@@ -10,8 +10,7 @@ import top.lingkang.finalserver.server.web.entity.RequestInfo;
 import top.lingkang.finalserver.server.web.http.RequestMethod;
 
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author lingkang
@@ -31,10 +30,17 @@ public class BuildControllerHandler {
 
     public ControllerRequestHandler build() {
         log.debug("开始加载 Controller 请求处理");
-        String[] allName = applicationContext.getBeanDefinitionNames();
+        String[] allName = applicationContext.getBeanNamesForAnnotation(Controller.class);
+        // 兼容spring的controller注解
+        String[] names = applicationContext.getBeanNamesForAnnotation(org.springframework.stereotype.Controller.class);
+        Set<String> tmp = new HashSet<>(Arrays.asList(allName));
+        tmp.addAll(Arrays.asList(names));
+        allName = tmp.toArray(new String[]{});
         for (String name : allName) {
             Object bean = applicationContext.getBean(name);
-            Controller annotation = bean.getClass().getAnnotation(Controller.class);
+            Object annotation = bean.getClass().getAnnotation(Controller.class);
+            if (annotation == null)
+                annotation = bean.getClass().getAnnotation(org.springframework.stereotype.Controller.class);
             if (annotation == null)
                 continue;
             log.debug(BeanUtils.getSpringProxyBeanName(bean.getClass()));

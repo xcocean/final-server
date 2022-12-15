@@ -24,6 +24,8 @@ public class Demo01 {
         FinalServerApplication.run(Demo01.class, args);
     }
 
+    private int count = 0;
+
     @GET
     public void index(HttpResponse response, String name, Request request) {
         // response.returnString("hi你好啊");
@@ -31,6 +33,8 @@ public class Demo01 {
         System.out.println(request.getCookies());
         request.getSession().setAttribute("vv", "你好啊666");
         response.returnTemplate("index.html");
+        count++;
+        System.out.println(count);
     }
 
     @GET("/w")
@@ -62,5 +66,10 @@ public class Demo01 {
     @GET("/r")
     public void r(HttpResponse response) {
         response.sendRedirect("");
+    }
+
+    @GET("t")
+    public void t(HttpResponse response) {
+        response.returnString("index");
     }
 }

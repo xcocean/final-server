@@ -1,4 +1,4 @@
-package top.lingkang.finalserver.server.web.nio;
+package top.lingkang.finalserver.server.web.http;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -8,11 +8,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.lingkang.finalserver.server.constant.FinalServerConstants;
 import top.lingkang.finalserver.server.core.FinalServerProperties;
-import top.lingkang.finalserver.server.core.HttpParseTemplate;
 import top.lingkang.finalserver.server.utils.BeanUtils;
 import top.lingkang.finalserver.server.utils.HttpUtils;
 import top.lingkang.finalserver.server.web.FinalServerHttpContext;
-import top.lingkang.finalserver.server.web.http.*;
 import top.lingkang.finalserver.server.web.nio.ws.FinalWebSocketServerProtocolHandler;
 import top.lingkang.finalserver.server.web.nio.ws.WebSocketHandler;
 import top.lingkang.finalserver.server.web.nio.ws.WebSocketInitializer;
@@ -25,15 +23,8 @@ import java.net.URLDecoder;
  * Created by 2022/12/6
  * @since 1.0.0
  */
-class HandlerHttpWrapper extends SimpleChannelInboundHandler<FullHttpRequest> {
+public class HandlerHttpWrapper extends SimpleChannelInboundHandler<FullHttpRequest> {
     private static final Logger log = LoggerFactory.getLogger(HandlerHttpWrapper.class);
-    private FilterChain filterChain;
-    private HttpParseTemplate parseTemplate;
-
-    public HandlerHttpWrapper(FilterChain filterChain, HttpParseTemplate parseTemplate) {
-        this.filterChain = filterChain;
-        this.parseTemplate = parseTemplate;
-    }
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest msg) throws Exception {
@@ -60,7 +51,7 @@ class HandlerHttpWrapper extends SimpleChannelInboundHandler<FullHttpRequest> {
         FinalServerHttpContext.init(context.getRequest(), context.getResponse());
 
         // http 处理
-        ctx.pipeline().addLast(new HandlerHttpRequest(filterChain, parseTemplate));
+        ctx.pipeline().addLast(new HandlerHttpRequest());
 
         // next
         ctx.fireChannelRead(context);

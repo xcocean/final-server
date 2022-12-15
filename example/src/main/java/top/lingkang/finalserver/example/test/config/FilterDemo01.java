@@ -18,8 +18,9 @@ public class FilterDemo01 implements Filter {
     @Override
     public void doFilter(FinalServerContext context, FilterChain filterChain) throws Exception {
         System.out.println("FilterDemo01 过滤前");
+        ThreadUtil.sleep(5000);
         filterChain.doFilter(context);
-        System.out.println("FilterDemo01 过滤后");
+        // System.out.println("FilterDemo01 过滤后");
     }
 
     @Override

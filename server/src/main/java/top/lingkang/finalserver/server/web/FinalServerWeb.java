@@ -1,6 +1,7 @@
 package top.lingkang.finalserver.server.web;
 
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
@@ -9,24 +10,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.core.annotation.Order;
 import top.lingkang.finalserver.server.FinalServerApplication;
-import top.lingkang.finalserver.server.core.*;
-import top.lingkang.finalserver.server.core.impl.*;
-import top.lingkang.finalserver.server.utils.BeanUtils;
-import top.lingkang.finalserver.server.web.handler.*;
-import top.lingkang.finalserver.server.web.http.Filter;
-import top.lingkang.finalserver.server.web.http.FilterChain;
+import top.lingkang.finalserver.server.core.FinalServerProperties;
+import top.lingkang.finalserver.server.core.FinalThreadFactory;
+import top.lingkang.finalserver.server.core.impl.ShutdownEventWeb;
 import top.lingkang.finalserver.server.web.nio.FinalServerNioServerSocketChannel;
-import top.lingkang.finalserver.server.web.nio.ServerInitializer;
-import top.lingkang.finalserver.server.web.nio.ws.WebSocketManage;
+import top.lingkang.finalserver.server.web.nio.HandlerNioInitializer;
 
-import javax.annotation.PostConstruct;
 import java.lang.management.ManagementFactory;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
 
 /**
  * @author lingkang
@@ -37,72 +28,13 @@ public class FinalServerWeb {
     private static final Logger log = LoggerFactory.getLogger(FinalServerWeb.class);
     private EventLoopGroup bossGroup;
     public static EventLoopGroup workGroup;
+
     @Autowired
     private ApplicationContext applicationContext;
-    private HttpParseTemplate parseTemplate;
 
-    private FilterChain filterChain;
-
-
-    @PostConstruct
     private void init() {
-        List<RequestHandler> handlers = new ArrayList<>();
-        String[] beanNamesForType = applicationContext.getBeanNamesForType(LocalStaticMapping.class);
-        if (beanNamesForType.length > 0) {
-            for (String name : beanNamesForType) {
-
-                LocalStaticMapping bean = (LocalStaticMapping) applicationContext.getBean(name);
-                for (String path : bean.getPaths()) {
-                    handlers.add(new LocalStaticRequestHandler(path));
-                    log.info("本地静态文件映射：" + path);
-                }
-            }
-        }
-        handlers.add(new StaticRequestHandler());// 项目静态文件
-        handlers.add(new BuildControllerHandler(applicationContext).build());// controller转发
-        filterChain = setFilterChain(handlers.toArray(new RequestHandler[0]));
-
-        // 初始化异常处理
-        WebExceptionHandler exceptionHandler = BeanUtils.getBean(WebExceptionHandler.class, applicationContext);
-        if (exceptionHandler != null)
-            FinalServerConfiguration.webExceptionHandler = exceptionHandler;
-        else
-            FinalServerConfiguration.webExceptionHandler = new DefaultWebExceptionHandler();
-
-        // 初始化模板解析
-        parseTemplate = BeanUtils.getBean(HttpParseTemplate.class, applicationContext);
-        if (parseTemplate == null)// 使用默认模板解析
-            parseTemplate = BeanUtils.getBean(DefaultHttpParseTemplate.class, applicationContext);
-        parseTemplate.init(FinalServerProperties.server_template);
-
-        // 初始化会话管理
-        String[] sessionManage = applicationContext.getBeanNamesForType(HttpSessionManage.class);
-        if (sessionManage.length > 0) {
-            FinalServerConfiguration.httpSessionManage = applicationContext.getBean(sessionManage[0], HttpSessionManage.class);
-            if (sessionManage.length > 1)
-                log.warn("存在多个会话管理，应用了首个：{}", sessionManage[0]);
-            log.info("use redis store session.");
-        } else
-            FinalServerConfiguration.httpSessionManage = new DefaultHttpSessionManage();
-
-        // id生成
-        String[] generateId = applicationContext.getBeanNamesForType(IdGenerateFactory.class);
-        if (generateId.length > 0) {
-            FinalServerConfiguration.idGenerateFactory = applicationContext.getBean(generateId[0], IdGenerateFactory.class);
-            if (generateId.length > 1)
-                log.warn("存在多个Id生成器，应用了首个：{}", generateId[0]);
-        } else
-            FinalServerConfiguration.idGenerateFactory = new DefaultIdGenerateFactory();
-
-
         // 运行
         run();
-    }
-
-    @Order(Integer.MAX_VALUE)// 最后加载
-    @Bean
-    public WebSocketManage websocketManage() {
-        return new WebSocketManage(applicationContext);
     }
 
     public void run() {
@@ -114,7 +46,7 @@ public class FinalServerWeb {
 
     private void web(int port) {
         int pro = Runtime.getRuntime().availableProcessors();
-        int boss = pro * 2, work = pro * 50;
+        int boss = pro, work = pro * 50;
         if (FinalServerProperties.server_thread_maxReceive != 0)
             boss = FinalServerProperties.server_thread_maxReceive;
         if (FinalServerProperties.server_thread_maxHandler != 0)
@@ -135,11 +67,18 @@ public class FinalServerWeb {
                 .channel(FinalServerNioServerSocketChannel.class) //  设置nio的双向管道
                 //当连接被阻塞时BACKLOG代表的是阻塞队列的长度
                 .option(ChannelOption.SO_BACKLOG, FinalServerProperties.server_thread_backlog)
+                // 禁用Nagle算法，即使用小数据包即时传输
+                .childOption(ChannelOption.TCP_NODELAY, true)
+                // 自动读取 关闭
+                .option(ChannelOption.AUTO_CLOSE, false)
+                // 客户端关闭连接时，自动关闭channel
+                .childOption(ChannelOption.ALLOW_HALF_CLOSURE, true)
+                .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                 //置连接为保持活动的状态
                 .childOption(ChannelOption.SO_KEEPALIVE, true);
         // 子处理器
         serverBootstrap.childHandler(
-                new ServerInitializer(filterChain, parseTemplate)
+                new HandlerNioInitializer()
         );
         //启动server并绑定端口监听和设置同步方式
         try {
@@ -167,52 +106,6 @@ public class FinalServerWeb {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private FilterChain setFilterChain(RequestHandler[] requestHandlers) {
-        // 过滤类
-        String[] filters = applicationContext.getBeanNamesForType(Filter.class);
-        if (filters.length > 0) {
-            List<Filter> list = new ArrayList<>();
-            for (String name : filters) {
-                Filter filter = (Filter) applicationContext.getBean(name);
-                filter.init();// 初始化
-                list.add(filter);
-            }
-
-            // 排序
-            list.sort(new Comparator<Filter>() {
-                @Override
-                public int compare(Filter o1, Filter o2) {
-                    Class<? extends Filter> aClass = o1.getClass();
-                    int v1 = 0, v2 = 0;
-                    Order order = BeanUtils.getSpringProxyToClass(o1.getClass()).getAnnotation(Order.class);
-                    if (order != null)
-                        v1 = order.value();
-                    order = BeanUtils.getSpringProxyToClass(o2.getClass()).getAnnotation(Order.class);
-                    if (order != null)
-                        v2 = order.value();
-
-                    if (v1 == v2)
-                        return 0;
-
-                    return v1 > v2 ? 1 : -1;
-                }
-            });
-
-            // 添加注销事件
-            FinalServerApplication.addShutdownHook(new ShutdownEvent() {
-                @Override
-                public void shutdown() throws Exception {
-                    for (Filter filter : list)
-                        filter.destroy();
-                }
-            });
-
-            return new FilterChain(list.toArray(new Filter[]{}), requestHandlers);
-        }
-
-        return new FilterChain(new Filter[0], requestHandlers);
     }
 
 }

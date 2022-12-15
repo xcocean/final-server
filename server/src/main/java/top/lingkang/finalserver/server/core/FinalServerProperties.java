@@ -21,6 +21,7 @@ public class FinalServerProperties {
     public static long websocket_timeout = 12000;
     public static String server_session_name = "sid";
     public static int server_session_age = 1800;
+    public static int server_maxContentLength = 1024;
 
     public static void load() {
         if (isLoad) {
@@ -40,5 +41,6 @@ public class FinalServerProperties {
         websocket_timeout = Long.parseLong(System.getProperty("websocket.timeout"));
         server_session_name = System.getProperty("server.session.name");
         server_session_age = Integer.parseInt(System.getProperty("server.session.age"));
+        server_maxContentLength = Integer.parseInt(System.getProperty("server.maxContentLength"));
     }
 }

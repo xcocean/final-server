@@ -21,20 +21,17 @@ public class FilterChain {
     public void doFilter(FinalServerContext context) throws Exception {
         if (current < length) {
             current++;// 自增
-            try {
-                filters[current - 1].doFilter(context, this);
-            } catch (Exception e) {
-                throw e;
-            } finally {
-                current = 0;//reset
-            }
+            filters[current - 1].doFilter(context, this);
         } else {
-            current = 0;//reset
             // 在此处调用处理逻辑方法
             for (RequestHandler handler : requestHandler) {
                 if (handler.handler(context)) break;
             }
         }
+    }
+
+    public Filter[] getFilters() {
+        return filters;
     }
 
     public RequestHandler[] getRequestHandler() {

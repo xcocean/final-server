@@ -105,6 +105,11 @@ public class HttpResponse implements Response {
 
     @Override
     public void addCookie(Cookie cookie) {
+        for (Cookie c : cookies)
+            if (c.name().equals(cookie.name())) {
+                cookies.remove(c);
+                break;
+            }
         cookies.add(cookie);
     }
 
