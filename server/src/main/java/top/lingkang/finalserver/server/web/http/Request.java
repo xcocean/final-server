@@ -3,7 +3,10 @@ package top.lingkang.finalserver.server.web.http;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.cookie.Cookie;
+import io.netty.handler.codec.http.multipart.FileUpload;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -17,6 +20,8 @@ public interface Request {
     String getPath();
 
     String getParam(String name);
+
+    List<FileUpload> getFileUpload();
 
     String getHeader(String name);
 

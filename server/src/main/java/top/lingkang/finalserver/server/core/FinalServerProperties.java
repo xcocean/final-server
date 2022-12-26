@@ -42,5 +42,7 @@ public class FinalServerProperties {
         server_session_name = System.getProperty("server.session.name");
         server_session_age = Integer.parseInt(System.getProperty("server.session.age"));
         server_maxContentLength = Integer.parseInt(System.getProperty("server.maxContentLength"));
+        if (server_maxContentLength == -1 || server_maxContentLength == 0)
+            server_maxContentLength = Integer.MAX_VALUE;
     }
 }

@@ -2,6 +2,7 @@ package top.lingkang.finalserver.example.test;
 
 import io.netty.handler.codec.http.cookie.Cookie;
 import io.netty.handler.codec.http.cookie.DefaultCookie;
+import io.netty.handler.codec.http.multipart.FileUpload;
 import top.lingkang.finalserver.server.FinalServerApplication;
 import top.lingkang.finalserver.server.annotation.Controller;
 import top.lingkang.finalserver.server.annotation.FinalServerBoot;
@@ -9,7 +10,12 @@ import top.lingkang.finalserver.server.annotation.GET;
 import top.lingkang.finalserver.server.annotation.POST;
 import top.lingkang.finalserver.server.web.http.*;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -84,7 +90,12 @@ public class Demo01 {
     }
 
     @POST("/p")
-    public Object p(String name){
-        return "post: "+ name;
+    public Object p(Request request) throws IOException {
+        List<FileUpload> upload = request.getFileUpload();
+        System.out.println(upload);
+        FileUpload fileUpload = upload.get(0);
+        File file = fileUpload.getFile();
+        System.out.println(file);
+        return "post: ";
     }
 }

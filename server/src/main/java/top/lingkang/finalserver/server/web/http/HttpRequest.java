@@ -4,6 +4,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.*;
 import io.netty.handler.codec.http.cookie.Cookie;
 import io.netty.handler.codec.http.multipart.Attribute;
+import io.netty.handler.codec.http.multipart.FileUpload;
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder;
 import io.netty.handler.codec.http.multipart.InterfaceHttpData;
 import top.lingkang.finalserver.server.core.FinalServerConfiguration;
@@ -12,6 +13,7 @@ import top.lingkang.finalserver.server.web.FinalServerHttpContext;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -58,13 +60,28 @@ public class HttpRequest implements Request {
             return put.get(0);
         checkQueryBody();
         InterfaceHttpData data = queryBody.getBodyHttpData(name);
-        if (data != null && data.getHttpDataType() == InterfaceHttpData.HttpDataType.Attribute && data != null) {
-            try {
-                return ((Attribute) data).getValue();
-            } catch (IOException e) {
+        if (data != null) {
+            if (data.getHttpDataType() == InterfaceHttpData.HttpDataType.Attribute) {
+                try {
+                    return ((Attribute) data).getValue();
+                } catch (IOException e) {
+                }
             }
         }
         return null;
+    }
+
+    @Override
+    public List<FileUpload> getFileUpload() {
+        checkQueryBody();
+        List<FileUpload> list = new ArrayList<>();
+        List<InterfaceHttpData> httpDatas = queryBody.getBodyHttpDatas();
+        for (InterfaceHttpData data : httpDatas) {
+            if (data.getHttpDataType() == InterfaceHttpData.HttpDataType.FileUpload) {
+                list.add((FileUpload) data);
+            }
+        }
+        return list;
     }
 
     @Override
