@@ -28,10 +28,10 @@ public class DefaultHttpParseTemplate implements HttpParseTemplate {
     }
 
     @Override
-    public byte[] getTemplate(String template, Map map) throws Exception {
+    public String getTemplate(String template, Map map) throws Exception {
         Template temp = config.getTemplate(template);
         StringWriter stringWriter = new StringWriter();
         temp.process(map, stringWriter);
-        return stringWriter.toString().getBytes(StandardCharsets.UTF_8);
+        return stringWriter.toString();
     }
 }

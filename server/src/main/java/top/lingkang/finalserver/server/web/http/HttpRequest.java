@@ -58,7 +58,7 @@ public class HttpRequest implements Request {
             return put.get(0);
         checkQueryBody();
         InterfaceHttpData data = queryBody.getBodyHttpData(name);
-        if (data.getHttpDataType() == InterfaceHttpData.HttpDataType.Attribute && data != null) {
+        if (data != null && data.getHttpDataType() == InterfaceHttpData.HttpDataType.Attribute && data != null) {
             try {
                 return ((Attribute) data).getValue();
             } catch (IOException e) {
@@ -118,7 +118,7 @@ public class HttpRequest implements Request {
 
     @Override
     public Session getSession() {
-        if (session == null || System.currentTimeMillis() - session.lastAccessTime() > FinalServerProperties.server_session_age * 1000L)
+        if (session == null || System.currentTimeMillis() - session.lastAccessTime() > FinalServerProperties.server_session_age)
             session = FinalServerConfiguration.httpSessionManage.getSession(FinalServerHttpContext.getRequest());
         return session;
     }

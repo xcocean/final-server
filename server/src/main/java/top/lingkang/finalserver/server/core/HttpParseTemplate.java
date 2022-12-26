@@ -12,5 +12,5 @@ public interface HttpParseTemplate {
     // 初始化模板，每次启动只会执行一次
     void init(String templatePath);
 
-    byte[] getTemplate(String template, Map map) throws Exception;
+    String getTemplate(String template, Map map) throws Exception;
 }

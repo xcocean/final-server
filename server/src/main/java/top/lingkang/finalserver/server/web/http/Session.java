@@ -20,7 +20,7 @@ public interface Session {
 
     void removeAttribute(String name);
 
-    void removeAllAttribute(String name);
+    void removeAllAttribute();
 
     Enumeration<String> getAttributeNames();
 
@@ -29,6 +29,4 @@ public interface Session {
     boolean hasAttribute();
 
     boolean isExpire();
-
-    boolean isNew();
 }

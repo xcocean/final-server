@@ -20,7 +20,7 @@ public class FinalServerProperties {
     public static int websocket_maxMessage = 65536;
     public static long websocket_timeout = 12000;
     public static String server_session_name = "sid";
-    public static int server_session_age = 1800;
+    public static int server_session_age = 1800000;
     public static int server_maxContentLength = 1024;
 
     public static void load() {

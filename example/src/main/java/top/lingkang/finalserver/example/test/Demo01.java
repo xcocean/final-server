@@ -6,6 +6,7 @@ import top.lingkang.finalserver.server.FinalServerApplication;
 import top.lingkang.finalserver.server.annotation.Controller;
 import top.lingkang.finalserver.server.annotation.FinalServerBoot;
 import top.lingkang.finalserver.server.annotation.GET;
+import top.lingkang.finalserver.server.annotation.POST;
 import top.lingkang.finalserver.server.web.http.*;
 
 import java.util.Date;
@@ -28,11 +29,11 @@ public class Demo01 {
     public void index(HttpResponse response, String name, Request request) {
         // response.returnString("hi你好啊");
         // System.out.println(FinalServerHttpContext.getRequest().requestId());
-        System.out.println(request.getCookies());
+//        System.out.println(request.getCookies());
         request.getSession().setAttribute("vv", "你好啊666");
         response.returnTemplate("index.html");
-        count++;
-        System.out.println(count);
+//        count++;
+//        System.out.println(count);
     }
 
     @GET("/w")
@@ -80,5 +81,10 @@ public class Demo01 {
     @GET("s1")
     public Object s1(HttpRequest request){
         return request.getSession().getAttribute("time");
+    }
+
+    @POST("/p")
+    public Object p(String name){
+        return "post: "+ name;
     }
 }

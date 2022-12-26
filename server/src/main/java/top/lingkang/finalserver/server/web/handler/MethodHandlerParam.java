@@ -45,6 +45,20 @@ public class MethodHandlerParam {
         handlerMap.put(Request.class, request);
         handlerMap.put(HttpRequest.class, request);
 
+        // session
+        handlerMap.put(HttpSession.class, new HandlerParam() {
+            @Override
+            public Object handler(String name, Class<?> type, FinalServerContext context) {
+                return context.getRequest().getSession();
+            }
+        });
+        handlerMap.put(Session.class, new HandlerParam() {
+            @Override
+            public Object handler(String name, Class<?> type, FinalServerContext context) {
+                return context.getRequest().getSession();
+            }
+        });
+
         HandlerParam response = new HandlerParam() {
             @Override
             public Object handler(String name, Class<?> type, FinalServerContext context) {

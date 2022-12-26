@@ -30,6 +30,7 @@ public class DefaultHttpSessionManage implements HttpSessionManage {
             @Override
             public void shutdown() throws Exception {
                 timer.cancel();
+                sessionMap.clear();
             }
         });
 
@@ -41,7 +42,7 @@ public class DefaultHttpSessionManage implements HttpSessionManage {
                     return;
                 log.info("自动session清理，当前session个数：{}", sessionMap.size());
                 // 预留10分钟
-                long removeTime = System.currentTimeMillis() - FinalServerProperties.server_session_age * 1000L - 600000L;
+                long removeTime = System.currentTimeMillis() - FinalServerProperties.server_session_age - 600000L;
                 List<String> removeList = new ArrayList<>();
                 HashMap<String, Session> temp = new HashMap<>(sessionMap);
                 for (Map.Entry<String, Session> entry : temp.entrySet()) {
@@ -64,18 +65,15 @@ public class DefaultHttpSessionManage implements HttpSessionManage {
         Session session;
         if (cookie == null) {
             session = new HttpSession(FinalServerConfiguration.idGenerateFactory.generateSessionId(request));
-            sessionMap.put(session.getId(), session);
             return session;
         }
 
         session = sessionMap.get(cookie.value());
         if (session == null) {
             session = new HttpSession(FinalServerConfiguration.idGenerateFactory.generateSessionId(request));
-            sessionMap.put(session.getId(), session);
         } else if (session.isExpire()) {
             sessionMap.remove(cookie.value());
             session = new HttpSession(FinalServerConfiguration.idGenerateFactory.generateSessionId(request));
-            sessionMap.put(session.getId(), session);
         }
 
         return session;
@@ -95,11 +93,13 @@ public class DefaultHttpSessionManage implements HttpSessionManage {
     @Override
     public void addSessionIdToCurrentHttp(FinalServerContext context) {
         Session session = context.getRequest().getSession();
-        if (session.isNew() && session.hasAttribute() && !session.isExpire()) {
+        if (session.hasAttribute() && !session.isExpire()) {
+            sessionMap.put(session.getId(), session);
             DefaultCookie cookie = new DefaultCookie(FinalServerProperties.server_session_name, context.getRequest().getSession().getId());
             cookie.setMaxAge(FinalServerProperties.server_session_age);
             cookie.setPath("/");
             context.getResponse().addCookie(cookie);
         }
+        System.out.println("session 个数："+sessionMap.size());
     }
 }

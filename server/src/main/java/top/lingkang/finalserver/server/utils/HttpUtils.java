@@ -44,13 +44,13 @@ public class HttpUtils {
         ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
     }
 
-    public static void sendResponse(ChannelHandlerContext ctx, byte[] content, HttpHeaders headers, int status) {
+    public static void sendResponse(ChannelHandlerContext ctx, String content, HttpHeaders headers, int status) {
         FullHttpResponse response = new DefaultFullHttpResponse(
                 HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(status),
-                Unpooled.copiedBuffer(content)
+                Unpooled.copiedBuffer(content, CharsetUtil.UTF_8)
         );
         response.headers().set(headers);
-        response.headers().set(HttpHeaderNames.CONTENT_LENGTH, content.length);
+        response.headers().set(HttpHeaderNames.CONTENT_LENGTH, content.length());
         ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
     }
 

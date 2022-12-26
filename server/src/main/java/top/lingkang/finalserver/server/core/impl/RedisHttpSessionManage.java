@@ -33,7 +33,6 @@ public class RedisHttpSessionManage implements HttpSessionManage {
         Session session = null;
         if (cookie == null) {
             session = new HttpSession(FinalServerConfiguration.idGenerateFactory.generateSessionId(request));
-            setSession(session);
             return session;
         }
         Object bucket = redissonClient.getBucket(cookie.value()).get();
@@ -41,11 +40,9 @@ public class RedisHttpSessionManage implements HttpSessionManage {
             session = (Session) bucket;
         if (session == null) {
             session = new HttpSession(FinalServerConfiguration.idGenerateFactory.generateSessionId(request));
-            setSession(session);
         } else if (session.isExpire()) {
             redissonClient.getBucket(session.getId()).delete();
             session = new HttpSession(FinalServerConfiguration.idGenerateFactory.generateSessionId(request));
-            setSession(session);
         }
 
         return session;
@@ -53,13 +50,12 @@ public class RedisHttpSessionManage implements HttpSessionManage {
 
     private void setSession(Session session) {
         // 添加100秒，防止临界值
-        redissonClient.getBucket(session.getId()).set(session, FinalServerProperties.server_session_age + 100, TimeUnit.SECONDS);
+        redissonClient.getBucket(session.getId()).set(session, FinalServerProperties.server_session_age + 100, TimeUnit.MILLISECONDS);
     }
 
     @Override
     public void updateSessionAccessTime(Session session) {
         ((HttpSession) session).updateLastAccessTime();
-        setSession(session);
     }
 
     @Override
@@ -73,6 +69,7 @@ public class RedisHttpSessionManage implements HttpSessionManage {
             DefaultCookie cookie = new DefaultCookie(FinalServerProperties.server_session_name, context.getRequest().getSession().getId());
             cookie.setMaxAge(FinalServerProperties.server_session_age);
             context.getResponse().addCookie(cookie);
+            setSession(context.getRequest().getSession());
         }
     }
 }

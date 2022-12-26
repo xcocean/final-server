@@ -9,7 +9,8 @@ import java.util.List;
  * Created by 2022/12/9
  * @since 1.0.0
  * 可以继承实现静态文件处理
- * @Override public void addStaticByAbsolutePath(List<String> paths) {
+ * @Override
+ * public void addStaticByAbsolutePath(List<String> paths) {
  * paths.add("d:/");
  * paths.add("C:\\Users\\Administrator\\Desktop\\picture");
  * }
