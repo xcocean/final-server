@@ -24,7 +24,7 @@ public class WebApp {
     }
 }
 ```
-`以spring 5.x 为底层，能够使用spring 5.x 的注解。`
+`以spring 5.x 为底层，能够使用spring 5.x 的能力。`
 
 ## web
 

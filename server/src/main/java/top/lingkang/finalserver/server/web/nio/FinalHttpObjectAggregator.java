@@ -13,6 +13,7 @@ import top.lingkang.finalserver.server.error.ContentTooLargeException;
 /**
  * @author lingkang
  * 2023/1/5
+ * @since 1.0.0
  **/
 public class FinalHttpObjectAggregator extends HttpObjectAggregator {
     private static final Logger logger= LoggerFactory.getLogger(FinalHttpObjectAggregator.class);

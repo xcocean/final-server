@@ -24,6 +24,7 @@ import java.util.List;
 /**
  * @author lingkang
  * 2022/12/15
+ * @since 1.0.0
  **/
 public class FinalServerInitializer {
     private static final Logger log = LoggerFactory.getLogger(FinalServerInitializer.class);
