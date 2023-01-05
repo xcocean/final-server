@@ -10,11 +10,12 @@ import io.netty.channel.ChannelHandlerContext;
 public class FinalServerContext {
     public FinalServerContext(ChannelHandlerContext ctx) {
         this.ctx = ctx;
+        finalServerContext.set(this);
     }
 
+    public static final ThreadLocal<FinalServerContext> finalServerContext = new ThreadLocal<>();
     private Request request;
     private Response response;
-
     private ChannelHandlerContext ctx;
 
     public ChannelHandlerContext getCtx() {
@@ -35,5 +36,15 @@ public class FinalServerContext {
 
     public void setResponse(Response response) {
         this.response = response;
+    }
+
+    // 获取当前的上下文
+    public static FinalServerContext currentContext() {
+        return finalServerContext.get();
+    }
+
+    // 移除当前的上下文，框架会自动处理
+    public static void removeCurrentContext() {
+        finalServerContext.remove();
     }
 }

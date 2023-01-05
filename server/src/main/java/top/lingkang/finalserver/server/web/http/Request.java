@@ -6,7 +6,6 @@ import io.netty.handler.codec.http.cookie.Cookie;
 import io.netty.handler.codec.http.multipart.FileUpload;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**

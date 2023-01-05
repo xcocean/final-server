@@ -94,5 +94,6 @@ public class DefaultHttpSessionManage implements HttpSessionManage {
             cookie.setPath("/");
             context.getResponse().addCookie(cookie);
         }
+        log.info("当前session数量：{}", sessionMap.size());
     }
 }

@@ -12,10 +12,8 @@ import top.lingkang.finalserver.server.web.http.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.channels.FileChannel;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -36,7 +34,8 @@ public class Demo01 {
         // response.returnString("hi你好啊");
         // System.out.println(FinalServerHttpContext.getRequest().requestId());
 //        System.out.println(request.getCookies());
-        // request.getSession().setAttribute("vv", "你好啊666");
+        System.out.println(request.getSession().getAttribute("vv"));
+        request.getSession().setAttribute("vv", "你好啊666");
         response.returnTemplate("index.html");
 //        count++;
 //        System.out.println(count);
@@ -81,11 +80,11 @@ public class Demo01 {
     @GET("s")
     public String s(HttpResponse response, HttpRequest request) {
         request.getSession().setAttribute("time", new Date());
-       return "session";
+        return "session";
     }
 
     @GET("s1")
-    public Object s1(HttpRequest request){
+    public Object s1(HttpRequest request) {
         return request.getSession().getAttribute("time");
     }
 

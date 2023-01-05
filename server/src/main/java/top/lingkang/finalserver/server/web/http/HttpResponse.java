@@ -7,6 +7,7 @@ import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.cookie.Cookie;
 import top.lingkang.finalserver.server.core.FinalServerConfiguration;
+import top.lingkang.finalserver.server.error.FinalServerException;
 
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -70,7 +71,8 @@ public class HttpResponse implements Response {
 
     @Override
     public void returnTemplate(String templatePath, HashMap<String, Object> map) {
-        Assert.notEmpty(templatePath, "templatePath 模板不能为空");
+        if (StrUtil.isEmpty(templatePath))
+            new FinalServerException("templatePath 模板不能为空");
         checkReady();
         this.templatePath = templatePath;
         this.map = map;
@@ -138,13 +140,12 @@ public class HttpResponse implements Response {
 
     private void checkReady() {
         if (isReady) {
-            throw new RuntimeException("007-已经设置返回值，不能重复设置");
+            throw new FinalServerException("007-已经设置返回值，不能重复设置");
         }
     }
 
 
     // get
-
     public String getFilePath() {
         return filePath;
     }

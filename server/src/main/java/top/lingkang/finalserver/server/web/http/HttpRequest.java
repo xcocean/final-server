@@ -9,7 +9,6 @@ import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder;
 import io.netty.handler.codec.http.multipart.InterfaceHttpData;
 import top.lingkang.finalserver.server.core.FinalServerConfiguration;
 import top.lingkang.finalserver.server.core.FinalServerProperties;
-import top.lingkang.finalserver.server.web.FinalServerHttpContext;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -136,7 +135,7 @@ public class HttpRequest implements Request {
     @Override
     public Session getSession() {
         if (session == null || System.currentTimeMillis() - session.lastAccessTime() > FinalServerProperties.server_session_age)
-            session = FinalServerConfiguration.httpSessionManage.getSession(FinalServerHttpContext.getRequest());
+            session = FinalServerConfiguration.httpSessionManage.getSession(FinalServerContext.currentContext().getRequest());
         return session;
     }
 

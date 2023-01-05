@@ -23,6 +23,18 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
  * @since 1.0.0
  */
 public class HttpUtils {
+    private static void responseBeforeHandler(FullHttpResponse response) {
+        FinalServerContext context = FinalServerContext.currentContext();
+        if (context == null)
+            return;
+        // 添加会话到cookie
+        FinalServerConfiguration.httpSessionManage.addSessionIdToCurrentHttp(context);
+
+        // 添加cookie
+        HttpUtils.addHeaderCookie(context);
+        response.headers().set(context.getResponse().getHeaders());
+    }
+
     public static void sendString(ChannelHandlerContext ctx, @NotNull String context, int status) {
         FullHttpResponse response = new DefaultFullHttpResponse(
                 HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(status),
@@ -31,6 +43,7 @@ public class HttpUtils {
         response.headers().set(FinalServerConfiguration.defaultResponseHeaders.get());
         response.headers().set(HttpHeaderNames.CONTENT_LENGTH, context.getBytes().length);
         response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain; charset=UTF-8");
+        responseBeforeHandler(response);
         ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
     }
 
@@ -41,6 +54,7 @@ public class HttpUtils {
         );
         response.headers().set(httpResponse.getHeaders());
         response.headers().set(HttpHeaderNames.CONTENT_LENGTH, httpResponse.getContent().length);
+        responseBeforeHandler(response);
         ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
     }
 
@@ -51,6 +65,7 @@ public class HttpUtils {
         );
         response.headers().set(headers);
         response.headers().set(HttpHeaderNames.CONTENT_LENGTH, content.length());
+        responseBeforeHandler(response);
         ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
     }
 
@@ -71,6 +86,7 @@ public class HttpUtils {
         FullHttpResponse response = new DefaultFullHttpResponse(
                 HTTP_1_1, HttpResponseStatus.BAD_REQUEST, Unpooled.wrappedBuffer(msg.getBytes()));
         response.headers().set(response.headers().set(FinalServerConfiguration.defaultResponseHeaders.get()));
+        responseBeforeHandler(response);
         ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
     }
 }

@@ -25,6 +25,7 @@ public interface Response {
 
     void returnTemplate(String templatePath, HashMap<String, Object> map);
 
+    // 返回文件，前端会下载文件。filePath为文件所在路径
     void returnFile(String filePath);
 
     // 设置响应http的状态码，默认 200

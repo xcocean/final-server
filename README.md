@@ -1,7 +1,7 @@
 # final-server
 
 ### 介绍
-final-server是一个基于netty实现的高性能web服务器
+final-server是一个基于netty实现的高性能web服务器。使用spring作为底层，兼容spring生态。
 
 ### 快速入门
 
