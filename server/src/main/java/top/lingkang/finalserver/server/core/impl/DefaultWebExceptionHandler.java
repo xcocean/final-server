@@ -23,7 +23,7 @@ public class DefaultWebExceptionHandler implements WebExceptionHandler {
 
     @Override
     public void notHandler(ChannelHandlerContext context) throws Exception {
-        log.warn("此请求未做处理，将返回空值: " + HttpUtils.getRequestPathInfo(FinalServerContext.currentContext().getRequest()));
+        log.warn("此请求未做处理，将返回404: " + HttpUtils.getRequestPathInfo(FinalServerContext.currentContext().getRequest()));
         HttpUtils.sendString(context, "404", 404);
     }
 }

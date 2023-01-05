@@ -6,7 +6,6 @@ import cn.hutool.core.util.IdUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.ComponentScan;
-import top.lingkang.finalserver.server.FinalServerApplication;
 
 import java.io.File;
 import java.io.InputStream;
@@ -46,9 +45,13 @@ public class InitAppConfig {
                     continue;
                 System.setProperty(entry.getKey().toString(), entry.getValue().toString());
             }
-            /*if (app.getProperty("debug") != null && app.getProperty("debug").equals("true")) {
-                FinalServerApplication.finalServerLogConfig.setLogLevel("DEBUG");
-            }*/
+
+            for (String arg : args) {
+                if (arg.contains("=")) {
+                    String[] split = arg.split("=");
+                    System.setProperty(split[0], split[1]);
+                }
+            }
 
             // load to
             FinalServerProperties.load();

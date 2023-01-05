@@ -50,11 +50,11 @@ public class HttpRequest implements Request {
     public String getParam(String name) {
         checkQueryUri();
         List<String> put = queryUri.parameters().get(name);
-        if (msg.method() == HttpMethod.GET) {
+        /*if (msg.method() == HttpMethod.GET) {
             if (put == null)
                 return null;
             return put.get(0);
-        }
+        }*/
         if (put != null)
             return put.get(0);
         checkQueryBody();

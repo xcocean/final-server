@@ -3,6 +3,9 @@ package top.lingkang.finalserver.server.core;
 import io.netty.handler.codec.http.cookie.ServerCookieDecoder;
 import top.lingkang.finalserver.server.core.impl.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author lingkang
  * Created by 2022/12/7
@@ -23,4 +26,6 @@ public class FinalServerConfiguration {
 
     // DefaultHttpSessionManage
     public static HttpSessionManage httpSessionManage;
+
+    public static List<WebListener> webListener=new ArrayList<>();
 }

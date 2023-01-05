@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import top.lingkang.finalserver.server.constant.FinalServerConstants;
 import top.lingkang.finalserver.server.core.FinalServerProperties;
 import top.lingkang.finalserver.server.utils.BeanUtils;
+import top.lingkang.finalserver.server.utils.CommonUtils;
 import top.lingkang.finalserver.server.utils.HttpUtils;
 import top.lingkang.finalserver.server.web.nio.ws.FinalWebSocketServerProtocolHandler;
 import top.lingkang.finalserver.server.web.nio.ws.WebSocketHandler;
@@ -45,6 +46,9 @@ public class HandlerHttpWrapper extends SimpleChannelInboundHandler<FullHttpRequ
     public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
         super.handlerRemoved(ctx);
         FinalServerContext.removeCurrentContext();
+
+        // 监听：之后
+        CommonUtils.pushWebListenerAfter();
     }
 
     private void httpHandler(ChannelHandlerContext ctx, FullHttpRequest msg) throws Exception {

@@ -124,6 +124,12 @@ public class FinalServerInitializer {
                 log.warn("存在多个Id生成器，应用了首个：{}", generateId[0]);
         } else
             FinalServerConfiguration.idGenerateFactory = new DefaultIdGenerateFactory();
+
+        // web监听初始化
+        String[] webListeners = applicationContext.getBeanNamesForType(WebListener.class);
+        for (String listener : webListeners) {
+            FinalServerConfiguration.webListener.add(applicationContext.getBean(listener, WebListener.class));
+        }
     }
 
     @Order(Integer.MAX_VALUE)// 最后加载

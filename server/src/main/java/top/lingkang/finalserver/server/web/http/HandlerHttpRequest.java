@@ -4,6 +4,7 @@ package top.lingkang.finalserver.server.web.http;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import top.lingkang.finalserver.server.core.FinalServerConfiguration;
+import top.lingkang.finalserver.server.utils.CommonUtils;
 import top.lingkang.finalserver.server.utils.HttpUtils;
 import top.lingkang.finalserver.server.web.FinalServerInitializer;
 
@@ -19,6 +20,7 @@ class HandlerHttpRequest extends SimpleChannelInboundHandler<FinalServerContext>
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FinalServerContext context) throws Exception {
+        CommonUtils.pushWebListenerBefore(context);
         // 在此更新会话访问
         context.getRequest().getSession().updateLastAccessTime();
         // 过滤器

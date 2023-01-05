@@ -97,4 +97,9 @@ public class Demo01 {
         System.out.println(file);
         return "post: ";
     }
+
+    @POST("/a")
+    public Object a(String a){
+        return a;
+    }
 }
