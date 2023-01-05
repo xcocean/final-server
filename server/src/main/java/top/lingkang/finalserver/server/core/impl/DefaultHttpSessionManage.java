@@ -80,12 +80,6 @@ public class DefaultHttpSessionManage implements HttpSessionManage {
     }
 
     @Override
-    public void updateSessionAccessTime(Session session) {
-        if (session != null)
-            ((HttpSession) session).updateLastAccessTime();
-    }
-
-    @Override
     public HashMap<String, Object> getSessionAttribute(Request request) {
         return request.getSession().getAttributeMap();
     }
@@ -100,6 +94,5 @@ public class DefaultHttpSessionManage implements HttpSessionManage {
             cookie.setPath("/");
             context.getResponse().addCookie(cookie);
         }
-        System.out.println("session 个数："+sessionMap.size());
     }
 }

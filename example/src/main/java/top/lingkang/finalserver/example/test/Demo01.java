@@ -36,7 +36,7 @@ public class Demo01 {
         // response.returnString("hi你好啊");
         // System.out.println(FinalServerHttpContext.getRequest().requestId());
 //        System.out.println(request.getCookies());
-        request.getSession().setAttribute("vv", "你好啊666");
+        // request.getSession().setAttribute("vv", "你好啊666");
         response.returnTemplate("index.html");
 //        count++;
 //        System.out.println(count);

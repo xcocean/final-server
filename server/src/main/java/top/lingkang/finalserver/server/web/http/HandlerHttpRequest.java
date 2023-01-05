@@ -26,7 +26,7 @@ class HandlerHttpRequest extends SimpleChannelInboundHandler<FinalServerContext>
         // log.info(context.getRequest().getHttpMethod().name() + " path=" + context.getRequest().getPath());
 
         // 在此更新会话访问
-        FinalServerConfiguration.httpSessionManage.updateSessionAccessTime(FinalServerHttpContext.getRequest().getSession());
+        ((HttpSession) FinalServerHttpContext.getRequest().getSession()).updateLastAccessTime();
         try {
             // 过滤器
             new FilterChain(FinalServerInitializer.filters, FinalServerInitializer.requestHandlers).doFilter(context);

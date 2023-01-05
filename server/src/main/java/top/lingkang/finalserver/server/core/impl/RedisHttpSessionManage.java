@@ -54,11 +54,6 @@ public class RedisHttpSessionManage implements HttpSessionManage {
     }
 
     @Override
-    public void updateSessionAccessTime(Session session) {
-        ((HttpSession) session).updateLastAccessTime();
-    }
-
-    @Override
     public HashMap<String, Object> getSessionAttribute(Request request) {
         return request.getSession().getAttributeMap();
     }

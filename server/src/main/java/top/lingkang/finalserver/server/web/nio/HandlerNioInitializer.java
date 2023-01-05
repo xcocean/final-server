@@ -19,11 +19,10 @@ public class HandlerNioInitializer extends ChannelInitializer<Channel> {
     @Override
     protected void initChannel(Channel ch) throws Exception {
         ChannelPipeline pipeline = ch.pipeline();
-        //pipeline.addLast(new FinalHttpServerCodec());// 使用自定义http编解码
         pipeline.addLast(new HttpServerCodec());// http编解码
         // pipeline.addLast(new FinalHttpRequestDecoder());// http 解码
         // pipeline.addLast(new HttpRequestEncoder());// http 编码
-        pipeline.addLast(new HttpObjectAggregator(FinalServerProperties.server_maxContentLength));
+        pipeline.addLast(new FinalHttpObjectAggregator(FinalServerProperties.server_maxContentLength));
         pipeline.addLast(new HandlerHttpWrapper());// 进行一次包装
     }
 

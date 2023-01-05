@@ -23,12 +23,7 @@ public class FinalServerLogConfig {
         try {
             ILoggerFactory loggerFactory = StaticLoggerBinder.getSingleton().getLoggerFactory();
             if (loggerFactory instanceof LoggerContext) {
-                InputStream in = null;
-                if (FinalServerProperties.log_file == null) {
-                    log.warn("未找到logback.xml日志配置，将使用默认");
-                } else {
-                    in = FinalServerLogConfig.class.getClassLoader().getResourceAsStream("logback.xml");
-                }
+                InputStream in = FinalServerLogConfig.class.getClassLoader().getResourceAsStream(FinalServerProperties.log_file);
                 if (in == null)
                     in = FinalServerLogConfig.class.getClassLoader().getResourceAsStream("final-server-logback.xml");
                 LoggerContext loggerContext = (LoggerContext) loggerFactory;
@@ -38,6 +33,9 @@ public class FinalServerLogConfig {
                 configurator.setContext(loggerContext);
                 configurator.doConfigure(in);
                 in.close();
+                if ("true".equals(System.getProperty("debug"))) {
+                    setLogLevel("DEBUG");
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -47,9 +45,9 @@ public class FinalServerLogConfig {
     /**
      * @param level ALL TRACE DEBUG INFO WARN ERROR OFF (不区分大小写)
      */
-    public void setLogLevel(String level) {
+    public static void setLogLevel(String level) {
         try {
-            InputStream in = FinalServerLogConfig.class.getClassLoader().getResourceAsStream("logback.xml");
+            InputStream in = FinalServerLogConfig.class.getClassLoader().getResourceAsStream(FinalServerProperties.log_file);
             if (in == null)
                 in = FinalServerLogConfig.class.getClassLoader().getResourceAsStream("final-server-logback.xml");
 

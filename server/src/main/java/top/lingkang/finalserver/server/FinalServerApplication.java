@@ -54,12 +54,12 @@ public class FinalServerApplication {
             FinalSystemOut.error("启动类未添加@FinalServerBoot，未执行相关功能");
             return;
         }
-        // 初始化日志配置
-        finalServerLogConfig = new FinalServerLogConfig();
 
         // 加载配置
-        log.debug("FinalServer 开始加载配置");
         InitAppConfig.initProperties(args, port);
+
+        // 初始化日志配置
+        finalServerLogConfig = new FinalServerLogConfig();
 
         // 检查端口
         if (!NetUtil.isUsableLocalPort(FinalServerProperties.server_port)) {

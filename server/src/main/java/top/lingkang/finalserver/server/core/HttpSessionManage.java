@@ -17,9 +17,6 @@ public interface HttpSessionManage {
     @NotNull
     Session getSession(Request request);
 
-    // 更新会话的访问时间
-    void updateSessionAccessTime(Session session);
-
     // 获取会话的map属性
     HashMap<String, Object> getSessionAttribute(Request request);
 

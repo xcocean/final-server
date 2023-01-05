@@ -46,9 +46,9 @@ public class InitAppConfig {
                     continue;
                 System.setProperty(entry.getKey().toString(), entry.getValue().toString());
             }
-            if (app.getProperty("debug") != null && app.getProperty("debug").equals("true")) {
+            /*if (app.getProperty("debug") != null && app.getProperty("debug").equals("true")) {
                 FinalServerApplication.finalServerLogConfig.setLogLevel("DEBUG");
-            }
+            }*/
 
             // load to
             FinalServerProperties.load();
