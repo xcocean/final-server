@@ -20,7 +20,7 @@ public interface Request {
 
     String getParam(String name);
 
-    List<FileUpload> getFileUpload();
+    List<MultipartFile> getFileUpload();
 
     String getHeader(String name);
 
@@ -37,4 +37,6 @@ public interface Request {
     Set<Cookie> getCookies();
 
     Session getSession();
+
+    void release();
 }

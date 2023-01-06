@@ -44,16 +44,8 @@ public class FinalHttpObjectAggregator extends HttpObjectAggregator {
                     }
                 });
             } else {
+                logger.warn("请求内容太大，请设置 server.maxContentLength 属性，例如：server.maxContentLength=0");
                 FinalServerConfiguration.webExceptionHandler.exception(ctx,new ContentTooLargeException("请求内容太大，拒绝处理。The request content is too large, refused to process"));
-                /*ctx.writeAndFlush(TOO_LARGE.retainedDuplicate()).addListener(new ChannelFutureListener() {
-                    @Override
-                    public void operationComplete(ChannelFuture future) throws Exception {
-                        if (!future.isSuccess()) {
-                            logger.debug("Failed to send a 413 Request Entity Too Large.", future.cause());
-                            ctx.close();
-                        }
-                    }
-                });*/
             }
         } else if (oversized instanceof HttpResponse) {
             ctx.close();

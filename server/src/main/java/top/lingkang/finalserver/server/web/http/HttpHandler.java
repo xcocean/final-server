@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.lingkang.finalserver.server.core.FinalServerConfiguration;
 import top.lingkang.finalserver.server.utils.CommonUtils;
+import top.lingkang.finalserver.server.utils.HttpUtils;
 
 import java.io.File;
 import java.io.RandomAccessFile;
@@ -39,6 +40,12 @@ class HttpHandler {
         headers.set(HttpHeaderNames.CONTENT_LENGTH, randomAccessFile.length());
         // 设置文件请求头
         CommonUtils.setResponseHeadName(filePath, headers);
+
+        // HttpUtils.responseBeforeHandler(response);
+        // 添加会话到cookie
+        FinalServerConfiguration.httpSessionManage.addSessionIdToCurrentHttp(context);
+        // 添加cookie
+        HttpUtils.addHeaderCookie(context);
         // 设置用户设置的请求头，可以覆盖上面的设置
         headers.setAll(context.getResponse().getHeaders());
 
@@ -67,8 +74,10 @@ class HttpHandler {
                 log.warn("断点续传解析错误", e);
             }
         }
+
         DefaultHttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, status);
         response.headers().set(headers);
+
         ctx.write(response);
         ctx.write(
                 new ChunkedFile(randomAccessFile, offset, length, 1024),

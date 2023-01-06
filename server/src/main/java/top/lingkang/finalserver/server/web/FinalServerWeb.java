@@ -8,8 +8,6 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import top.lingkang.finalserver.server.FinalServerApplication;
 import top.lingkang.finalserver.server.core.FinalServerProperties;
 import top.lingkang.finalserver.server.core.FinalThreadFactory;
@@ -28,9 +26,6 @@ public class FinalServerWeb {
     private static final Logger log = LoggerFactory.getLogger(FinalServerWeb.class);
     private EventLoopGroup bossGroup;
     public static EventLoopGroup workGroup;
-
-    @Autowired
-    private ApplicationContext applicationContext;
 
     private void init() {
         // 运行

@@ -27,12 +27,13 @@ public class HttpUtils {
         FinalServerContext context = FinalServerContext.currentContext();
         if (context == null)
             return;
+
         // 添加会话到cookie
         FinalServerConfiguration.httpSessionManage.addSessionIdToCurrentHttp(context);
-
         // 添加cookie
         HttpUtils.addHeaderCookie(context);
-        response.headers().set(context.getResponse().getHeaders());
+
+        response.headers().add(context.getResponse().getHeaders());
     }
 
     public static void sendString(ChannelHandlerContext ctx, @NotNull String context, int status) {
@@ -40,7 +41,6 @@ public class HttpUtils {
                 HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(status),
                 Unpooled.copiedBuffer(context, CharsetUtil.UTF_8)
         );
-        response.headers().set(FinalServerConfiguration.defaultResponseHeaders.get());
         response.headers().set(HttpHeaderNames.CONTENT_LENGTH, context.getBytes().length);
         response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain; charset=UTF-8");
         responseBeforeHandler(response);

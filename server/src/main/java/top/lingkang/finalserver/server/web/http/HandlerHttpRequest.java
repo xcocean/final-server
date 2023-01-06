@@ -17,9 +17,11 @@ import java.util.HashMap;
  * @since 1.0.0
  */
 class HandlerHttpRequest extends SimpleChannelInboundHandler<FinalServerContext> {
+    private FinalServerContext context;
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FinalServerContext context) throws Exception {
+        this.context = context;
         CommonUtils.pushWebListenerBefore(context);
         // 在此更新会话访问
         context.getRequest().getSession().updateLastAccessTime();
@@ -39,7 +41,7 @@ class HandlerHttpRequest extends SimpleChannelInboundHandler<FinalServerContext>
                 if (templateMap == null)
                     templateMap = new HashMap<>();
                 templateMap.put("request", context.getRequest());
-                templateMap.put("session", FinalServerConfiguration.httpSessionManage.getSessionAttribute(context.getRequest()));
+                templateMap.put("session", context.getRequest().getSession().getAttributeMap());
                 HttpUtils.sendResponse(
                         ctx,
                         FinalServerInitializer.httpParseTemplate.getTemplate(res.getTemplatePath(), templateMap),
@@ -58,5 +60,19 @@ class HandlerHttpRequest extends SimpleChannelInboundHandler<FinalServerContext>
         if (ctx.channel().isActive()) {// 未关闭时手动关闭
             HttpUtils.sendString(ctx, "", 500);
         }
+    }
+
+    @Override
+    public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
+        super.handlerRemoved(ctx);
+
+        // 为了解决文件上传生成的临时文件导致内存溢出问题 https://github.com/netty/netty/issues/10351
+        // 手动将文件释放
+        context.getRequest().release();
+
+        FinalServerContext.removeCurrentContext();
+
+        // 监听：之后
+        CommonUtils.pushWebListenerAfter();
     }
 }

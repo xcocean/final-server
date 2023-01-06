@@ -10,6 +10,7 @@ import java.util.HashMap;
 /**
  * @author lingkang
  * Created by 2022/12/12
+ * @since 1.0.0
  */
 public interface HttpSessionManage {
     // 获取会话，cookie中或者请求参数、请求头中没有session时，应该创建，不能返回空值
@@ -17,9 +18,5 @@ public interface HttpSessionManage {
     @NotNull
     Session getSession(Request request);
 
-    // 获取会话的map属性
-    HashMap<String, Object> getSessionAttribute(Request request);
-
     void addSessionIdToCurrentHttp(FinalServerContext context);
-
 }

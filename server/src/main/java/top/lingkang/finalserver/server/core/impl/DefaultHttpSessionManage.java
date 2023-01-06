@@ -80,11 +80,6 @@ public class DefaultHttpSessionManage implements HttpSessionManage {
     }
 
     @Override
-    public HashMap<String, Object> getSessionAttribute(Request request) {
-        return request.getSession().getAttributeMap();
-    }
-
-    @Override
     public void addSessionIdToCurrentHttp(FinalServerContext context) {
         Session session = context.getRequest().getSession();
         if (session.hasAttribute() && !session.isExpire()) {

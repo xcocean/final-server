@@ -49,13 +49,8 @@ public class RedisHttpSessionManage implements HttpSessionManage {
     }
 
     private void setSession(Session session) {
-        // 添加100秒，防止临界值
+        // 添加100毫秒，防止临界值
         redissonClient.getBucket(session.getId()).set(session, FinalServerProperties.server_session_age + 100, TimeUnit.MILLISECONDS);
-    }
-
-    @Override
-    public HashMap<String, Object> getSessionAttribute(Request request) {
-        return request.getSession().getAttributeMap();
     }
 
     @Override

@@ -63,3 +63,14 @@ public class WebApp {
     }
 }
 ```
+
+## 特点
+
+* http处理
+* websocket
+* filter功能
+* web监听
+* aop
+* 文件上传、文件下载
+* 静态文件映射，分段下载
+* web session管理

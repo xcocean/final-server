@@ -90,16 +90,25 @@ public class Demo01 {
 
     @POST("/p")
     public Object p(Request request) throws IOException {
-        List<FileUpload> upload = request.getFileUpload();
-        System.out.println(upload);
-        FileUpload fileUpload = upload.get(0);
-        File file = fileUpload.getFile();
+        List<MultipartFile> upload = request.getFileUpload();
+        MultipartFile file = upload.get(0);
+
+        System.out.println(file.getParamName());// 上传文件的参数名
+        System.out.println(file.getFileName());// 名称
+        System.out.println(file.getLength());// 长度
+        System.out.println(file.getFile()); // 文件对象
         System.out.println(file);
-        return "post: ";
+        return "ok";
+    }
+
+    @POST("/p2")
+    public Object p2(Request request) throws IOException {
+        System.out.println(request.getPath());
+        return "p2";
     }
 
     @POST("/a")
-    public Object a(String a){
+    public Object a(String a) {
         return a;
     }
 }

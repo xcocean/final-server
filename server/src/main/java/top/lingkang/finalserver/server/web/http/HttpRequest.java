@@ -3,10 +3,9 @@ package top.lingkang.finalserver.server.web.http;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.*;
 import io.netty.handler.codec.http.cookie.Cookie;
-import io.netty.handler.codec.http.multipart.Attribute;
-import io.netty.handler.codec.http.multipart.FileUpload;
-import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder;
-import io.netty.handler.codec.http.multipart.InterfaceHttpData;
+import io.netty.handler.codec.http.multipart.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import top.lingkang.finalserver.server.core.FinalServerConfiguration;
 import top.lingkang.finalserver.server.core.FinalServerProperties;
 
@@ -29,6 +28,8 @@ public class HttpRequest implements Request {
     private HttpPostRequestDecoder queryBody;
     private Set<Cookie> cookies;
     private Session session;
+    List<MultipartFile> fileList = new ArrayList<>();
+    private static final Logger log = LoggerFactory.getLogger(HttpRequest.class);
 
     public HttpRequest(ChannelHandlerContext ctx, FullHttpRequest msg) {
         this.ctx = ctx;
@@ -48,39 +49,38 @@ public class HttpRequest implements Request {
 
     @Override
     public String getParam(String name) {
-        checkQueryUri();
-        List<String> put = queryUri.parameters().get(name);
-        /*if (msg.method() == HttpMethod.GET) {
-            if (put == null)
-                return null;
-            return put.get(0);
-        }*/
-        if (put != null)
-            return put.get(0);
-        checkQueryBody();
-        InterfaceHttpData data = queryBody.getBodyHttpData(name);
-        if (data != null) {
-            if (data.getHttpDataType() == InterfaceHttpData.HttpDataType.Attribute) {
-                try {
-                    return ((Attribute) data).getValue();
-                } catch (IOException e) {
+        if (msg.method() == HttpMethod.POST) {
+            checkQueryBody();
+            InterfaceHttpData data = queryBody.getBodyHttpData(name);
+            if (data != null) {
+                if (data.getHttpDataType() == InterfaceHttpData.HttpDataType.Attribute) {
+                    try {
+                        return ((Attribute) data).getValue();
+                    } catch (IOException e) {
+                    }
                 }
             }
         }
-        return null;
+
+        // get 请求
+        checkQueryUri();
+        List<String> put = queryUri.parameters().get(name);
+        return put.get(0);
     }
 
     @Override
-    public List<FileUpload> getFileUpload() {
+    public List<MultipartFile> getFileUpload() {
+        if (!fileList.isEmpty())
+            return fileList;
         checkQueryBody();
-        List<FileUpload> list = new ArrayList<>();
         List<InterfaceHttpData> httpDatas = queryBody.getBodyHttpDatas();
         for (InterfaceHttpData data : httpDatas) {
             if (data.getHttpDataType() == InterfaceHttpData.HttpDataType.FileUpload) {
-                list.add((FileUpload) data);
+                FileUpload fileUpload = (FileUpload) data;
+                fileList.add(new MultipartFile(fileUpload));
             }
         }
-        return list;
+        return fileList;
     }
 
     @Override
@@ -127,6 +127,7 @@ public class HttpRequest implements Request {
                 cookies = FinalServerConfiguration.cookieDecoder.decode(cookie);
                 return cookies;
             } catch (Exception e) {
+                log.warn("", e);
             }
         }
         return new TreeSet<>();
@@ -139,6 +140,27 @@ public class HttpRequest implements Request {
         return session;
     }
 
+    @Override
+    public void release() {
+        // 上传的是文件才执行释放
+//        if (queryBody != null && queryBody.isMultipart())
+//            queryBody.destroy(); // https://github.com/netty/netty/issues/10351
+        if (!fileList.isEmpty()) {
+            for (MultipartFile multipartFile : fileList) {
+                try {
+                    if (multipartFile.isInMemory()) {
+                        if (multipartFile.getFile() != null)
+                            multipartFile.getFile().delete();
+                    } else {
+                        multipartFile.getFileUpload().getFile().delete();
+                    }
+                } catch (Exception e) {
+                    log.warn("", e);
+                }
+            }
+        }
+    }
+
     // 首次获取时再实例化，提升性能
     private void checkQueryUri() {
         if (queryUri == null)
@@ -147,7 +169,8 @@ public class HttpRequest implements Request {
 
     // 首次获取时再实例化，提升性能
     private void checkQueryBody() {
-        if (queryBody == null)
-            queryBody = new HttpPostRequestDecoder(msg);
+        if (queryBody == null) {
+            queryBody = new HttpPostRequestDecoder(new DefaultHttpDataFactory(FinalServerProperties.server_uploadFileBuffer), msg);
+        }
     }
 }

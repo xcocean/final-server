@@ -1,9 +1,10 @@
 package top.lingkang.finalserver.server.core.impl;
 
 import top.lingkang.finalserver.server.core.HttpSessionManage;
-import top.lingkang.finalserver.server.web.http.*;
-
-import java.util.HashMap;
+import top.lingkang.finalserver.server.web.http.FinalServerContext;
+import top.lingkang.finalserver.server.web.http.HttpSession;
+import top.lingkang.finalserver.server.web.http.Request;
+import top.lingkang.finalserver.server.web.http.Session;
 
 /**
  * @author lingkang
@@ -14,11 +15,6 @@ public class EmptyHttpSessionManage implements HttpSessionManage {
     @Override
     public Session getSession(Request request) {
         return new HttpSession("EmptyHttpSessionManage");
-    }
-
-    @Override
-    public HashMap<String, Object> getSessionAttribute(Request request) {
-        return null;
     }
 
     @Override

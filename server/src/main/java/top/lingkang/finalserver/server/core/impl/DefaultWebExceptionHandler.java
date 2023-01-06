@@ -18,7 +18,8 @@ public class DefaultWebExceptionHandler implements WebExceptionHandler {
     @Override
     public void exception(ChannelHandlerContext context, Throwable cause) throws Exception {
         log.error("web处理异常", cause);
-        HttpUtils.sendString(context, cause.getMessage(), 500);
+
+        HttpUtils.sendString(context, cause.getMessage() == null ? "" : cause.getMessage(), 500);
     }
 
     @Override
