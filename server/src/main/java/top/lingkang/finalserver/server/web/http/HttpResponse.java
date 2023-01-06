@@ -1,6 +1,5 @@
 package top.lingkang.finalserver.server.web.http;
 
-import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.StrUtil;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.HttpHeaderNames;
@@ -8,6 +7,7 @@ import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.cookie.Cookie;
 import top.lingkang.finalserver.server.core.FinalServerConfiguration;
 import top.lingkang.finalserver.server.error.FinalServerException;
+import top.lingkang.finalserver.server.web.entity.ResponseFile;
 
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -24,11 +24,10 @@ public class HttpResponse implements Response {
     private HttpHeaders headers = FinalServerConfiguration.defaultResponseHeaders.get();
 
     private boolean isReady;
-    private boolean isStatic;
+    private ResponseFile responseFile;
     private boolean isTemplate;
     private String templatePath;
     private HashMap<String, Object> map;
-    private String filePath;
     private byte[] content;
     private int code = 200;
     private Set<Cookie> cookies = new TreeSet<>();
@@ -83,11 +82,12 @@ public class HttpResponse implements Response {
     }
 
     @Override
-    public void returnFile(String filePath) {
+    public void returnFile(ResponseFile responseFile) {
         checkReady();
         isReady = true;
-        isStatic = true;
-        this.filePath = filePath;
+        if (responseFile.getFilePath() == null)
+            throw new FinalServerException("返回文件路径不能为空");
+        this.responseFile = responseFile;
     }
 
     @Override
@@ -138,6 +138,16 @@ public class HttpResponse implements Response {
         headers.set(HttpHeaderNames.LOCATION, url);
     }
 
+    @Override
+    public ResponseFile getResponseFile() {
+        return responseFile;
+    }
+
+    @Override
+    public int getStatusCode() {
+        return code;
+    }
+
     private void checkReady() {
         if (isReady) {
             throw new FinalServerException("007-已经设置返回值，不能重复设置");
@@ -146,18 +156,6 @@ public class HttpResponse implements Response {
 
 
     // get
-    public String getFilePath() {
-        return filePath;
-    }
-
-    public boolean isStatic() {
-        return isStatic;
-    }
-
-    public void setStatic(boolean aStatic) {
-        isStatic = aStatic;
-    }
-
     public ChannelHandlerContext getCtx() {
         return ctx;
     }
@@ -168,9 +166,5 @@ public class HttpResponse implements Response {
 
     public byte[] getContent() {
         return content;
-    }
-
-    public int getCode() {
-        return code;
     }
 }

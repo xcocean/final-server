@@ -1,6 +1,7 @@
 package top.lingkang.finalserver.server.web.handler;
 
 import top.lingkang.finalserver.server.core.FinalServerProperties;
+import top.lingkang.finalserver.server.web.entity.ResponseFile;
 import top.lingkang.finalserver.server.web.http.FinalServerContext;
 
 import java.net.URL;
@@ -26,7 +27,7 @@ public class StaticRequestHandler implements RequestHandler {
         if (context.getRequest().getPath().contains(".")) {
             URL resource = StaticRequestHandler.class.getClassLoader().getResource(basePath + context.getRequest().getPath());
             if (resource != null) {
-                context.getResponse().returnFile(URLDecoder.decode(resource.getPath(), "UTF-8"));
+                context.getResponse().returnFile(new ResponseFile(URLDecoder.decode(resource.getPath(), "UTF-8")));
                 return true;
             }
         }

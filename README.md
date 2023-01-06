@@ -44,7 +44,7 @@ public class WebApp {
     @GET("/t")
     public void template(FinalServerContext context) throws Exception {
         // 返回文件到前端
-        context.getResponse().returnFile("C:\\Users\\Administrator\\Desktop\\temp-凡人修仙传.mp4");
+        context.getResponse().returnFile(new ResponseFile("C:\\Users\\Administrator\\Desktop\\temp-凡人修仙传.mp4"));
         // 告诉前端，下载文件
         // context.getResponse().setHeader("Content-type", "application/octet-stream");
         // 附件下载 attachment 附件 inline 在线打开(默认值)
@@ -72,5 +72,5 @@ public class WebApp {
 * web监听
 * aop
 * 文件上传、文件下载
-* 静态文件映射，分段下载
+* 静态文件映射，文件断点续传
 * web session管理

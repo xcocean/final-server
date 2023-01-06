@@ -64,8 +64,10 @@ public class HttpRequest implements Request {
 
         // get 请求
         checkQueryUri();
-        List<String> put = queryUri.parameters().get(name);
-        return put.get(0);
+        List<String> param = queryUri.parameters().get(name);
+        if (param == null)
+            return null;
+        return param.get(0);
     }
 
     @Override

@@ -2,6 +2,7 @@ package top.lingkang.finalserver.server.web.http;
 
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.cookie.Cookie;
+import top.lingkang.finalserver.server.web.entity.ResponseFile;
 
 import java.util.HashMap;
 import java.util.Set;
@@ -26,7 +27,7 @@ public interface Response {
     void returnTemplate(String templatePath, HashMap<String, Object> map);
 
     // 返回文件，前端会下载文件。filePath为文件所在路径
-    void returnFile(String filePath);
+    void returnFile(ResponseFile responseFile);
 
     // 设置响应http的状态码，默认 200
     void setStatusCode(int code);
@@ -48,5 +49,9 @@ public interface Response {
 
     // 重定向
     void sendRedirect(String url);
+
+    ResponseFile getResponseFile();
+
+    int getStatusCode();
 
 }

@@ -1,5 +1,6 @@
 package top.lingkang.finalserver.server.web.handler;
 
+import top.lingkang.finalserver.server.web.entity.ResponseFile;
 import top.lingkang.finalserver.server.web.http.FinalServerContext;
 
 import java.io.File;
@@ -30,7 +31,7 @@ public class LocalStaticRequestHandler implements RequestHandler {
         if (path.contains(".")) {
             File file = new File(basePath + path);
             if (file.exists()) {
-                context.getResponse().returnFile(file.getAbsolutePath());
+                context.getResponse().returnFile(new ResponseFile(file.getAbsolutePath()));
                 return true;
             }
         }

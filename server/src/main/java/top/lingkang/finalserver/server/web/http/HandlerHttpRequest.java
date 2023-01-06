@@ -29,9 +29,9 @@ class HandlerHttpRequest extends SimpleChannelInboundHandler<FinalServerContext>
         new FilterChain(FinalServerInitializer.filters, FinalServerInitializer.requestHandlers).doFilter(context);
 
         if (context.getResponse().isReady()) {
-            HttpResponse res = (HttpResponse) context.getResponse();
-            if (res.isStatic()) {
-                HttpHandler.returnStaticFile(res.getFilePath(), ctx, context);
+            Response res = context.getResponse();
+            if (res.getResponseFile() != null) {
+                HttpHandler.returnStaticFile(res.getResponseFile().getFilePath(), ctx, context);
                 return;
             }
 
@@ -47,8 +47,8 @@ class HandlerHttpRequest extends SimpleChannelInboundHandler<FinalServerContext>
                         FinalServerInitializer.httpParseTemplate.getTemplate(res.getTemplatePath(), templateMap),
                         res.getHeaders(),
                         200);
-            } else
-                HttpUtils.sendResponse(ctx, res, res.getCode());
+            } else // 其他内容
+                HttpUtils.sendResponse(ctx, (HttpResponse) res, res.getStatusCode());
         } else {// 返回 404
             FinalServerConfiguration.webExceptionHandler.notHandler(ctx);
         }

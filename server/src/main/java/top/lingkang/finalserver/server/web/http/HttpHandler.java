@@ -2,6 +2,7 @@ package top.lingkang.finalserver.server.web.http;
 
 import cn.hutool.core.util.StrUtil;
 import io.netty.buffer.Unpooled;
+import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.*;
@@ -39,7 +40,7 @@ class HttpHandler {
         headers.set(HttpHeaderNames.ACCEPT_RANGES, HttpHeaderValues.BYTES);
         headers.set(HttpHeaderNames.CONTENT_LENGTH, randomAccessFile.length());
         // 设置文件请求头
-        CommonUtils.setResponseHeadName(filePath, headers);
+        CommonUtils.setResponseHeadName(context.getResponse().getResponseFile(), headers);
 
         // HttpUtils.responseBeforeHandler(response);
         // 添加会话到cookie
@@ -47,11 +48,11 @@ class HttpHandler {
         // 添加cookie
         HttpUtils.addHeaderCookie(context);
         // 设置用户设置的请求头，可以覆盖上面的设置
-        headers.setAll(context.getResponse().getHeaders());
+        headers.add(context.getResponse().getHeaders());
 
         // 静态文件需要做到断点续传
         String range = context.getRequest().getHeaders().get(HttpHeaderNames.RANGE);
-        Long offset = 0L, length = randomAccessFile.length();
+        long offset = 0L, length = randomAccessFile.length();
         if (StrUtil.isNotBlank(range)) {// Range: bytes=1900544-  Range: bytes=1900544-6666666
             range = range.substring(6);
             String[] split = range.split("-");
@@ -82,7 +83,16 @@ class HttpHandler {
         ctx.write(
                 new ChunkedFile(randomAccessFile, offset, length, 1024),
                 ctx.newProgressivePromise());
-        flushAndClose(ctx);
+
+        // 检查文件删除
+        ctx.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(new ChannelFutureListener() {
+            @Override
+            public void operationComplete(ChannelFuture future) {
+                future.channel().close();
+                if (context.getResponse().getResponseFile().isDelete())
+                    file.delete();
+            }
+        });
     }
 
     private static void flushAndClose(ChannelHandlerContext ctx) {

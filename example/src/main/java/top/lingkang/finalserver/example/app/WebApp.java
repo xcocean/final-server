@@ -4,9 +4,8 @@ import top.lingkang.finalserver.server.FinalServerApplication;
 import top.lingkang.finalserver.server.annotation.Controller;
 import top.lingkang.finalserver.server.annotation.FinalServerBoot;
 import top.lingkang.finalserver.server.annotation.GET;
+import top.lingkang.finalserver.server.web.entity.ResponseFile;
 import top.lingkang.finalserver.server.web.http.FinalServerContext;
-
-import java.net.URLEncoder;
 
 /**
  * @author lingkang
@@ -27,7 +26,7 @@ public class WebApp {
     @GET("/t")
     public void template(FinalServerContext context) throws Exception {
         // 返回文件到前端
-        context.getResponse().returnFile("C:\\Users\\Administrator\\Desktop\\temp-凡人修仙传.mp4");
+        context.getResponse().returnFile(new ResponseFile("C:\\Users\\Administrator\\Desktop\\temp-凡人修仙传.mp4"));
         // 告诉前端，下载文件
         // context.getResponse().setHeader("Content-type", "application/octet-stream");
         // 附件下载 attachment 附件 inline 在线打开(默认值)
@@ -35,12 +34,12 @@ public class WebApp {
     }
 
     @GET("s")
-    public Object s(){
+    public Object s() {
         return "hello, final server， 直接返回string";
     }
 
     @GET("e")
-    public Object e(Integer id){
+    public Object e(Integer id) {
         // http://localhost:7070/e?id=123
         return id;
     }

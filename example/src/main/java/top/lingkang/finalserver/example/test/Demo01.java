@@ -1,13 +1,14 @@
 package top.lingkang.finalserver.example.test;
 
+import cn.hutool.core.io.FileUtil;
 import io.netty.handler.codec.http.cookie.Cookie;
 import io.netty.handler.codec.http.cookie.DefaultCookie;
-import io.netty.handler.codec.http.multipart.FileUpload;
 import top.lingkang.finalserver.server.FinalServerApplication;
 import top.lingkang.finalserver.server.annotation.Controller;
 import top.lingkang.finalserver.server.annotation.FinalServerBoot;
 import top.lingkang.finalserver.server.annotation.GET;
 import top.lingkang.finalserver.server.annotation.POST;
+import top.lingkang.finalserver.server.web.entity.ResponseFile;
 import top.lingkang.finalserver.server.web.http.*;
 
 import java.io.File;
@@ -110,5 +111,22 @@ public class Demo01 {
     @POST("/a")
     public Object a(String a) {
         return a;
+    }
+
+    @GET("/d")
+    public Object d(HttpResponse response) {
+        response.returnFile(new ResponseFile("C:\\Users\\lingkang\\Desktop\\1.xml").setDownload(true));
+        return "ok";
+    }
+
+    @GET("/d2")
+    public Object d2(HttpResponse response) throws Exception {
+        // 当数据为二进制时，先将数据转为临时文件，再写入，并设置delete
+        byte[] zipByte = new byte[]{1, 2, 3, 4};
+        File tempFile = File.createTempFile("123前缀", ".zip");// 后缀有.
+        FileUtil.writeBytes(zipByte, tempFile);
+        // 返回下载文件并响应后删除临时文件
+        response.returnFile(new ResponseFile(tempFile.getPath()).setDownload(true).setDelete(true));
+        return "ok";
     }
 }
