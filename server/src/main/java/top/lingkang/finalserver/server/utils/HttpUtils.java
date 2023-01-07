@@ -25,15 +25,13 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 public class HttpUtils {
     private static void responseBeforeHandler(FullHttpResponse response) {
         FinalServerContext context = FinalServerContext.currentContext();
-        if (context == null)
-            return;
 
         // 添加会话到cookie
         FinalServerConfiguration.httpSessionManage.addSessionIdToCurrentHttp(context);
         // 添加cookie
         HttpUtils.addHeaderCookie(context);
 
-        response.headers().add(context.getResponse().getHeaders());
+        response.headers().setAll(context.getResponse().getHeaders());
     }
 
     public static void sendString(ChannelHandlerContext ctx, @NotNull String context, int status) {

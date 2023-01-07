@@ -48,7 +48,7 @@ class HttpHandler {
         // 添加cookie
         HttpUtils.addHeaderCookie(context);
         // 设置用户设置的请求头，可以覆盖上面的设置
-        headers.add(context.getResponse().getHeaders());
+        headers.setAll(context.getResponse().getHeaders());
 
         // 静态文件需要做到断点续传
         String range = context.getRequest().getHeaders().get(HttpHeaderNames.RANGE);
