@@ -99,7 +99,7 @@ session: ${session.sessionValue!"没有sessionValue值"}
 
 ## 获取当前请求上下文
 
-```java
+```html
 FinalServerContext.currentContext()
 ```
 

@@ -7,7 +7,7 @@
     <groupId>top.lingkang</groupId>
     <artifactId>final-server</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.8-SNAPSHOT</version>
+    <version>1.0.9-SNAPSHOT</version>
 
     <!--基本开源信息-->
     <url>https://gitee.com/lingkang_top/final-security</url>
