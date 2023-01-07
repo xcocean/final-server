@@ -28,4 +28,7 @@ public class FinalServerConfiguration {
     public static HttpSessionManage httpSessionManage;
 
     public static List<WebListener> webListener=new ArrayList<>();
+
+    // 默认模板解析
+    public static HttpParseTemplate httpParseTemplate=new DefaultHttpParseTemplate();
 }

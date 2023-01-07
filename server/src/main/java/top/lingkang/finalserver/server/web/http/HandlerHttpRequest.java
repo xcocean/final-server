@@ -44,7 +44,7 @@ class HandlerHttpRequest extends SimpleChannelInboundHandler<FinalServerContext>
                 templateMap.put("session", context.getRequest().getSession().getAttributeMap());
                 HttpUtils.sendResponse(
                         ctx,
-                        FinalServerInitializer.httpParseTemplate.getTemplate(res.getTemplatePath(), templateMap),
+                        FinalServerConfiguration.httpParseTemplate.getTemplate(res.getTemplatePath(), templateMap),
                         res.getHeaders(),
                         200);
             } else // 其他内容

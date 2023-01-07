@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
 import top.lingkang.finalserver.server.FinalServerApplication;
 import top.lingkang.finalserver.server.core.*;
-import top.lingkang.finalserver.server.core.impl.DefaultHttpParseTemplate;
 import top.lingkang.finalserver.server.core.impl.DefaultHttpSessionManage;
 import top.lingkang.finalserver.server.core.impl.DefaultIdGenerateFactory;
 import top.lingkang.finalserver.server.core.impl.DefaultWebExceptionHandler;
@@ -31,7 +30,6 @@ public class FinalServerInitializer {
     private final ApplicationContext applicationContext;
     public static RequestHandler[] requestHandlers = new RequestHandler[0];
     public static Filter[] filters = new Filter[0];
-    public static HttpParseTemplate httpParseTemplate;
 
     @Autowired
     public FinalServerInitializer(ApplicationContext applicationContext) {
@@ -101,10 +99,10 @@ public class FinalServerInitializer {
             FinalServerConfiguration.webExceptionHandler = new DefaultWebExceptionHandler();
 
         // 初始化模板解析
-        httpParseTemplate = BeanUtils.getBean(HttpParseTemplate.class, applicationContext);
-        if (httpParseTemplate == null)// 使用默认模板解析
-            httpParseTemplate = BeanUtils.getBean(DefaultHttpParseTemplate.class, applicationContext);
-        httpParseTemplate.init(FinalServerProperties.server_template);
+        HttpParseTemplate httpParseTemplate = BeanUtils.getBean(HttpParseTemplate.class, applicationContext);
+        if (httpParseTemplate != null)// 使用默认模板解析
+            FinalServerConfiguration.httpParseTemplate = httpParseTemplate;
+        FinalServerConfiguration.httpParseTemplate.init(FinalServerProperties.server_template);
 
         // 初始化会话管理
         String[] sessionManage = applicationContext.getBeanNamesForType(HttpSessionManage.class);
