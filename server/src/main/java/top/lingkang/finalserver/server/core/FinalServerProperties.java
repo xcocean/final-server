@@ -23,6 +23,7 @@ public class FinalServerProperties {
     public static int server_session_age = 1800000;
     public static int server_maxContentLength = 3145728;
     public static long server_uploadFileBuffer = 3145728L;
+    public static long server_fileFtpSize = 1048576L;
 
     public static void load() {
         if (isLoad) {
@@ -46,5 +47,6 @@ public class FinalServerProperties {
         if (server_maxContentLength == -1 || server_maxContentLength == 0)
             server_maxContentLength = Integer.MAX_VALUE;
         server_uploadFileBuffer = Long.parseLong(System.getProperty("server.uploadFileBuffer"));
+        server_fileFtpSize = Long.parseLong(System.getProperty("server.fileFtpSize"));
     }
 }

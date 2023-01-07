@@ -10,6 +10,7 @@ import io.netty.handler.stream.ChunkedFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.lingkang.finalserver.server.core.FinalServerConfiguration;
+import top.lingkang.finalserver.server.core.FinalServerProperties;
 import top.lingkang.finalserver.server.utils.CommonUtils;
 import top.lingkang.finalserver.server.utils.HttpUtils;
 
@@ -53,7 +54,7 @@ class HttpHandler {
         // 静态文件需要做到断点续传
         String range = context.getRequest().getHeaders().get(HttpHeaderNames.RANGE);
         long offset = 0L, length = randomAccessFile.length();
-        if (StrUtil.isNotBlank(range)) {// Range: bytes=1900544-  Range: bytes=1900544-6666666
+        if (StrUtil.isNotBlank(range) && length > FinalServerProperties.server_fileFtpSize) {// Range: bytes=1900544-  Range: bytes=1900544-6666666
             range = range.substring(6);
             String[] split = range.split("-");
             try {
