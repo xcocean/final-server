@@ -25,6 +25,8 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 public class HttpUtils {
     private static void responseBeforeHandler(FullHttpResponse response) {
         FinalServerContext context = FinalServerContext.currentContext();
+        if (context == null)// websocket 时，上下文为空
+            return;
 
         // 添加会话到cookie
         FinalServerConfiguration.httpSessionManage.addSessionIdToCurrentHttp(context);

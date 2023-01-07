@@ -1,4 +1,4 @@
-package top.lingkang.finalserver.server.web.nio.ws;
+package top.lingkang.finalserver.server.web.ws;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;

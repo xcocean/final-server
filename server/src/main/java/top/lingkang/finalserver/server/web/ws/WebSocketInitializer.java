@@ -1,4 +1,4 @@
-package top.lingkang.finalserver.server.web.nio.ws;
+package top.lingkang.finalserver.server.web.ws;
 
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
@@ -30,7 +30,9 @@ public class WebSocketInitializer extends SimpleChannelInboundHandler<WebSocketF
             return;
         isFirst = true;
         session = new WebSocketSession(ctx, headers);
+        WebSocketDispatchManage.addConnect(session);
         handler.onOpen(session);
+        WebSocketDispatchManage.sessionMap.put(session.getId(), session);
     }
 
 
@@ -41,11 +43,14 @@ public class WebSocketInitializer extends SimpleChannelInboundHandler<WebSocketF
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        WebSocketDispatchManage.exceptionConnect(session, cause);
         handler.onException(session, cause);
     }
 
     @Override
     public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
+        WebSocketDispatchManage.sessionMap.remove(session.getId());
+        WebSocketDispatchManage.removeConnect(session);
         handler.onClose(session);
         if (ctx.channel().isActive())
             ctx.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);

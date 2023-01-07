@@ -1,8 +1,5 @@
 package top.lingkang.finalserver.server.web;
 
-import io.netty.handler.codec.http.multipart.DefaultHttpDataFactory;
-import io.netty.handler.codec.http.multipart.DiskAttribute;
-import io.netty.handler.codec.http.multipart.DiskFileUpload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +15,7 @@ import top.lingkang.finalserver.server.core.impl.DefaultWebExceptionHandler;
 import top.lingkang.finalserver.server.utils.BeanUtils;
 import top.lingkang.finalserver.server.web.handler.*;
 import top.lingkang.finalserver.server.web.http.Filter;
-import top.lingkang.finalserver.server.web.nio.ws.WebSocketManage;
+import top.lingkang.finalserver.server.web.ws.WebSocketDispatch;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -137,7 +134,7 @@ public class FinalServerInitializer {
 
     @Order(Integer.MAX_VALUE)// 最后加载
     @Bean
-    public WebSocketManage websocketManage() {
-        return new WebSocketManage(applicationContext);
+    public WebSocketDispatch websocketManage() {
+        return new WebSocketDispatch(applicationContext);
     }
 }

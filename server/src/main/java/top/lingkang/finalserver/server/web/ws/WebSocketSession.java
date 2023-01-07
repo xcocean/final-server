@@ -1,4 +1,4 @@
-package top.lingkang.finalserver.server.web.nio.ws;
+package top.lingkang.finalserver.server.web.ws;
 
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
@@ -6,6 +6,8 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
+
+import java.util.HashMap;
 
 /**
  * @author lingkang
@@ -15,6 +17,7 @@ import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 public class WebSocketSession {
     private ChannelHandlerContext context;
     private HttpHeaders headers;
+    private final HashMap<String, Object> attributes = new HashMap<>();
 
     public WebSocketSession(ChannelHandlerContext context, HttpHeaders headers) {
         this.context = context;
@@ -50,5 +53,29 @@ public class WebSocketSession {
 
     public HttpHeaders getHeaders() {
         return headers;
+    }
+
+    public HashMap<String, Object> getAttributes() {
+        return attributes;
+    }
+
+    public Object getAttribute(String name) {
+        return attributes.get(name);
+    }
+
+    public void setAttribute(String name, Object value) {
+        attributes.put(name, value);
+    }
+
+    public void removeAttribute(String name) {
+        attributes.remove(name);
+    }
+
+    public boolean existsAttribute(String name) {
+        return attributes.containsKey(name);
+    }
+
+    public void clearAttribute() {
+        attributes.clear();
     }
 }
