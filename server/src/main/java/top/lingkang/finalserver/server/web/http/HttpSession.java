@@ -11,6 +11,7 @@ import java.util.LinkedHashSet;
 /**
  * @author lingkang
  * Created by 2022/12/12
+ * @since 1.0.0
  */
 public class HttpSession implements Session, Serializable {
     private long createTime = System.currentTimeMillis(), lastAccessTime = createTime;

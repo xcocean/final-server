@@ -95,6 +95,7 @@ session: ${session.sessionValue!"没有sessionValue值"}
 </body>
 </html>
 ```
+`需要注意，不能直接输出${session!}，因为session通过freemarker的eval后变成了Map对象，应该搭配属性取值，例如${session.name!}、${session.hello!}`
 
 ## 获取当前请求上下文
 
