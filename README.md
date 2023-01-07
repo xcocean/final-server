@@ -61,7 +61,45 @@ public class WebApp {
         // http://localhost:7070/e?id=123
         return id;
     }
+
+    @GET("/index")
+    public void index(FinalServerContext context){
+        // 添加值到session中
+        context.getRequest().getSession().setAttribute("sessionValue","这是session值");
+
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("vv","直接输出模板渲染的变量vv");// 直接输出模板渲染的变量
+        context.getResponse().returnTemplate("index.html",map);
+        // 返回 resources/template/index.html 渲染模板
+        // context.getResponse().returnTemplate("index.html");
+    }
 }
+```
+* 默认使用 `freemarker` 作为html模板渲染，<br>
+
+> 默认的静态资源目录为 `resources/static`，其中`mp4中文.mp4`位于`resources/static/mp4中文.mp4`<br>
+
+> 模板目录为`resources/template`，html文件为：`resources/template/index.html`
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>hello</title>
+</head>
+<body>
+hi，${vv!}
+<hr>
+session: ${session.sessionValue!"没有sessionValue值"}
+<video width="320" height="240" controls src="/mp4中文.mp4"></video>
+<hr>
+</body>
+</html>
+```
+
+## 获取当前请求上下文
+
+```java
+FinalServerContext.currentContext()
 ```
 
 ## 特点

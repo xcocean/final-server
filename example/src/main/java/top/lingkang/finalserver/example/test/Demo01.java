@@ -14,6 +14,7 @@ import top.lingkang.finalserver.server.web.http.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -37,7 +38,9 @@ public class Demo01 {
 //        System.out.println(request.getCookies());
         System.out.println(request.getSession().getAttribute("vv"));
         request.getSession().setAttribute("vv", "你好啊666");
-        response.returnTemplate("index.html");
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("vv","vvvvvvvvv");
+        response.returnTemplate("index.html",map);
 //        count++;
 //        System.out.println(count);
     }
@@ -128,5 +131,17 @@ public class Demo01 {
         // 返回下载文件并响应后删除临时文件
         response.returnFile(new ResponseFile(tempFile.getPath()).setDownload(true).setDelete(true));
         return "ok";
+    }
+
+    @GET("/index")
+    public void index(FinalServerContext context){
+        // 添加值到session中
+        context.getRequest().getSession().setAttribute("sessionValue","这是session值");
+
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("vv","vvvvvvvvv");// 直接输出模板渲染的变量
+        context.getResponse().returnTemplate("index.html",map);
+
+        // context.getResponse().returnTemplate("index.html");
     }
 }
