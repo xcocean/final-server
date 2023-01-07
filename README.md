@@ -70,7 +70,7 @@ public class WebApp {
 * websocket
 * filter功能
 * web监听
-* aop
+* IOC、AOP
 * 文件上传、文件下载
 * 静态文件映射，文件断点续传
 * web session管理

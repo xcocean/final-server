@@ -9,6 +9,7 @@ import java.nio.charset.Charset;
 /**
  * @author lingkang
  * Created by 2022/12/12
+ * @since 1.0.0
  */
 public class Message {
     private WebSocketFrame webSocketFrame;

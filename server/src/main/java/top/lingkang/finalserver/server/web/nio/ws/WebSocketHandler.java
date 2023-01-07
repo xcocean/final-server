@@ -3,6 +3,7 @@ package top.lingkang.finalserver.server.web.nio.ws;
 /**
  * @author lingkang
  * Created by 2022/12/12
+ * @since 1.0.0
  */
 public interface WebSocketHandler {
     void onOpen(WebSocketSession session) throws Exception;

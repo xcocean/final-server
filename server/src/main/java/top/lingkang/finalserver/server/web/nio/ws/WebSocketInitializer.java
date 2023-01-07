@@ -10,6 +10,7 @@ import io.netty.handler.codec.http.websocketx.WebSocketFrame;
 /**
  * @author lingkang
  * Created by 2022/12/11
+ * @since 1.0.0
  */
 public class WebSocketInitializer extends SimpleChannelInboundHandler<WebSocketFrame> {
     private WebSocketHandler handler;

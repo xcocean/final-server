@@ -6,6 +6,7 @@ import io.netty.handler.codec.http.FullHttpRequest;
 /**
  * @author lingkang
  * Created by 2022/12/12
+ * @since 1.0.0
  */
 public interface WsHandler {
     // 对 WebSocket 的处理

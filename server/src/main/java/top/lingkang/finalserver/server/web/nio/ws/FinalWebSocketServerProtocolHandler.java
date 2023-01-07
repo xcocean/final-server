@@ -10,6 +10,7 @@ import top.lingkang.finalserver.server.core.FinalServerProperties;
 /**
  * @author lingkang
  * Created by 2022/12/12
+ * @since 1.0.0
  */
 public class FinalWebSocketServerProtocolHandler extends WebSocketServerProtocolHandler {
 
