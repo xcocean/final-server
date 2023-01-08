@@ -39,8 +39,8 @@ public class Demo01 {
         System.out.println(request.getSession().getAttribute("vv"));
         request.getSession().setAttribute("vv", "你好啊666");
         HashMap<String, Object> map = new HashMap<>();
-        map.put("vv","vvvvvvvvv");
-        response.returnTemplate("index.html",map);
+        map.put("vv","直接输出模板渲染的变量vv");
+        response.returnTemplate("index",map);
 //        count++;
 //        System.out.println(count);
     }

@@ -1,15 +1,14 @@
-<!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>hello</title>
 </head>
 <body>
-hi，${vv!}
+hi，[[${vv}]]
 <hr>
-session: ${session.sessionValue!"没有sessionValue值"}
+session:[[${session}]]
 <hr>
 <video width="320" height="240" controls src="/mp4中文.mp4"></video>
 <hr>
-${request.getHeaders()!}
+[[${request.getHeaders()}]]
 </body>
 </html>

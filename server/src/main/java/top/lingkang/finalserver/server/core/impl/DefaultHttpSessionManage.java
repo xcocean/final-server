@@ -19,6 +19,7 @@ import java.util.*;
 /**
  * @author lingkang
  * Created by 2022/12/12
+ * @since 1.0.0
  */
 public class DefaultHttpSessionManage implements HttpSessionManage {
     private static final Logger log = LoggerFactory.getLogger(DefaultHttpSessionManage.class);

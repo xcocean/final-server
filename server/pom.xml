@@ -54,9 +54,10 @@
         </dependency>
 
         <dependency>
-            <groupId>org.freemarker</groupId>
-            <artifactId>freemarker</artifactId>
+            <groupId>org.thymeleaf</groupId>
+            <artifactId>thymeleaf</artifactId>
         </dependency>
+
         <!--log-->
         <dependency>
             <groupId>org.slf4j</groupId>

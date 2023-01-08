@@ -17,6 +17,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author lingkang
  * Created by 2022/12/13
+ * @since 1.0.0
  * 会话存储的redis实现
  */
 public class RedisHttpSessionManage implements HttpSessionManage {

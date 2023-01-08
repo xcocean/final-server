@@ -4,8 +4,6 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import org.slf4j.ILoggerFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.slf4j.impl.StaticLoggerBinder;
 import top.lingkang.finalserver.server.core.FinalServerProperties;
 
@@ -17,7 +15,6 @@ import java.io.InputStream;
  * @since 1.0.0
  */
 public class FinalServerLogConfig {
-    private static final Logger log = LoggerFactory.getLogger(FinalServerLogConfig.class);
 
     public FinalServerLogConfig() {
         try {
@@ -33,7 +30,7 @@ public class FinalServerLogConfig {
                 configurator.setContext(loggerContext);
                 configurator.doConfigure(in);
                 in.close();
-                if ("true".equals(System.getProperty("debug"))) {
+                if ("true".equals(FinalServerProperties.debug)) {
                     setLogLevel("DEBUG");
                 }
             }

@@ -69,33 +69,33 @@ public class WebApp {
 
         HashMap<String, Object> map = new HashMap<>();
         map.put("vv","直接输出模板渲染的变量vv");// 直接输出模板渲染的变量
-        context.getResponse().returnTemplate("index.html",map);
-        // 返回 resources/template/index.html 渲染模板
-        // context.getResponse().returnTemplate("index.html");
+        context.getResponse().returnTemplate("index",map);
+        // 返回 resources/templates/index.html 渲染模板
+        // context.getResponse().returnTemplate("index");
     }
 }
 ```
-* 默认使用 `freemarker` 作为html模板渲染，<br>
+* 默认使用 `thymeleaf` 作为html模板渲染<br>
 
 > 默认的静态资源目录为 `resources/static`，其中`mp4中文.mp4`位于`resources/static/mp4中文.mp4`<br>
 
-> 模板目录为`resources/template`，html文件为：`resources/template/index.html`
+> 模板目录为`resources/templates`，html文件为：`resources/templates/index.html`
 ```html
-<!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>hello</title>
 </head>
 <body>
-hi，${vv!}
+hi，[[${vv}]]
 <hr>
-session: ${session.sessionValue!"没有sessionValue值"}
+session:[[${session}]]
+<hr>
 <video width="320" height="240" controls src="/mp4中文.mp4"></video>
 <hr>
+[[${request.getHeaders()}]]
 </body>
 </html>
 ```
-`需要注意，不能直接输出${session!}，因为session通过freemarker的eval后变成了Map对象，应该搭配属性取值，例如${session.name!}、${session.hello!}`
 
 ## 获取当前请求上下文
 

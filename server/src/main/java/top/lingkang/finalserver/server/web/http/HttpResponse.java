@@ -69,11 +69,11 @@ public class HttpResponse implements Response {
     }
 
     @Override
-    public void returnTemplate(String templatePath, HashMap<String, Object> map) {
-        if (StrUtil.isEmpty(templatePath))
+    public void returnTemplate(String template, HashMap<String, Object> map) {
+        if (StrUtil.isEmpty(template))
             new FinalServerException("templatePath 模板不能为空");
         checkReady();
-        this.templatePath = templatePath;
+        this.templatePath = template;
         this.map = map;
         isTemplate = true;
         isReady = true;

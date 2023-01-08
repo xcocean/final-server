@@ -7,6 +7,7 @@ import top.lingkang.finalserver.server.web.http.Request;
 /**
  * @author lingkang
  * Created by 2022/12/11
+ * @since 1.0.0
  */
 public class DefaultIdGenerateFactory implements IdGenerateFactory {
     @Override

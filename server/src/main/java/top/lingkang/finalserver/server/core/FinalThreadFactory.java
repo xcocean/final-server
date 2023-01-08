@@ -5,6 +5,7 @@ import java.util.concurrent.ThreadFactory;
 /**
  * @author lingkang
  * Created by 2022/12/12
+ * @since 1.0.0
  */
 public class FinalThreadFactory implements ThreadFactory {
     private static int index = 0;

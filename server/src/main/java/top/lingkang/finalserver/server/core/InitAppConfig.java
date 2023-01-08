@@ -3,6 +3,8 @@ package top.lingkang.finalserver.server.core;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.util.IdUtil;
+import cn.hutool.core.util.ObjUtil;
+import cn.hutool.core.util.StrUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.ComponentScan;
@@ -26,7 +28,7 @@ public class InitAppConfig {
         InputStream banner = InitAppConfig.class.getClassLoader().getResourceAsStream("banner.txt");
         if (banner != null) {
             System.out.println();
-            System.out.println(IoUtil.read(banner, Charset.forName("UTF-8")));
+            System.out.println(IoUtil.read(banner, StandardCharsets.UTF_8));
             System.out.println();
             IoUtil.close(banner);
         }
