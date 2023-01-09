@@ -106,7 +106,6 @@ class HandlerHttpRequest extends SimpleChannelInboundHandler<FinalServerContext>
         // 设置文件请求头
         CommonUtils.setResponseHeadName(context.getResponse().getResponseFile(), headers);
 
-        // HttpUtils.responseBeforeHandler(response);
         // 添加会话到cookie
         FinalServerConfiguration.httpSessionManage.addSessionIdToCurrentHttp(context);
         // 添加cookie

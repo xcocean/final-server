@@ -1,6 +1,7 @@
 package top.lingkang.finalserver.server.core.impl;
 
 import cn.hutool.core.util.IdUtil;
+import io.netty.channel.socket.nio.NioSocketChannel;
 import top.lingkang.finalserver.server.core.IdGenerateFactory;
 import top.lingkang.finalserver.server.web.http.Request;
 
@@ -11,7 +12,7 @@ import top.lingkang.finalserver.server.web.http.Request;
  */
 public class DefaultIdGenerateFactory implements IdGenerateFactory {
     @Override
-    public String generateNettyId() {
+    public String generateNettyId(NioSocketChannel nioSocketChannel) {
         return IdUtil.objectId();
     }
 

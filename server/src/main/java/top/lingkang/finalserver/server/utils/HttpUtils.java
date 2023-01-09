@@ -10,7 +10,6 @@ import io.netty.util.CharsetUtil;
 import top.lingkang.finalserver.server.annotation.NotNull;
 import top.lingkang.finalserver.server.core.FinalServerConfiguration;
 import top.lingkang.finalserver.server.web.http.FinalServerContext;
-import top.lingkang.finalserver.server.web.http.HttpResponse;
 import top.lingkang.finalserver.server.web.http.Request;
 import top.lingkang.finalserver.server.web.http.Response;
 
