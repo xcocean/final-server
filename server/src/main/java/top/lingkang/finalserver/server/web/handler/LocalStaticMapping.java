@@ -8,7 +8,7 @@ import java.util.List;
  * @author lingkang
  * Created by 2022/12/9
  * @since 1.0.0
- * 可以继承实现静态文件处理
+ * 可以继承实现静态文件处理，优先级高于 resources/static 中的静态文件
  * @Override
  * public void addStaticByAbsolutePath(List<String> paths) {
  * paths.add("d:/");

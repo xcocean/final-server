@@ -12,6 +12,7 @@ import top.lingkang.finalserver.server.core.FinalServerConfiguration;
 import top.lingkang.finalserver.server.web.http.FinalServerContext;
 import top.lingkang.finalserver.server.web.http.HttpResponse;
 import top.lingkang.finalserver.server.web.http.Request;
+import top.lingkang.finalserver.server.web.http.Response;
 
 import java.util.Set;
 
@@ -47,7 +48,7 @@ public class HttpUtils {
         ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
     }
 
-    public static void sendResponse(ChannelHandlerContext ctx, HttpResponse httpResponse, int status) {
+    public static void sendResponse(ChannelHandlerContext ctx, Response httpResponse, int status) {
         FullHttpResponse response = new DefaultFullHttpResponse(
                 HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(status),
                 Unpooled.copiedBuffer(httpResponse.getContent())
@@ -58,12 +59,11 @@ public class HttpUtils {
         ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
     }
 
-    public static void sendResponse(ChannelHandlerContext ctx, String content, HttpHeaders headers, int status) {
+    public static void sendResponse(ChannelHandlerContext ctx, String content, int status) {
         FullHttpResponse response = new DefaultFullHttpResponse(
                 HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(status),
                 Unpooled.copiedBuffer(content, CharsetUtil.UTF_8)
         );
-        response.headers().set(headers);
         response.headers().set(HttpHeaderNames.CONTENT_LENGTH, content.length());
         responseBeforeHandler(response);
         ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);

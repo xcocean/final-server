@@ -11,6 +11,7 @@ import java.util.Set;
  * @author lingkang
  * Created by 2022/12/6
  * @since 1.0.0
+ * return 时，并非直接返回内容结果，而是先做标记。在请求断开前才会将return的内容写到客户端
  */
 public interface Response {
     // 设置请求头
@@ -28,6 +29,8 @@ public interface Response {
 
     // 返回文件，前端会下载文件。filePath为文件所在路径
     void returnFile(ResponseFile responseFile);
+
+    void returnBytes(byte[] bytes);
 
     // 设置响应http的状态码，默认 200
     void setStatusCode(int code);
@@ -53,5 +56,7 @@ public interface Response {
     ResponseFile getResponseFile();
 
     int getStatusCode();
+
+    byte[] getContent();
 
 }

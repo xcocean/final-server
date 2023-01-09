@@ -91,6 +91,13 @@ public class HttpResponse implements Response {
     }
 
     @Override
+    public void returnBytes(byte[] bytes) {
+        checkReady();
+        isReady = true;
+        this.content=bytes;
+    }
+
+    @Override
     public void setStatusCode(int code) {
         this.code = code;
     }
