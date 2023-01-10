@@ -1,6 +1,7 @@
 package top.lingkang.finalserver.example.test;
 
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.io.resource.ResourceUtil;
 import io.netty.handler.codec.http.cookie.Cookie;
 import io.netty.handler.codec.http.cookie.DefaultCookie;
 import top.lingkang.finalserver.server.FinalServerApplication;
@@ -8,6 +9,7 @@ import top.lingkang.finalserver.server.annotation.Controller;
 import top.lingkang.finalserver.server.annotation.FinalServerBoot;
 import top.lingkang.finalserver.server.annotation.GET;
 import top.lingkang.finalserver.server.annotation.POST;
+import top.lingkang.finalserver.server.core.InitAppConfig;
 import top.lingkang.finalserver.server.web.entity.ResponseFile;
 import top.lingkang.finalserver.server.web.http.*;
 
@@ -28,8 +30,6 @@ public class Demo01 {
     public static void main(String[] args) {
         FinalServerApplication.run(Demo01.class, args);
     }
-
-    private int count = 0;
 
     @GET
     public void index(HttpResponse response, String name, Request request) {

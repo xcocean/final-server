@@ -12,7 +12,7 @@ import java.util.List;
  * @since 1.0.0
  */
 public class FinalServerConfiguration {
-    public static FinalServerDefaultHttpHeaders defaultResponseHeaders=new FinalServerDefaultHttpHeaders();
+    public static ServerDefaultHttpHeaders defaultResponseHeaders=new FinalServerDefaultHttpHeaders();
 
     public static SerializableObject serializable=new DefaultSerializableObject();
 

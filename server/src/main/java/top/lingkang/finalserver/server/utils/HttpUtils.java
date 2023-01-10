@@ -84,7 +84,7 @@ public class HttpUtils {
     public static void closeHttpWebsocket(ChannelHandlerContext ctx, String msg) {
         FullHttpResponse response = new DefaultFullHttpResponse(
                 HTTP_1_1, HttpResponseStatus.BAD_REQUEST, Unpooled.wrappedBuffer(msg.getBytes()));
-        response.headers().set(response.headers().set(FinalServerConfiguration.defaultResponseHeaders.get()));
+        response.headers().set(response.headers().set(FinalServerConfiguration.defaultResponseHeaders.get(false)));
         responseBeforeHandler(response);
         ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
     }

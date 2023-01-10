@@ -3,15 +3,15 @@ package top.lingkang.finalserver.server.core;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.util.IdUtil;
-import cn.hutool.core.util.ObjUtil;
-import cn.hutool.core.util.StrUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.ComponentScan;
+import top.lingkang.finalserver.server.error.FinalServerException;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Properties;
@@ -24,7 +24,7 @@ import java.util.Properties;
 public class InitAppConfig {
     private static final Logger log = LoggerFactory.getLogger(InitAppConfig.class);
 
-    public static void initProperties(String[] args, int port) {
+    public static void initProperties(String[] args, int port) throws Exception {
         InputStream banner = InitAppConfig.class.getClassLoader().getResourceAsStream("banner.txt");
         if (banner != null) {
             System.out.println();
@@ -35,7 +35,7 @@ public class InitAppConfig {
         try {
             Properties app = new Properties();
             app.load(InitAppConfig.class.getClassLoader().getResourceAsStream("final-server-application.properties"));
-            InputStream in = InitAppConfig.class.getClassLoader().getResourceAsStream("application.properties");
+            InputStream in = getCustomConfig(args);// 获取定义的配置文件
             if (in != null) {
                 app.load(in);
             }
@@ -58,7 +58,7 @@ public class InitAppConfig {
             // load to
             FinalServerProperties.load();
         } catch (Exception e) {
-            log.error("初始化应用配置异常：", e);
+            throw e;
         }
     }
 
@@ -91,6 +91,32 @@ public class InitAppConfig {
     public static String getXmlPage() {
         log.debug(xmlFile.getAbsolutePath());
         return xmlFile.getPath();
+    }
+
+
+    // [server.config=application.properties]
+    private static InputStream getCustomConfig(String[] args) throws FileNotFoundException {
+        if (args.length == 0)
+            return null;
+
+        for (String item : args) {
+            if (item.contains("server.config=")) {
+                String pro = item.split("=")[1];
+                File file = new File(pro);
+                if (file.exists()) {
+                    log.debug(file.getAbsolutePath());
+                    return new FileInputStream(file);
+                }
+
+                InputStream resourceAsStream = InitAppConfig.class.getClassLoader().getResourceAsStream(pro);
+                if (resourceAsStream == null)
+                    throw new FinalServerException("未找到配置文件：" + pro + "    启动参数：" + item);
+                else
+                    return resourceAsStream;
+            }
+        }
+
+        return InitAppConfig.class.getClassLoader().getResourceAsStream("application.properties");
     }
 
 }

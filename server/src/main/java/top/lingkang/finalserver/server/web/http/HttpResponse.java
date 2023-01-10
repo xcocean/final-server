@@ -21,7 +21,7 @@ import java.util.TreeSet;
  */
 public class HttpResponse implements Response {
     private ChannelHandlerContext ctx;
-    private HttpHeaders headers = FinalServerConfiguration.defaultResponseHeaders.get();
+    private HttpHeaders headers = FinalServerConfiguration.defaultResponseHeaders.get(true);
 
     private boolean isReady;
     private ResponseFile responseFile;
@@ -94,7 +94,7 @@ public class HttpResponse implements Response {
     public void returnBytes(byte[] bytes) {
         checkReady();
         isReady = true;
-        this.content=bytes;
+        this.content = bytes;
     }
 
     @Override

@@ -55,20 +55,20 @@ public class FinalServerApplication {
             return;
         }
 
-        // 加载配置
-        InitAppConfig.initProperties(args, port);
-
-        // 初始化日志配置
-        finalServerLogConfig = new FinalServerLogConfig();
-
-        // 检查端口
-        if (!NetUtil.isUsableLocalPort(FinalServerProperties.server_port)) {
-            log.error("FinalServer start fail  启动失败，端口被占用: {}", FinalServerProperties.server_port);
-            System.exit(0);
-            return;
-        }
-
         try {
+            // 加载配置
+            InitAppConfig.initProperties(args, port);
+
+            // 初始化日志配置
+            finalServerLogConfig = new FinalServerLogConfig();
+
+            // 检查端口
+            if (!NetUtil.isUsableLocalPort(FinalServerProperties.server_port)) {
+                log.error("FinalServer start fail  启动失败，端口被占用: {}", FinalServerProperties.server_port);
+                System.exit(0);
+                return;
+            }
+
             // 配置spring xml
             InitAppConfig.initXml(mainClass);
             log.debug("FinalServer 配置加载完成");
