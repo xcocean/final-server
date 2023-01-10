@@ -50,7 +50,7 @@ public class FinalServerApplication {
     public static Class<?> mainClass;
 
     public static void run(Class<?> mainClass, String[] args) {
-        run(mainClass, 7070, args);
+        run(mainClass, 0, args);
     }
 
     public static void run(Class<?> mainClass, int port, String[] args) {

@@ -1,5 +1,6 @@
 package top.lingkang.finalserver.server.core;
 
+import cn.hutool.core.util.SystemPropsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,7 +13,7 @@ public class FinalServerProperties {
     private static final Logger log = LoggerFactory.getLogger(FinalServerProperties.class);
     private static boolean isLoad;
     public static int server_port = 7070;
-    public static String debug="false";
+    public static String debug = "false";
     public static String server_static = "/static";
     public static String server_template = "/template";
     public static String log_file = "logback.xml";
@@ -38,27 +39,27 @@ public class FinalServerProperties {
         } else
             isLoad = true;
 
-        server_port = Integer.parseInt(System.getProperty("server.port"));
-        debug=System.getProperty("debug");
-        server_static = System.getProperty("server.static");
-        server_template = System.getProperty("server.template");
-        log_file = System.getProperty("log.file");
-        server_thread_maxReceive = Integer.parseInt(System.getProperty("server.thread.maxReceive"));
-        server_thread_maxHandler = Integer.parseInt(System.getProperty("server.thread.maxHandler"));
-        server_thread_backlog = Integer.parseInt(System.getProperty("server.thread.backlog"));
-        websocket_maxMessage = Integer.parseInt(System.getProperty("websocket.maxMessage"));
-        websocket_timeout = Long.parseLong(System.getProperty("websocket.timeout"));
-        server_session_name = System.getProperty("server.session.name");
-        server_session_age = Integer.parseInt(System.getProperty("server.session.age"));
-        server_maxContentLength = Integer.parseInt(System.getProperty("server.maxContentLength"));
-        server_uploadFileBuffer = Long.parseLong(System.getProperty("server.uploadFileBuffer"));
-        server_fileFtpSize = Long.parseLong(System.getProperty("server.fileFtpSize"));
+        server_port = SystemPropsUtil.getInt("server.port", server_port);
+        debug = SystemPropsUtil.get("debug", debug);
+        server_static = SystemPropsUtil.get("server.static", server_static);
+        server_template = SystemPropsUtil.get("server.template", server_template);
+        log_file = SystemPropsUtil.get("log.file", log_file);
+        server_thread_maxReceive = SystemPropsUtil.getInt("server.thread.maxReceive", server_thread_maxReceive);
+        server_thread_maxHandler = SystemPropsUtil.getInt("server.thread.maxHandler", server_thread_maxHandler);
+        server_thread_backlog = SystemPropsUtil.getInt("server.thread.backlog", server_thread_backlog);
+        websocket_maxMessage = SystemPropsUtil.getInt("websocket.maxMessage", websocket_maxMessage);
+        websocket_timeout = SystemPropsUtil.getLong("websocket.timeout", websocket_timeout);
+        server_session_name = SystemPropsUtil.get("server.session.name", server_session_name);
+        server_session_age = SystemPropsUtil.getInt("server.session.age", server_session_age);
+        server_maxContentLength = SystemPropsUtil.getInt("server.maxContentLength", server_maxContentLength);
+        server_uploadFileBuffer = SystemPropsUtil.getLong("server.uploadFileBuffer", server_uploadFileBuffer);
+        server_fileFtpSize = SystemPropsUtil.getLong("server.fileFtpSize", server_fileFtpSize);
 
         // 模板引擎配置
-        server_template_suffix = System.getProperty("server.template.suffix");
-        server_template_prefix = System.getProperty("server.template.prefix");
-        server_template_cache = Boolean.parseBoolean(System.getProperty("server.template.cache"));
-        server_template_cacheTime = Long.parseLong(System.getProperty("server.template.cacheTime"));
+        server_template_suffix = SystemPropsUtil.get("server.template.suffix", server_template_suffix);
+        server_template_prefix = SystemPropsUtil.get("server.template.prefix", server_template_prefix);
+        server_template_cache = SystemPropsUtil.getBoolean("server.template.cache", server_template_cache);
+        server_template_cacheTime = SystemPropsUtil.getLong("server.template.cacheTime", server_template_cacheTime);
 
         check();
     }
