@@ -9,7 +9,6 @@ import top.lingkang.finalserver.server.annotation.Controller;
 import top.lingkang.finalserver.server.annotation.FinalServerBoot;
 import top.lingkang.finalserver.server.annotation.GET;
 import top.lingkang.finalserver.server.annotation.POST;
-import top.lingkang.finalserver.server.core.InitAppConfig;
 import top.lingkang.finalserver.server.web.entity.ResponseFile;
 import top.lingkang.finalserver.server.web.http.*;
 
