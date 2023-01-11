@@ -83,7 +83,7 @@ public class DefaultHttpSessionManage implements HttpSessionManage {
     @Override
     public void addSessionIdToCurrentHttp(FinalServerContext context) {
         Session session = context.getRequest().getSession();
-        if (session.hasAttribute() && !session.isExpire()) {
+        if (session.hasUpdateAttribute()) {
             sessionMap.put(session.getId(), session);
             DefaultCookie cookie = new DefaultCookie(FinalServerProperties.server_session_name, context.getRequest().getSession().getId());
             cookie.setMaxAge(FinalServerProperties.server_session_age);

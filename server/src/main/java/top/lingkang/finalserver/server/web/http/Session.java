@@ -26,9 +26,9 @@ public interface Session {
 
     HashMap<String,Object> getAttributeMap();
 
-    boolean hasAttribute();
-
     boolean isExpire();
 
     void updateLastAccessTime();
+
+    boolean hasUpdateAttribute();
 }

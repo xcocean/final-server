@@ -56,7 +56,7 @@ public class RedisHttpSessionManage implements HttpSessionManage {
 
     @Override
     public void addSessionIdToCurrentHttp(FinalServerContext context) {
-        if (context.getRequest().getSession().hasAttribute() && !context.getRequest().getSession().isExpire()) {
+        if (context.getRequest().getSession().hasUpdateAttribute()) {
             DefaultCookie cookie = new DefaultCookie(FinalServerProperties.server_session_name, context.getRequest().getSession().getId());
             cookie.setMaxAge(FinalServerProperties.server_session_age);
             context.getResponse().addCookie(cookie);

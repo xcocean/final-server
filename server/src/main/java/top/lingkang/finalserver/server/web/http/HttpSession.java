@@ -17,6 +17,7 @@ public class HttpSession implements Session, Serializable {
     private long createTime = System.currentTimeMillis(), lastAccessTime = createTime;
     private String id;
     private final HashMap<String, Object> attributes = new HashMap<>();
+    private boolean hasUpdateAttribute;
 
     public HttpSession() {
     }
@@ -47,16 +48,19 @@ public class HttpSession implements Session, Serializable {
 
     @Override
     public void setAttribute(String name, Object value) {
+        hasUpdateAttribute =true;
         attributes.put(name, value);
     }
 
     @Override
     public void removeAttribute(String name) {
+        hasUpdateAttribute =true;
         attributes.remove(name);
     }
 
     @Override
     public void removeAllAttribute() {
+        hasUpdateAttribute =true;
         attributes.clear();
     }
 
@@ -81,11 +85,6 @@ public class HttpSession implements Session, Serializable {
     }
 
     @Override
-    public boolean hasAttribute() {
-        return !attributes.isEmpty();
-    }
-
-    @Override
     public boolean isExpire() {
         boolean is = System.currentTimeMillis() - lastAccessTime > FinalServerProperties.server_session_age;
         if (is) {
@@ -96,5 +95,10 @@ public class HttpSession implements Session, Serializable {
 
     public void updateLastAccessTime() {
         lastAccessTime = System.currentTimeMillis();
+    }
+
+    @Override
+    public boolean hasUpdateAttribute() {
+        return hasUpdateAttribute;
     }
 }

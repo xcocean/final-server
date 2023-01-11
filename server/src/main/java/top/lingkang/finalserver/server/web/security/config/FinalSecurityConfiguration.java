@@ -1,5 +1,8 @@
 package top.lingkang.finalserver.server.web.security.config;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Bean;
 import top.lingkang.finalserver.server.web.http.Filter;
 import top.lingkang.finalserver.server.web.http.FilterChain;
 import top.lingkang.finalserver.server.web.http.FinalServerContext;
@@ -9,6 +12,7 @@ import top.lingkang.finalserver.server.web.security.base.FinalSessionObject;
 import top.lingkang.finalserver.server.web.security.error.FinalBaseException;
 import top.lingkang.finalserver.server.web.security.error.FinalNotLoginException;
 import top.lingkang.finalserver.server.web.security.error.FinalPermissionException;
+import top.lingkang.finalserver.server.web.security.http.FinalSecurityHolder;
 import top.lingkang.finalserver.server.web.security.utils.AuthUtils;
 
 import java.util.ArrayList;
@@ -25,7 +29,8 @@ import java.util.Map;
  */
 public class FinalSecurityConfiguration implements Filter {
     private FinalHttpProperties properties = new FinalHttpProperties();
-    private FinalSessionObject sessionObject = new FinalSessionObjectServlet();
+    private final FinalSessionObject sessionObject = new FinalSessionObjectServlet();
+    private Logger log= LoggerFactory.getLogger(FinalSecurityConfiguration.class);
 
     @Override
     public void doFilter(FinalServerContext context, FilterChain filterChain) throws Exception {
@@ -106,12 +111,17 @@ public class FinalSecurityConfiguration implements Filter {
 
     }
 
-
     protected void config(FinalHttpProperties properties) {
         this.properties = properties;
     }
 
     public FinalHttpProperties getProperties() {
         return properties;
+    }
+
+    @Bean
+    public FinalSecurityHolder finalSecurityHolder(){
+        log.debug("final-security 添加上下文处理： FinalSecurityHolder");
+        return new FinalSecurityHolder();
     }
 }

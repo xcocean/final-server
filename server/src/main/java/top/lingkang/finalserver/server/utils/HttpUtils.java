@@ -6,7 +6,6 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.*;
 import io.netty.handler.codec.http.cookie.Cookie;
 import io.netty.handler.codec.http.cookie.ServerCookieEncoder;
-import io.netty.util.CharsetUtil;
 import top.lingkang.finalserver.server.core.FinalServerConfiguration;
 import top.lingkang.finalserver.server.web.http.FinalServerContext;
 import top.lingkang.finalserver.server.web.http.Request;
@@ -61,12 +60,12 @@ public class HttpUtils {
         ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
     }
 
-    public static void sendTemplate(ChannelHandlerContext ctx, String content, int status) {
+    public static void sendTemplate(ChannelHandlerContext ctx, byte[] content, int status) {
         FullHttpResponse response = new DefaultFullHttpResponse(
                 HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(status),
-                Unpooled.copiedBuffer(content, CharsetUtil.UTF_8)
+                Unpooled.copiedBuffer(content)
         );
-        response.headers().set(HttpHeaderNames.CONTENT_LENGTH, content.length());
+        response.headers().set(HttpHeaderNames.CONTENT_LENGTH, content.length);
         responseBeforeHandler(response);
         ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
     }

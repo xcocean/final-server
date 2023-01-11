@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import top.lingkang.finalserver.server.annotation.Controller;
 import top.lingkang.finalserver.server.annotation.GET;
 import top.lingkang.finalserver.server.web.http.FinalServerContext;
+import top.lingkang.finalserver.server.web.security.http.FinalSecurityHolder;
 import top.lingkang.finalsql.sql.Condition;
 import top.lingkang.finalsql.sql.FinalSql;
 
@@ -18,6 +19,8 @@ import java.util.List;
 public class WebController {
     @Autowired
     private FinalSql finalSql;
+    @Autowired
+    private FinalSecurityHolder finalSecurityHolder;
 
     @GET("/sql")
     public void s(FinalServerContext context) {
@@ -38,5 +41,11 @@ public class WebController {
         User user = finalSql.selectOne(User.class, new Condition().orderByAsc("id"));
         user.setCreateTime(new Date());
         finalSql.update(user);
+    }
+
+    @GET("/login")
+    public void login(FinalServerContext context){
+        finalSecurityHolder.login("admin",new String[]{"user"});
+        context.getResponse().returnString("login success");
     }
 }
