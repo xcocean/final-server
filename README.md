@@ -107,6 +107,7 @@ FinalServerContext.currentContext()
 
 * 相较于 `springboot` 运行内存减半
 * http处理
+* 自带基于RPC角色鉴权
 * websocket
 * filter功能
 * web监听
