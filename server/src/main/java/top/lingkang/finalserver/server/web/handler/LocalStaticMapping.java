@@ -1,6 +1,5 @@
 package top.lingkang.finalserver.server.web.handler;
 
-import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +27,6 @@ public class LocalStaticMapping {
 
     private List<String> paths = new ArrayList<>();
 
-    @PostConstruct
     public void init() {
         addStaticByAbsolutePath(paths);
     }

@@ -40,6 +40,7 @@ public class FinalServerInitializer {
             for (String name : beanNamesForType) {
 
                 LocalStaticMapping bean = applicationContext.getBean(name, LocalStaticMapping.class);
+                bean.init();
                 for (String path : bean.getPaths()) {
                     handlers.add(new LocalStaticRequestHandler(path));
                     log.info("本地静态文件映射：" + path);
