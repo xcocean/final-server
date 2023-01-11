@@ -7,12 +7,12 @@ import io.netty.handler.codec.http.*;
 import io.netty.handler.codec.http.cookie.Cookie;
 import io.netty.handler.codec.http.cookie.ServerCookieEncoder;
 import io.netty.util.CharsetUtil;
-import top.lingkang.finalserver.server.annotation.NotNull;
 import top.lingkang.finalserver.server.core.FinalServerConfiguration;
 import top.lingkang.finalserver.server.web.http.FinalServerContext;
 import top.lingkang.finalserver.server.web.http.Request;
 import top.lingkang.finalserver.server.web.http.Response;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Set;
 
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
@@ -36,12 +36,15 @@ public class HttpUtils {
         response.headers().setAll(context.getResponse().getHeaders());
     }
 
-    public static void sendString(ChannelHandlerContext ctx, @NotNull String context, int status) {
+    public static void sendString(ChannelHandlerContext ctx, String content, int status) {
+        if (content == null)
+            content = "";
+        byte[] bytes = content.getBytes(StandardCharsets.UTF_8);
         FullHttpResponse response = new DefaultFullHttpResponse(
                 HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(status),
-                Unpooled.copiedBuffer(context, CharsetUtil.UTF_8)
+                Unpooled.copiedBuffer(bytes)
         );
-        response.headers().set(HttpHeaderNames.CONTENT_LENGTH, context.getBytes().length);
+        response.headers().set(HttpHeaderNames.CONTENT_LENGTH, bytes.length);
         response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain; charset=UTF-8");
         responseBeforeHandler(response);
         ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
@@ -58,7 +61,7 @@ public class HttpUtils {
         ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
     }
 
-    public static void sendResponse(ChannelHandlerContext ctx, String content, int status) {
+    public static void sendTemplate(ChannelHandlerContext ctx, String content, int status) {
         FullHttpResponse response = new DefaultFullHttpResponse(
                 HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(status),
                 Unpooled.copiedBuffer(content, CharsetUtil.UTF_8)

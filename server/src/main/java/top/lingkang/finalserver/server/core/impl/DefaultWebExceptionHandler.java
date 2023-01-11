@@ -19,12 +19,18 @@ public class DefaultWebExceptionHandler implements WebExceptionHandler {
     public void exception(ChannelHandlerContext context, Throwable cause) throws Exception {
         log.error("web处理异常", cause);
 
-        HttpUtils.sendString(context, cause.getMessage() == null ? "" : cause.getMessage(), 500);
+        HttpUtils.sendString(context, getErrorMsg(cause), 500);
     }
 
     @Override
     public void notHandler(ChannelHandlerContext context) throws Exception {
         log.warn("此请求未找到处理，将返回404: " + HttpUtils.getRequestPathInfo(FinalServerContext.currentContext().getRequest()));
         HttpUtils.sendString(context, "404", 404);
+    }
+
+    private String getErrorMsg(Throwable cause) {
+        if (cause.getMessage() != null)
+            return cause.getMessage();
+        return getErrorMsg(cause.getCause());
     }
 }
