@@ -20,6 +20,7 @@ import top.lingkang.finalserver.server.web.FinalServerInitializer;
 import java.io.File;
 import java.io.RandomAccessFile;
 import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -49,7 +50,7 @@ class HandlerHttpRequest extends SimpleChannelInboundHandler<FinalServerContext>
 
             if (res.isTemplate()) {
                 // 将会话的值追加到目标渲染
-                HashMap<String, Object> templateMap = res.getTemplateMap();
+                Map<String, Object> templateMap = res.getTemplateMap();
                 if (templateMap == null)
                     templateMap = new HashMap<>();
                 templateMap.put("request", context.getRequest());

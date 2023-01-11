@@ -5,6 +5,7 @@ import io.netty.handler.codec.http.cookie.Cookie;
 import top.lingkang.finalserver.server.web.entity.ResponseFile;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -25,7 +26,7 @@ public interface Response {
 
     void returnTemplate(String template);
 
-    void returnTemplate(String templatePath, HashMap<String, Object> map);
+    void returnTemplate(String templatePath, Map<String, Object> map);
 
     // 返回文件，前端会下载文件。filePath为文件所在路径
     void returnFile(ResponseFile responseFile);
@@ -48,7 +49,7 @@ public interface Response {
 
     String getTemplatePath();
 
-    HashMap<String, Object> getTemplateMap();
+    Map<String, Object> getTemplateMap();
 
     // 重定向
     void sendRedirect(String url);

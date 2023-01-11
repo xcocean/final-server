@@ -11,6 +11,7 @@ import top.lingkang.finalserver.server.web.entity.ResponseFile;
 
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -27,7 +28,7 @@ public class HttpResponse implements Response {
     private ResponseFile responseFile;
     private boolean isTemplate;
     private String templatePath;
-    private HashMap<String, Object> map;
+    private Map<String, Object> map;
     private byte[] content;
     private int code = 200;
     private Set<Cookie> cookies = new TreeSet<>();
@@ -69,7 +70,7 @@ public class HttpResponse implements Response {
     }
 
     @Override
-    public void returnTemplate(String template, HashMap<String, Object> map) {
+    public void returnTemplate(String template, Map<String, Object> map) {
         if (StrUtil.isEmpty(template))
             new FinalServerException("templatePath 模板不能为空");
         checkReady();
@@ -133,7 +134,7 @@ public class HttpResponse implements Response {
     }
 
     @Override
-    public HashMap<String, Object> getTemplateMap() {
+    public Map<String, Object> getTemplateMap() {
         return map;
     }
 

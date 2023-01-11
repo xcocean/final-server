@@ -7,6 +7,7 @@ import org.springframework.context.ApplicationContext;
 import top.lingkang.finalserver.server.core.FinalServerConfiguration;
 import top.lingkang.finalserver.server.web.entity.RequestInfo;
 import top.lingkang.finalserver.server.web.http.FinalServerContext;
+import top.lingkang.finalserver.server.web.http.ViewTemplate;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -45,6 +46,14 @@ public class ControllerRequestHandler implements RequestHandler {
                 context.getResponse().returnString("");
             } else if (ObjectUtil.isBasicType(result)) {
                 context.getResponse().returnBytes(FinalServerConfiguration.serializable.jsonTo(result));
+            } else if (result instanceof ViewTemplate) {// 返回视图模板时
+                ViewTemplate template = (ViewTemplate) result;
+                if (context.getResponse().getTemplateMap() == null) {
+                    context.getResponse().returnTemplate(template.getTemplate(), template.getMap());
+                } else {
+                    context.getResponse().getTemplateMap().putAll(template.getMap());
+                    context.getResponse().returnTemplate(template.getTemplate());
+                }
             } else {
                 // 其他结果返回toString
                 context.getResponse().returnString(result.toString());
