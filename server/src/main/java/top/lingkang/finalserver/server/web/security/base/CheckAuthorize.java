@@ -13,6 +13,9 @@ import java.util.Set;
  * Created by 2022/3/22
  * 设置授权检查
  * @since 1.0.0
+ * properties.checkAuthorize()
+ *           .pathMatchers("/user").hasAnyRole("user", "vip1") // 有其中任意角色就能访问
+ *           .pathMatchers("/vip/**").hasAllRole("user", "vip1");// 必须同时有所有角色才能访问
  */
 public class CheckAuthorize implements Serializable {
     public CheckAuthorize() {
@@ -48,7 +51,7 @@ public class CheckAuthorize implements Serializable {
 
     public CheckAuthorize hasAllRole(String... allRole) {
         if (tempFinalAuth == null) {
-            throw new FinalBaseException("请先设置匹配路径：antMatchers");
+            throw new FinalBaseException("请先设置匹配路径：pathMatchers");
         }
         Set<String> newRole = new HashSet<>(Arrays.asList(tempFinalAuth.getRole()));
         newRole.addAll(Arrays.asList(allRole));
@@ -59,7 +62,7 @@ public class CheckAuthorize implements Serializable {
 
     public CheckAuthorize hasLogin() {
         if (tempFinalAuth == null) {
-            throw new FinalBaseException("请先设置匹配路径：antMatchers");
+            throw new FinalBaseException("请先设置匹配路径：pathMatchers");
         }
         authorize.put(tempMatchers, new FinalAuth());
         return this;

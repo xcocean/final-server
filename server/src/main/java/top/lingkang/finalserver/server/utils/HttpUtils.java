@@ -35,6 +35,9 @@ public class HttpUtils {
         response.headers().setAll(context.getResponse().getHeaders());
     }
 
+    /**
+     * 返回string字符串
+     */
     public static void sendString(ChannelHandlerContext ctx, String content, int status) {
         if (content == null)
             content = "";
@@ -49,6 +52,26 @@ public class HttpUtils {
         ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
     }
 
+    /**
+     * 返回json字符串
+     */
+    public static void sendJSON(ChannelHandlerContext ctx, String json, int status) {
+        if (json == null)
+            json = "";
+        byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+        FullHttpResponse response = new DefaultFullHttpResponse(
+                HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(status),
+                Unpooled.copiedBuffer(bytes)
+        );
+        response.headers().set(HttpHeaderNames.CONTENT_LENGTH, bytes.length);
+        response.headers().set(HttpHeaderNames.CONTENT_TYPE, "application/json; charset=UTF-8");
+        responseBeforeHandler(response);
+        ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
+    }
+
+    /**
+     * 自定义返回httpResponse
+     */
     public static void sendResponse(ChannelHandlerContext ctx, Response httpResponse, int status) {
         FullHttpResponse response = new DefaultFullHttpResponse(
                 HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(status),
@@ -60,6 +83,9 @@ public class HttpUtils {
         ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
     }
 
+    /**
+     * 返回html模板
+     */
     public static void sendTemplate(ChannelHandlerContext ctx, byte[] content, int status) {
         FullHttpResponse response = new DefaultFullHttpResponse(
                 HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(status),
