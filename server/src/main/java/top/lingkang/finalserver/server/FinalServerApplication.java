@@ -207,7 +207,10 @@ public class FinalServerApplication {
                     return resourceAsStream;
             }
         }
-        return mainClass.getClassLoader().getResourceAsStream("application.properties");
+
+        // application.properties
+        FinalServerBoot mainClassAnnotation = mainClass.getAnnotation(FinalServerBoot.class);
+        return mainClass.getClassLoader().getResourceAsStream(mainClassAnnotation.value());
     }
 
     private static File xmlFile;

@@ -14,13 +14,10 @@ import org.slf4j.LoggerFactory;
 import top.lingkang.finalserver.server.core.FinalServerConfiguration;
 import top.lingkang.finalserver.server.core.FinalServerProperties;
 import top.lingkang.finalserver.server.utils.CommonUtils;
-import top.lingkang.finalserver.server.utils.HttpUtils;
 import top.lingkang.finalserver.server.web.FinalServerInitializer;
 
 import java.io.File;
 import java.io.RandomAccessFile;
-import java.util.HashMap;
-import java.util.Map;
 
 
 /**
@@ -35,42 +32,41 @@ class HandlerHttpRequest extends SimpleChannelInboundHandler<FinalServerContext>
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FinalServerContext context) throws Exception {
         this.context = context;
-        CommonUtils.pushWebListenerBefore(context);
-        // 在此更新会话访问
-        context.getRequest().getSession().updateLastAccessTime();
-        // 过滤器
-        new FilterChain(FinalServerInitializer.filters, FinalServerInitializer.requestHandlers).doFilter(context);
+        try {
+            CommonUtils.pushWebListenerBefore(context);
+            // 在此更新会话访问
+            context.getRequest().getSession().updateLastAccessTime();
+            // 过滤器
+            new FilterChain(FinalServerInitializer.filters, FinalServerInitializer.requestHandlers).doFilter(context);
 
-        if (context.getResponse().isReady()) {
-            Response res = context.getResponse();
-            if (res.getResponseFile() != null) {
-                returnStaticFile(res.getResponseFile().getFilePath(), ctx);
-                return;
+            if (context.getResponse().isReady()) {
+                Response res = context.getResponse();
+                if (res.getResponseFile() != null) {
+                    returnStaticFile(res.getResponseFile().getFilePath(), ctx);
+                    return;
+                }
+
+                if (res.isTemplate()) {
+                    HttpUtils.sendTemplate(
+                            ctx,
+                            FinalServerConfiguration.httpParseTemplate.getTemplate(res.getTemplatePath(), HttpUtils.getReturnFinalTemplateMap(context)),
+                            200);
+                } else // 其他内容
+                    HttpUtils.sendResponse(ctx, res, res.getStatusCode());
+            } else {// 返回 404
+                FinalServerConfiguration.webExceptionHandler.notHandler(ctx);
             }
-
-            if (res.isTemplate()) {
-                // 将会话的值追加到目标渲染
-                Map<String, Object> templateMap = res.getTemplateMap();
-                if (templateMap == null)
-                    templateMap = new HashMap<>();
-                templateMap.put("request", context.getRequest());
-                templateMap.put("session", context.getRequest().getSession().getAttributeMap());
-                HttpUtils.sendTemplate(
-                        ctx,
-                        FinalServerConfiguration.httpParseTemplate.getTemplate(res.getTemplatePath(), templateMap),
-                        200);
-            } else // 其他内容
-                HttpUtils.sendResponse(ctx, res, res.getStatusCode());
-        } else {// 返回 404
-            FinalServerConfiguration.webExceptionHandler.notHandler(ctx);
+        } catch (Exception e) {
+            FinalServerConfiguration.webExceptionHandler.exception(ctx, e);
         }
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        FinalServerConfiguration.webExceptionHandler.exception(ctx, cause);
+        // http处理后仍出现异常
+        log.warn("http处理后仍出现异常，请检查异常处理是否异常。");
         if (ctx.channel().isActive()) {// 未关闭时手动关闭
-            HttpUtils.sendString(ctx, "", 500);
+            HttpUtils.sendString(ctx, "服务错误", 500);
         }
     }
 

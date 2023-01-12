@@ -4,7 +4,7 @@ import io.netty.channel.ChannelHandlerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.lingkang.finalserver.server.core.WebExceptionHandler;
-import top.lingkang.finalserver.server.utils.HttpUtils;
+import top.lingkang.finalserver.server.web.http.HttpUtils;
 import top.lingkang.finalserver.server.web.http.FinalServerContext;
 
 /**

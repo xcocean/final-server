@@ -1,4 +1,4 @@
-package top.lingkang.finalserver.server.utils;
+package top.lingkang.finalserver.server.web.http;
 
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
@@ -7,11 +7,10 @@ import io.netty.handler.codec.http.*;
 import io.netty.handler.codec.http.cookie.Cookie;
 import io.netty.handler.codec.http.cookie.ServerCookieEncoder;
 import top.lingkang.finalserver.server.core.FinalServerConfiguration;
-import top.lingkang.finalserver.server.web.http.FinalServerContext;
-import top.lingkang.finalserver.server.web.http.Request;
-import top.lingkang.finalserver.server.web.http.Response;
 
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
@@ -20,8 +19,9 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
  * @author lingkang
  * Created by 2022/12/8
  * @since 1.0.0
+ * 统一处理http返回
  */
-public class HttpUtils {
+public final class HttpUtils {
     private static void responseBeforeHandler(FullHttpResponse response) {
         FinalServerContext context = FinalServerContext.currentContext();
         if (context == null)// websocket 时，上下文为空
@@ -38,62 +38,88 @@ public class HttpUtils {
     /**
      * 返回string字符串
      */
-    public static void sendString(ChannelHandlerContext ctx, String content, int status) {
+    public static void sendString(ChannelHandlerContext context, String content, int statusCode) {
         if (content == null)
             content = "";
         byte[] bytes = content.getBytes(StandardCharsets.UTF_8);
         FullHttpResponse response = new DefaultFullHttpResponse(
-                HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(status),
+                HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(statusCode),
                 Unpooled.copiedBuffer(bytes)
         );
         response.headers().set(HttpHeaderNames.CONTENT_LENGTH, bytes.length);
         response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain; charset=UTF-8");
         responseBeforeHandler(response);
-        ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
+        context.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
+    }
+
+    /**
+     * 返回空
+     */
+    public static void sendEmpty(ChannelHandlerContext context, int statusCode) {
+        FullHttpResponse response = new DefaultFullHttpResponse(
+                HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(statusCode),
+                Unpooled.copiedBuffer(new byte[0])
+        );
+        response.headers().set(HttpHeaderNames.CONTENT_LENGTH, 0);
+        // response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain; charset=UTF-8");
+        responseBeforeHandler(response);
+        context.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
     }
 
     /**
      * 返回json字符串
      */
-    public static void sendJSON(ChannelHandlerContext ctx, String json, int status) {
+    public static void sendJSON(ChannelHandlerContext context, String json, int statusCode) {
         if (json == null)
             json = "";
         byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
         FullHttpResponse response = new DefaultFullHttpResponse(
-                HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(status),
+                HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(statusCode),
                 Unpooled.copiedBuffer(bytes)
         );
         response.headers().set(HttpHeaderNames.CONTENT_LENGTH, bytes.length);
         response.headers().set(HttpHeaderNames.CONTENT_TYPE, "application/json; charset=UTF-8");
         responseBeforeHandler(response);
-        ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
+        context.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
     }
 
     /**
      * 自定义返回httpResponse
      */
-    public static void sendResponse(ChannelHandlerContext ctx, Response httpResponse, int status) {
+    public static void sendResponse(ChannelHandlerContext context, Response httpResponse, int statusCode) {
         FullHttpResponse response = new DefaultFullHttpResponse(
-                HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(status),
+                HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(statusCode),
                 Unpooled.copiedBuffer(httpResponse.getContent())
         );
         response.headers().set(httpResponse.getHeaders());
         response.headers().set(HttpHeaderNames.CONTENT_LENGTH, httpResponse.getContent().length);
         responseBeforeHandler(response);
-        ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
+        context.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
     }
 
     /**
-     * 返回html模板
+     * 返回html模板的内容
      */
-    public static void sendTemplate(ChannelHandlerContext ctx, byte[] content, int status) {
+    public static void sendTemplate(ChannelHandlerContext context, byte[] content, int statusCode) {
         FullHttpResponse response = new DefaultFullHttpResponse(
-                HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(status),
+                HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(statusCode),
                 Unpooled.copiedBuffer(content)
         );
         response.headers().set(HttpHeaderNames.CONTENT_LENGTH, content.length);
         responseBeforeHandler(response);
-        ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
+        context.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
+    }
+
+    /**
+     * 返回视图模板
+     */
+    public static void sendTemplate(ChannelHandlerContext context, String template, int statusCode) throws Exception {
+        byte[] content = FinalServerConfiguration.httpParseTemplate.getTemplate(
+                template,
+                HttpUtils.getReturnFinalTemplateMap(FinalServerContext.currentContext())
+        );
+
+        sendTemplate(context, content, statusCode);
     }
 
     public static void addHeaderCookie(FinalServerContext context) {
@@ -105,15 +131,30 @@ public class HttpUtils {
         }
     }
 
-    public static String getRequestPathInfo(Request request) {
-        return request.getHttpMethod().name() + "  path=" + request.getPath();
-    }
-
-    public static void closeHttpWebsocket(ChannelHandlerContext ctx, String msg) {
+    public static void closeHttpWebsocket(ChannelHandlerContext context, String msg) {
         FullHttpResponse response = new DefaultFullHttpResponse(
                 HTTP_1_1, HttpResponseStatus.BAD_REQUEST, Unpooled.wrappedBuffer(msg.getBytes()));
         response.headers().set(response.headers().set(FinalServerConfiguration.defaultResponseHeaders.get(false)));
         responseBeforeHandler(response);
-        ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
+        context.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+
+    public static String getRequestPathInfo(Request request) {
+        return request.getHttpMethod().name() + "  path=" + request.getPath();
+    }
+
+    /**
+     * 返回模板的最终 map
+     */
+    public static Map<String, Object> getReturnFinalTemplateMap(FinalServerContext context) {
+        // 将会话的值追加到目标渲染
+        Map<String, Object> templateMap = context.getResponse().getTemplateMap();
+        if (templateMap == null)
+            templateMap = new HashMap<>();
+        templateMap.put("request", context.getRequest());
+        templateMap.put("session", context.getRequest().getSession().getAttributeMap());
+        return templateMap;
     }
 }
