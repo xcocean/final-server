@@ -92,8 +92,9 @@ public final class HttpUtils {
                 Unpooled.copiedBuffer(json)
         );
         response.headers().set(HttpHeaderNames.CONTENT_LENGTH, json.length);
-        response.headers().set(HttpHeaderNames.CONTENT_TYPE, "application/json; charset=UTF-8");
         responseBeforeHandler(response);
+        // 提升优先级
+        response.headers().set(HttpHeaderNames.CONTENT_TYPE, "application/json; charset=UTF-8");
         context.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
     }
 
