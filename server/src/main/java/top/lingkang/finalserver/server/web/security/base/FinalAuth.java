@@ -22,19 +22,22 @@ public class FinalAuth implements Serializable {
         if (session.getAttribute(FinalSessionKey.IS_LOGIN) == null) {
             throw new FinalNotLoginException(FinalConstants.NOT_LOGIN_MSG);
         }
-        if (role.length != 0 || andRole.length != 0) {
-            Object finalRole = session.getAttribute(FinalSessionKey.HAS_ROLE);
-            if (finalRole == null)
-                throw new FinalPermissionException(FinalConstants.UNAUTHORIZED_MSG);
+        if (role.length == 0 && andRole.length == 0)
+            return;
 
-            String[] has = (String[]) finalRole;
-            if (has.length == 0)
-                throw new FinalPermissionException(FinalConstants.UNAUTHORIZED_MSG);
+        Object finalRole = session.getAttribute(FinalSessionKey.HAS_ROLE);
+        if (finalRole == null)
+            throw new FinalPermissionException(FinalConstants.UNAUTHORIZED_MSG);
 
-            // 检查
+        String[] has = (String[]) finalRole;
+        if (has.length == 0)
+            throw new FinalPermissionException(FinalConstants.UNAUTHORIZED_MSG);
+
+        // 检查
+        if (role.length != 0)
             AuthUtils.checkRole(role, has);
+        if (andRole.length != 0)
             AuthUtils.checkAndRole(andRole, has);
-        }
     }
 
     public String[] getRole() {
