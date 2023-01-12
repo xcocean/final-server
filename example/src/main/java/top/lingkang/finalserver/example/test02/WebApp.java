@@ -9,6 +9,9 @@ import top.lingkang.finalserver.server.core.FinalServerConfiguration;
 import top.lingkang.finalserver.server.core.impl.DefaultWebExceptionHandler;
 import top.lingkang.finalserver.server.web.http.HttpUtils;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author lingkang
  * 2023/1/12
@@ -21,22 +24,25 @@ public class WebApp {
     }
 
     @GET("")
-    public String index()throws Exception{
-        FinalServerConfiguration.webExceptionHandler=new DefaultWebExceptionHandler() {
+    public String index() throws Exception {
+        FinalServerConfiguration.webExceptionHandler = new DefaultWebExceptionHandler() {
             @Override
             public void exception(ChannelHandlerContext context, Throwable cause) throws Exception {
                 // super.exception(context, cause);
                 System.out.println("出现异常");
                 // HttpUtils.sendTemplate(context,"index",500);
-                HttpUtils.sendEmpty(context,200);
+                // HttpUtils.sendEmpty(context,200);
+                Map map = new HashMap();
+                map.put("hello", "hello");
+                HttpUtils.sendJSONObject(context, map, 200);
             }
         };
         return "ok";
     }
 
     @GET("/e")
-    public String e()throws Exception{
-        if (1==1)
+    public String e() throws Exception {
+        if (1 == 1)
             throw new RuntimeException("6666666");
         return "ok";
     }

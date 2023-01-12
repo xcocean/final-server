@@ -4,8 +4,9 @@ import io.netty.channel.ChannelHandlerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.lingkang.finalserver.server.core.WebExceptionHandler;
-import top.lingkang.finalserver.server.web.http.HttpUtils;
 import top.lingkang.finalserver.server.web.http.FinalServerContext;
+import top.lingkang.finalserver.server.web.http.HttpUtils;
+import top.lingkang.finalserver.server.web.http.Request;
 
 /**
  * @author lingkang
@@ -24,7 +25,8 @@ public class DefaultWebExceptionHandler implements WebExceptionHandler {
 
     @Override
     public void notHandler(ChannelHandlerContext context) throws Exception {
-        log.warn("此请求未找到处理，将返回404: " + HttpUtils.getRequestPathInfo(FinalServerContext.currentContext().getRequest()));
+        Request request = FinalServerContext.currentContext().getRequest();
+        log.warn("此请求未找到处理，将返回404: " + request.getHttpMethod().name() + "  path=" + request.getPath());
         HttpUtils.sendString(context, "404", 404);
     }
 

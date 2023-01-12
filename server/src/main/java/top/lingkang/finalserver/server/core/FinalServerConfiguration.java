@@ -12,21 +12,23 @@ import java.util.List;
  * @since 1.0.0
  */
 public class FinalServerConfiguration {
+    // 默认响应头
     public static ServerDefaultHttpHeaders defaultResponseHeaders=new FinalServerDefaultHttpHeaders();
 
     public static SerializableObject serializable=new DefaultSerializableObject();
 
-    // new DefaultWebExceptionHandler();
+    // new DefaultWebExceptionHandler(); 异常处理
     public static WebExceptionHandler webExceptionHandler;
 
     public static ServerCookieDecoder cookieDecoder=ServerCookieDecoder.LAX;
 
-    // 默认 new DefaultIdGenerateFactory();
+    // 默认 new DefaultIdGenerateFactory(); id生成
     public static IdGenerateFactory idGenerateFactory;
 
-    // DefaultHttpSessionManage
+    // DefaultHttpSessionManage 会话管理
     public static HttpSessionManage httpSessionManage;
 
+    // web监听
     public static List<WebListener> webListener=new ArrayList<>();
 
     // 默认模板解析

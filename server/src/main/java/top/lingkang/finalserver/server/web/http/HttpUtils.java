@@ -71,13 +71,27 @@ public final class HttpUtils {
      */
     public static void sendJSON(ChannelHandlerContext context, String json, int statusCode) {
         if (json == null)
-            json = "";
-        byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+            sendJSONBytes(context, null, statusCode);
+        else
+            sendJSONBytes(context, json.getBytes(StandardCharsets.UTF_8), statusCode);
+    }
+
+    /**
+     * 返回序列化的json对象
+     */
+    public static void sendJSONObject(ChannelHandlerContext context, Object jsonObject, int statusCode) {
+        byte[] json = FinalServerConfiguration.serializable.jsonTo(jsonObject);
+        sendJSONBytes(context, json, statusCode);
+    }
+
+    public static void sendJSONBytes(ChannelHandlerContext context, byte[] json, int statusCode) {
+        if (json == null)
+            json = new byte[0];
         FullHttpResponse response = new DefaultFullHttpResponse(
                 HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(statusCode),
-                Unpooled.copiedBuffer(bytes)
+                Unpooled.copiedBuffer(json)
         );
-        response.headers().set(HttpHeaderNames.CONTENT_LENGTH, bytes.length);
+        response.headers().set(HttpHeaderNames.CONTENT_LENGTH, json.length);
         response.headers().set(HttpHeaderNames.CONTENT_TYPE, "application/json; charset=UTF-8");
         responseBeforeHandler(response);
         context.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
@@ -93,6 +107,16 @@ public final class HttpUtils {
         );
         response.headers().set(httpResponse.getHeaders());
         response.headers().set(HttpHeaderNames.CONTENT_LENGTH, httpResponse.getContent().length);
+        responseBeforeHandler(response);
+        context.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
+    }
+
+    public static void sendFullResponse(ChannelHandlerContext context, FullHttpResponse response, int statusCode) {
+        if (response == null)
+            response = new DefaultFullHttpResponse(
+                    HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(statusCode),
+                    Unpooled.copiedBuffer(new byte[0])
+            );
         responseBeforeHandler(response);
         context.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
     }
@@ -140,10 +164,6 @@ public final class HttpUtils {
     }
 
     // -----------------------------------------------------------------------------------------------------------------
-
-    public static String getRequestPathInfo(Request request) {
-        return request.getHttpMethod().name() + "  path=" + request.getPath();
-    }
 
     /**
      * 返回模板的最终 map
