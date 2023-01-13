@@ -14,17 +14,17 @@ import top.lingkang.finalserver.server.web.http.FinalServerContext;
 @FinalServerBoot
 public class Test03WebApp {
     public static void main(String[] args) {
-        FinalServerApplication.run(Test03WebApp.class,args);
+        FinalServerApplication.run(Test03WebApp.class, args);
     }
 
     @GET("")
-    public String index(String a){
+    public String index(String a) {
         System.out.println(a);
-        return "index:666";
+        return "index:666中文：" + a;
     }
 
     @GET("/f")
-    public void f(FinalServerContext context){
+    public void f(FinalServerContext context) {
         // 转发
         context.getResponse().returnForward("/");
     }

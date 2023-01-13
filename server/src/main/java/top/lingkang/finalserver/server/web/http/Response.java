@@ -32,7 +32,10 @@ public interface Response {
 
     void returnBytes(byte[] bytes);
 
-    // 请求转发
+    /**
+     * 请求转发，使用http再次请求。存在局限性：
+     * 例如不能转发文件下载、大数据内容（MB级别数据）
+     */
     void returnForward(String forwardPath);
 
     // 重定向

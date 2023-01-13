@@ -11,10 +11,7 @@ import top.lingkang.finalserver.server.core.FinalServerProperties;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * @author lingkang
@@ -52,12 +49,11 @@ public class HttpRequest implements Request {
         if (msg.method() == HttpMethod.POST) {
             checkQueryBody();
             InterfaceHttpData data = queryBody.getBodyHttpData(name);
-            if (data != null) {
-                if (data.getHttpDataType() == InterfaceHttpData.HttpDataType.Attribute) {
-                    try {
-                        return ((Attribute) data).getValue();
-                    } catch (IOException e) {
-                    }
+            if (data != null && data.getHttpDataType() == InterfaceHttpData.HttpDataType.Attribute) {
+                try {
+                    return ((Attribute) data).getValue();
+                } catch (IOException e) {
+                    log.warn("获取参数内容失败：" + name, e);
                 }
             }
         }
@@ -68,6 +64,32 @@ public class HttpRequest implements Request {
         if (param == null)
             return null;
         return param.get(0);
+    }
+
+    @Override
+    public Map<String, String> getParams() {
+        Map<String, String> map = new HashMap<>();
+        if (msg.method() == HttpMethod.GET) {
+            checkQueryUri();
+            Map<String, List<String>> parameters = queryUri.parameters();
+            for (Map.Entry<String, List<String>> entry : parameters.entrySet()) {
+                if (!entry.getValue().isEmpty())
+                    map.put(entry.getKey(), entry.getValue().get(0));
+            }
+        } else if (msg.method() == HttpMethod.POST || msg.method() == HttpMethod.PUT || msg.method() == HttpMethod.DELETE) {
+            checkQueryBody();
+            List<InterfaceHttpData> bodyHttpDatas = queryBody.getBodyHttpDatas();
+            for (InterfaceHttpData data : bodyHttpDatas) {
+                if (data.getHttpDataType() == InterfaceHttpData.HttpDataType.Attribute) {
+                    try {
+                        map.put(data.getName(), ((Attribute) data).getValue());
+                    } catch (IOException e) {
+                        log.warn("获取参数内容失败：" + data.getName(), e);
+                    }
+                }
+            }
+        }
+        return map;
     }
 
     @Override
