@@ -1,10 +1,13 @@
 package top.lingkang.finalserver.server.web.handler;
 
+import cn.hutool.core.util.ObjectUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
+import top.lingkang.finalserver.server.core.FinalServerConfiguration;
 import top.lingkang.finalserver.server.web.entity.RequestInfo;
 import top.lingkang.finalserver.server.web.http.FinalServerContext;
+import top.lingkang.finalserver.server.web.http.ViewTemplate;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -41,6 +44,16 @@ public class ControllerRequestHandler implements RequestHandler {
             if (result == null) {
                 // 返回空时，直接输出空字符串
                 context.getResponse().returnString("");
+            } else if (ObjectUtil.isBasicType(result)) {
+                context.getResponse().returnBytes(FinalServerConfiguration.serializable.jsonTo(result));
+            } else if (result instanceof ViewTemplate) {// 返回视图模板时
+                ViewTemplate template = (ViewTemplate) result;
+                if (context.getResponse().getTemplateMap() == null) {
+                    context.getResponse().returnTemplate(template.getTemplate(), template.getMap());
+                } else {
+                    context.getResponse().getTemplateMap().putAll(template.getMap());
+                    context.getResponse().returnTemplate(template.getTemplate());
+                }
             } else {
                 // 其他结果返回toString
                 context.getResponse().returnString(result.toString());

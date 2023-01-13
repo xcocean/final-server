@@ -36,7 +36,10 @@ public class WebSocketDispatch {
             if (!value.startsWith("/"))
                 value = "/" + value;
 
-            Assert.isFalse(ws.containsKey(value), "存在重复的websocket处理，" + value + " 请检查：" + bean.getClass().getName());
+            Assert.isFalse(
+                    ws.containsKey(value),
+                    "存在重复的websocket处理，" + value + " 请检查：" + bean.getClass().getName()
+            );
             ws.put(value, (WebSocketHandler) bean);
             log.debug("add websocket 处理：{} - {}", value, bean.getClass().getName());
         }

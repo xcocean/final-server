@@ -18,11 +18,13 @@ class FinalServerNioSocketChannel extends NioSocketChannel {
         super(parent, socket);
     }
 
+    private NioSocketChannel this_ = this;
+
     // 自定义ID
     @Override
     protected ChannelId newId() {
         return new ChannelId() {
-            private String id = FinalServerConfiguration.idGenerateFactory.generateNettyId();
+            private String id = FinalServerConfiguration.idGenerateFactory.generateNettyId(this_);
 
             @Override
             public String asShortText() {

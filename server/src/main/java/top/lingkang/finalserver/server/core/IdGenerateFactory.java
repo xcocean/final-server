@@ -1,5 +1,6 @@
 package top.lingkang.finalserver.server.core;
 
+import io.netty.channel.socket.nio.NioSocketChannel;
 import top.lingkang.finalserver.server.web.http.Request;
 
 /**
@@ -13,12 +14,12 @@ public interface IdGenerateFactory {
      * 生成netty的ID
      * @return
      */
-    String generateNettyId();
+    String generateNettyId(NioSocketChannel nioSocketChannel);
 
     /**
      * 生成 session ID
-     * @param httpRequest
+     * @param request
      * @return
      */
-    String generateSessionId(Request httpRequest);
+    String generateSessionId(Request request);
 }

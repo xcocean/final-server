@@ -15,5 +15,8 @@ import java.lang.annotation.*;
 public @interface RequestMapping {
     String value() default "";
 
+    /**
+     * 作用与类上时将忽略请求方法
+     */
     RequestMethod method() default RequestMethod.GET;
 }

@@ -10,7 +10,7 @@ import java.util.Map;
  * Created by 2023/1/8
  * 自定义模板渲染
  */
-@Component
+// @Component
 public class MyHttpParseTemplate implements HttpParseTemplate {
     @Override
     public void init(String templatePath) {
@@ -18,7 +18,7 @@ public class MyHttpParseTemplate implements HttpParseTemplate {
     }
 
     @Override
-    public String getTemplate(String template, Map map) throws Exception {
+    public byte[] getTemplate(String template, Map map) throws Exception {
         // 在此处进行模板渲染，返回输出结果
         return null;
     }

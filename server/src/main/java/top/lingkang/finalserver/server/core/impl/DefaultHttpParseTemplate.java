@@ -8,6 +8,7 @@ import org.thymeleaf.util.Validate;
 import top.lingkang.finalserver.server.core.FinalServerProperties;
 import top.lingkang.finalserver.server.core.HttpParseTemplate;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -39,8 +40,8 @@ public class DefaultHttpParseTemplate implements HttpParseTemplate {
     }
 
     @Override
-    public String getTemplate(String template, Map map) throws Exception {
-        return templateEngine.process(template, new TemplateContext(Locale.ROOT, map));
+    public byte[] getTemplate(String template, Map map) throws Exception {
+        return templateEngine.process(template, new TemplateContext(Locale.ROOT, map)).getBytes(StandardCharsets.UTF_8);
     }
 
     private class TemplateContext implements IContext {

@@ -105,7 +105,9 @@ FinalServerContext.currentContext()
 
 ## 特点
 
+* 相较于 `springboot` 运行内存减半
 * http处理
+* 自带基于RPC角色鉴权
 * websocket
 * filter功能
 * web监听
@@ -113,3 +115,10 @@ FinalServerContext.currentContext()
 * 文件上传、文件下载
 * 静态文件映射，文件断点续传
 * web session管理
+
+
+## 局限性
+
+> 新的web生态也有局限性
+
+* 未实现JTA，无法把事务交由`spring`管理，即无法使用`spring-tx`的功能，事务需要自己手动管理。

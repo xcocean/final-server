@@ -9,6 +9,18 @@ session:[[${session}]]
 <hr>
 <video width="320" height="240" controls src="/mp4中文.mp4"></video>
 <hr>
+request headers:<br>
 [[${request.getHeaders()}]]
+<hr>
+[[${session}]]
+<br>
+是否登录了：[[${session.final_isLogin==null?"false":session.final_isLogin}]]
+<br>
+登录的用户：[[${session.final_loginUsername}]]
+<br>
+用户拥有的角色：[[${session.final_hasRoles}]]
+<br>
+<!-- Thymeleaf 遍历-->
+<span th:each="item:${session.final_hasRoles}">[[${item}]]，</span>
 </body>
 </html>

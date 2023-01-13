@@ -20,7 +20,7 @@ public class WebApp {
 
     @GET // 默认 url=/
     public void index(FinalServerContext context) {
-        context.getResponse().returnString("hello, final server");
+        context.getResponse().returnTemplate("index");
     }
 
     @GET("/t")

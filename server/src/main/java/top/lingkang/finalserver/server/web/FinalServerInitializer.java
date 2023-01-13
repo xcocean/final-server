@@ -39,7 +39,8 @@ public class FinalServerInitializer {
         if (beanNamesForType.length > 0) {
             for (String name : beanNamesForType) {
 
-                LocalStaticMapping bean = (LocalStaticMapping) applicationContext.getBean(name);
+                LocalStaticMapping bean = applicationContext.getBean(name, LocalStaticMapping.class);
+                bean.init();
                 for (String path : bean.getPaths()) {
                     handlers.add(new LocalStaticRequestHandler(path));
                     log.info("本地静态文件映射：" + path);
@@ -56,6 +57,12 @@ public class FinalServerInitializer {
             for (String name : namesForType) {
                 Filter filter = (Filter) applicationContext.getBean(name);
                 filter.init();// 初始化
+                FinalServerApplication.addShutdownHook(new ShutdownEvent() {
+                    @Override
+                    public void shutdown() throws Exception {
+                        filter.destroy();
+                    }
+                });
                 list.add(filter);
             }
 
