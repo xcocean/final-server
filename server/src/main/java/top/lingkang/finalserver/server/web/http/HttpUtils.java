@@ -1,8 +1,5 @@
 package top.lingkang.finalserver.server.web.http;
 
-import cn.hutool.http.HttpRequest;
-import cn.hutool.http.HttpResponse;
-import cn.hutool.http.Method;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -12,12 +9,9 @@ import io.netty.handler.codec.http.cookie.ServerCookieEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.lingkang.finalserver.server.core.FinalServerConfiguration;
-import top.lingkang.finalserver.server.core.FinalServerProperties;
-import top.lingkang.finalserver.server.error.FinalServerException;
 
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -112,15 +106,6 @@ public final class HttpUtils {
      * 自定义返回httpResponse
      */
     public static void sendResponse(ChannelHandlerContext context, Response httpResponse, int statusCode) throws Exception {
-        // 先判断是否是转发
-        if (httpResponse.getForwardPath() != null) {
-            Request request = FinalServerContext.currentContext().getRequest();
-            if (request.getPath().equals(httpResponse.getForwardPath()))
-                throw new FinalServerException("不能转发到相同的请求路径: " + request.getPath());
-
-            httpForwardRequest(httpResponse.getForwardPath(), request, context);
-            return;
-        }
         FullHttpResponse response = new DefaultFullHttpResponse(
                 HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(statusCode),
                 Unpooled.copiedBuffer(httpResponse.getContent())
@@ -210,7 +195,7 @@ public final class HttpUtils {
      * 请求转发，使用http再次请求。存在局限性：
      * 例如不能转发文件下载、大数据内容（MB级别数据）
      */
-    public static void httpForwardRequest(String forwardPath, Request request, ChannelHandlerContext ctx) throws Exception {
+    /*public static void httpForwardRequest(String forwardPath, Request request, ChannelHandlerContext ctx) throws Exception {
         try {
             HttpRequest httpRequest = HttpRequest.of("http://127.0.0.1:" + FinalServerProperties.server_port + forwardPath, StandardCharsets.UTF_8);
             for (String name : request.getHeaders().names()) {
@@ -249,5 +234,5 @@ public final class HttpUtils {
             log.error("请求转发失败，例如不能转发文件下载、大数据内容（MB级别数据）");
             throw e;
         }
-    }
+    }*/
 }

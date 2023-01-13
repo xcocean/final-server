@@ -102,12 +102,6 @@
                 <version>5.8.11</version>
             </dependency>
 
-            <dependency>
-                <groupId>cn.hutool</groupId>
-                <artifactId>hutool-http</artifactId>
-                <version>5.8.11</version>
-            </dependency>
-
             <!--https://github.com/alibaba/fastjson2-->
             <dependency>
                 <groupId>com.alibaba.fastjson2</groupId>

@@ -1,20 +1,13 @@
 package top.lingkang.finalserver.server.utils;
 
 import cn.hutool.core.io.FileUtil;
-import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.*;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.http.*;
-import io.netty.handler.stream.ChunkedWriteHandler;
+import io.netty.handler.codec.http.HttpHeaderNames;
+import io.netty.handler.codec.http.HttpHeaders;
 import top.lingkang.finalserver.server.core.FinalServerConfiguration;
-import top.lingkang.finalserver.server.core.FinalServerProperties;
 import top.lingkang.finalserver.server.core.WebListener;
 import top.lingkang.finalserver.server.web.entity.ResponseFile;
 import top.lingkang.finalserver.server.web.http.FinalServerContext;
 import top.lingkang.finalserver.server.web.http.StaticMimes;
-import top.lingkang.finalserver.server.web.nio.FinalHttpObjectAggregator;
 
 import java.net.URLEncoder;
 
@@ -26,8 +19,7 @@ import java.net.URLEncoder;
 public class CommonUtils {
     public static void setResponseHeadName(ResponseFile responseFile, HttpHeaders headers) throws Exception {
         int index = responseFile.getFilePath().lastIndexOf(".");
-        if (index == -1)
-            return;
+        if (index == -1) return;
 
         if (!headers.contains(HttpHeaderNames.CONTENT_TYPE)) {
             String type = StaticMimes.get(responseFile.getFilePath().substring(index));
@@ -37,8 +29,7 @@ public class CommonUtils {
             if (responseFile.isDownload() && !headers.contains(HttpHeaderNames.CONTENT_DISPOSITION)) {
                 if (responseFile.getName() == null)// 设置名称
                     responseFile.setName(FileUtil.getName(responseFile.getFilePath()));
-                headers.set(HttpHeaderNames.CONTENT_DISPOSITION, "attachment;filename="
-                        + URLEncoder.encode(responseFile.getName(), "UTF-8"));
+                headers.set(HttpHeaderNames.CONTENT_DISPOSITION, "attachment;filename=" + URLEncoder.encode(responseFile.getName(), "UTF-8"));
             }
         }
     }

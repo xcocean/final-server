@@ -13,6 +13,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.lingkang.finalserver.server.core.FinalServerConfiguration;
 import top.lingkang.finalserver.server.core.FinalServerProperties;
+import top.lingkang.finalserver.server.error.FinalServerException;
+import top.lingkang.finalserver.server.utils.BeanUtils;
 import top.lingkang.finalserver.server.utils.CommonUtils;
 import top.lingkang.finalserver.server.web.FinalServerInitializer;
 
@@ -34,25 +36,41 @@ class HandlerHttpRequest extends SimpleChannelInboundHandler<FinalServerContext>
         this.context = context;
         try {
             CommonUtils.pushWebListenerBefore(context);
+            Request request = context.getRequest();
             // 在此更新会话访问
-            context.getRequest().getSession().updateLastAccessTime();
+            request.getSession().updateLastAccessTime();
             // 过滤器
             new FilterChain(FinalServerInitializer.filters, FinalServerInitializer.requestHandlers).doFilter(context);
-
-            if (context.getResponse().isReady()) {
-                Response res = context.getResponse();
-                if (res.getResponseFile() != null) {
-                    returnStaticFile(res.getResponseFile().getFilePath(), ctx);
+            Response response = context.getResponse();
+            if (response.isReady()) {
+                if (response.getResponseFile() != null) {
+                    returnStaticFile(response.getResponseFile().getFilePath(), ctx);
                     return;
                 }
 
-                if (res.isTemplate()) {
+                if (response.isTemplate()) {
                     HttpUtils.sendTemplate(
                             ctx,
-                            FinalServerConfiguration.httpParseTemplate.getTemplate(res.getTemplatePath(), HttpUtils.getReturnFinalTemplateMap(context)),
+                            FinalServerConfiguration.httpParseTemplate.getTemplate(
+                                    response.getTemplatePath(),
+                                    HttpUtils.getReturnFinalTemplateMap(context)),
                             200);
-                } else // 其他内容
-                    HttpUtils.sendResponse(ctx, res, res.getStatusCode());
+                } else { // 其他内容
+                    if (response.getForwardPath() != null) {
+                        if (request.getPath().equals(response.getForwardPath())) {
+                            throw new FinalServerException("006请求路径不能与转发路径相同！请求路径：" + request.getPath() + "  转发路径：" + request.getPath());
+                        }
+                        request.getFullHttpRequest().setUri(response.getForwardPath());
+                        // 修改转发参数初始化 // 追加转发参数
+                        QueryStringDecoder queryUri = (QueryStringDecoder) BeanUtils.getAttributeValue(request, "queryUri");
+                        BeanUtils.updateAttributeValue(queryUri, "path", response.getForwardPath());
+                        BeanUtils.updateAttributeValue(request, "queryUri", queryUri);
+                        BeanUtils.updateAttributeValue(response, "isReady", false);
+                        // 过滤器
+                        new FilterChain(FinalServerInitializer.filters, FinalServerInitializer.requestHandlers).doFilter(context);
+                    }
+                    HttpUtils.sendResponse(ctx, response, response.getStatusCode());
+                }
             } else {// 返回 404
                 FinalServerConfiguration.webExceptionHandler.notHandler(ctx);
             }

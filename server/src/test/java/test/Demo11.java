@@ -7,9 +7,12 @@ import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.http.*;
+import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.handler.codec.http.FullHttpResponse;
+import io.netty.handler.codec.http.HttpClientCodec;
 import io.netty.util.CharsetUtil;
 import top.lingkang.finalserver.server.core.FinalServerProperties;
+import top.lingkang.finalserver.server.web.http.FinalServerContext;
 import top.lingkang.finalserver.server.web.nio.FinalHttpObjectAggregator;
 
 /**
@@ -18,9 +21,17 @@ import top.lingkang.finalserver.server.web.nio.FinalHttpObjectAggregator;
  */
 public class Demo11 {
     public static void main(String[] args) throws Exception {
+
+    }
+
+    public static void forwardRequestHandler(ChannelHandlerContext handlerContext) {
         EventLoopGroup group = new NioEventLoopGroup(1);
         try {
-            ForwardRequestHandler forwardRequestHandler = new ForwardRequestHandler(null, null, null);
+            FinalServerContext context = FinalServerContext.currentContext();
+            ForwardRequestHandler forwardRequestHandler = new ForwardRequestHandler(
+                    context.getRequest().getFullHttpRequest(),
+                    context.getResponse().getForwardPath()
+            );
             Bootstrap b = new Bootstrap();
             b.group(group)
                     .channel(NioSocketChannel.class)
@@ -42,6 +53,7 @@ public class Demo11 {
             f.channel().closeFuture().sync();
             System.out.println(5);
             System.out.println(forwardRequestHandler.response != null);
+            handlerContext.writeAndFlush(forwardRequestHandler.response).addListener(ChannelFutureListener.CLOSE);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -51,14 +63,12 @@ public class Demo11 {
     }
 
     static class ForwardRequestHandler extends SimpleChannelInboundHandler<FullHttpResponse> {
-        private ChannelHandlerContext context;
         private FullHttpRequest request;
         private String forwardPath;
         public volatile FullHttpResponse response;
 
 
-        public ForwardRequestHandler(ChannelHandlerContext context, FullHttpRequest request, String forwardPath) {
-            this.context = context;
+        public ForwardRequestHandler(FullHttpRequest request, String forwardPath) {
             this.request = request;
             this.forwardPath = forwardPath;
         }
@@ -69,8 +79,8 @@ public class Demo11 {
             FullHttpRequest request = new DefaultFullHttpRequest(HttpVersion.HTTP_1_0, HttpMethod.GET, uri.toASCIIString());
             request.headers().add(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
             request.headers().add(HttpHeaderNames.CONTENT_LENGTH, request.content().readableBytes());*/
-            request = new DefaultFullHttpRequest(HttpVersion.HTTP_1_0, HttpMethod.GET, "http://lingkang.top:80");
-            request.setUri("/");
+            // request = new DefaultFullHttpRequest(HttpVersion.HTTP_1_0, HttpMethod.GET, "http://lingkang.top:80");
+            request.setUri(forwardPath);
             ctx.writeAndFlush(request);
             System.out.println(1);
         }

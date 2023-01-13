@@ -101,4 +101,15 @@ public class BeanUtils {
         return (AdvisedSupport) advised.get(dynamicAdvisedInterceptor);
     }
 
+    public static void updateAttributeValue(Object obj, String attributeName, Object value) throws Exception {
+        Field field = obj.getClass().getDeclaredField(attributeName);
+        field.setAccessible(true);
+        field.set(obj, value);
+    }
+
+    public static Object getAttributeValue(Object obj, String attributeName) throws Exception {
+        Field field = obj.getClass().getDeclaredField(attributeName);
+        field.setAccessible(true);
+        return field.get(obj);
+    }
 }

@@ -26,6 +26,6 @@ public class Test03WebApp {
     @GET("/f")
     public void f(FinalServerContext context) {
         // 转发
-        context.getResponse().returnForward("/");
+        context.getResponse().returnForward("/f");
     }
 }
