@@ -36,7 +36,7 @@ public class FinalSecurityConfiguration implements Filter {
     public void doFilter(FinalServerContext context, FilterChain filterChain) throws Exception {
         try {
             String path = context.getRequest().getPath();
-            // 缓存相关
+            // 缓存相关自动session清理完成
             if (properties.getCheckPathCache().getExcludePath().contains(path)) {
                 filterChain.doFilter(context);
                 return;

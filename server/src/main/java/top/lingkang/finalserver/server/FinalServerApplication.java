@@ -95,6 +95,9 @@ public class FinalServerApplication {
 
     private static List<ShutdownEvent> shutdownEventList = new ArrayList<>();
 
+    /**
+     * 正常结束程序时执行，它是不可靠的。因为进程被杀死 kill -9 是不会执行下面的事件的
+     */
     public static void addShutdownHook(ShutdownEvent shutdownEvent) {
         shutdownEventList.add(shutdownEvent);
     }

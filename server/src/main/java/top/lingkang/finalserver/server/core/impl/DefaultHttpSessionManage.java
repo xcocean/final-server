@@ -53,7 +53,7 @@ public class DefaultHttpSessionManage implements HttpSessionManage {
                 }
                 for (String key : removeList)
                     sessionMap.remove(key);
-                log.info("自动session清理完成，清理session个数：{}", removeList.size());
+                log.info("自动session清理完成，清理session个数：{} ，剩余session个数： {}", removeList.size(), sessionMap.size());
                 temp = null;
                 removeList = null;
             }

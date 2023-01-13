@@ -57,6 +57,12 @@ public class FinalServerInitializer {
             for (String name : namesForType) {
                 Filter filter = (Filter) applicationContext.getBean(name);
                 filter.init();// 初始化
+                FinalServerApplication.addShutdownHook(new ShutdownEvent() {
+                    @Override
+                    public void shutdown() throws Exception {
+                        filter.destroy();
+                    }
+                });
                 list.add(filter);
             }
 
