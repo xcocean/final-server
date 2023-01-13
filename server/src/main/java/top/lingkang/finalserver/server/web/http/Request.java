@@ -1,5 +1,6 @@
 package top.lingkang.finalserver.server.web.http;
 
+import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.cookie.Cookie;
@@ -20,6 +21,8 @@ public interface Request {
 
     String getParam(String name);
 
+
+
     List<MultipartFile> getFileUpload();
 
     String getHeader(String name);
@@ -39,4 +42,6 @@ public interface Request {
     Session getSession();
 
     void release();
+
+    FullHttpRequest getFullHttpRequest();
 }

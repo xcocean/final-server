@@ -163,6 +163,11 @@ public class HttpRequest implements Request {
         }
     }
 
+    @Override
+    public FullHttpRequest getFullHttpRequest() {
+        return msg;
+    }
+
     // 首次获取时再实例化，提升性能
     private void checkQueryUri() {
         if (queryUri == null)

@@ -1,17 +1,30 @@
 package top.lingkang.finalserver.server.web.http;
 
+import io.netty.bootstrap.Bootstrap;
+import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.*;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.http.*;
 import io.netty.handler.codec.http.cookie.Cookie;
 import io.netty.handler.codec.http.cookie.ServerCookieEncoder;
+import io.netty.util.CharsetUtil;
 import top.lingkang.finalserver.server.core.FinalServerConfiguration;
+import top.lingkang.finalserver.server.core.FinalServerProperties;
+import top.lingkang.finalserver.server.error.FinalServerException;
 
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.sql.PseudoColumnUsage;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
@@ -101,7 +114,16 @@ public final class HttpUtils {
     /**
      * 自定义返回httpResponse
      */
-    public static void sendResponse(ChannelHandlerContext context, Response httpResponse, int statusCode) {
+    public static void sendResponse(ChannelHandlerContext context, Response httpResponse, int statusCode) throws Exception {
+        // 先判断是否是转发
+        if (httpResponse.getForwardPath() != null) {
+            Request request = FinalServerContext.currentContext().getRequest();
+            if (request.getPath().equals(httpResponse.getForwardPath()))
+                throw new FinalServerException("不能转发到相同的请求路径: " + request.getPath());
+
+            httpForwardRequest(httpResponse.getForwardPath(), FinalServerContext.currentContext().getRequest().getFullHttpRequest(), context);
+            return;
+        }
         FullHttpResponse response = new DefaultFullHttpResponse(
                 HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(statusCode),
                 Unpooled.copiedBuffer(httpResponse.getContent())
@@ -177,5 +199,104 @@ public final class HttpUtils {
         templateMap.put("request", context.getRequest());
         templateMap.put("session", context.getRequest().getSession().getAttributeMap());
         return templateMap;
+    }
+
+
+    // -----------------------------------------------------------------------------------------------------------------
+    public static void httpForwardRequest(String forwardPath, FullHttpRequest request, ChannelHandlerContext channel) throws Exception {
+        BufferedWriter out = null;
+        BufferedReader in = null;
+        HttpURLConnection conn = null;
+        try {
+            // System.out.print(FinalServerContext.currentContext().getRequest().getParam());
+            URL url = new URL("http://127.0.0.1:" + FinalServerProperties.server_port + forwardPath);
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod(request.method().name());
+            conn.setDoOutput(true);
+            conn.setDoInput(true);
+            // 设置连接超时时间
+            conn.setConnectTimeout(5000);
+            // 设置读取超时时间
+            conn.setReadTimeout(5000);
+            // 参数
+            /*if (param != null) {
+                String params = "";
+                Set<Entry<String, Object>> entrys = param.entrySet();
+                for (Entry<String, Object> entry : entrys) {
+                    params = params
+                            + String.format("%s=%s&", entry.getKey(),
+                            entry.getValue());
+                }
+                params = params.substring(0, params.lastIndexOf("&"));
+                out = new BufferedWriter(new OutputStreamWriter(
+                        conn.getOutputStream(), "UTF-8"));
+                out.write(params);
+                out.flush();
+            }*/
+            // 接收返回结果
+            StringBuilder result = new StringBuilder();
+            in = new BufferedReader(new InputStreamReader(
+                    conn.getInputStream(), StandardCharsets.UTF_8));
+            String line = "";
+            while ((line = in.readLine()) != null) {
+                result.append(line);
+            }
+            System.out.println(result);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (in != null) {
+                    in.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            // 关闭连接
+            if (conn != null) {
+                conn.disconnect();
+            }
+        }
+        sendEmpty(channel, 200);
+    }
+
+    static class ForwardRequestHandler extends ChannelInboundHandlerAdapter {
+        private ChannelHandlerContext context;
+        private FullHttpRequest request;
+        private String forwardPath;
+
+        public ForwardRequestHandler(ChannelHandlerContext context, FullHttpRequest request, String forwardPath) {
+            this.context = context;
+            this.request = request;
+            this.forwardPath = forwardPath;
+        }
+
+        @Override
+        public void channelActive(ChannelHandlerContext ctx) throws Exception {
+            /*URI uri = new URI("/");
+            FullHttpRequest request = new DefaultFullHttpRequest(HttpVersion.HTTP_1_0, HttpMethod.GET, uri.toASCIIString());
+            request.headers().add(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
+            request.headers().add(HttpHeaderNames.CONTENT_LENGTH, request.content().readableBytes());*/
+            request.setUri(forwardPath);
+            ctx.writeAndFlush(request);
+        }
+
+        @Override
+        public void channelRead(ChannelHandlerContext ctx, Object msg)
+                throws Exception {
+            System.out.println("msg -> " + msg);
+            if (msg instanceof FullHttpResponse) {
+                FullHttpResponse response = (FullHttpResponse) msg;
+                ByteBuf buf = response.content();
+                String result = buf.toString(CharsetUtil.UTF_8);
+                System.out.println("response -> " + result);
+                context.writeAndFlush(response).addListener(new ChannelFutureListener() {
+                    @Override
+                    public void operationComplete(ChannelFuture future) {
+                        future.channel().close();
+                    }
+                });
+            }
+        }
     }
 }

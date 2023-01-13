@@ -41,7 +41,7 @@ public class DefaultWebExceptionHandler implements WebExceptionHandler {
         HttpUtils.sendString(context, "404", 404);
     }
 
-    private String getErrorMsg(Throwable cause) {
+    public String getErrorMsg(Throwable cause) {
         if (cause.getMessage() != null)
             return cause.getMessage();
         return getErrorMsg(cause.getCause());

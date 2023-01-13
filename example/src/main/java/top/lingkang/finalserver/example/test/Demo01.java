@@ -1,7 +1,6 @@
 package top.lingkang.finalserver.example.test;
 
 import cn.hutool.core.io.FileUtil;
-import cn.hutool.core.io.resource.ResourceUtil;
 import io.netty.handler.codec.http.cookie.Cookie;
 import io.netty.handler.codec.http.cookie.DefaultCookie;
 import top.lingkang.finalserver.server.FinalServerApplication;
@@ -72,7 +71,7 @@ public class Demo01 {
 
     @GET("/r")
     public void r(HttpResponse response) {
-        response.sendRedirect("");
+        response.returnRedirect("");
     }
 
     @GET("t")

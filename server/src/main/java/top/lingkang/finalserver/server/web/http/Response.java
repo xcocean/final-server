@@ -4,7 +4,6 @@ import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.cookie.Cookie;
 import top.lingkang.finalserver.server.web.entity.ResponseFile;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -20,7 +19,7 @@ public interface Response {
 
     HttpHeaders getHeaders();
 
-    void returnString(String obj);
+    void returnString(String str);
 
     void returnJsonObject(Object json);
 
@@ -32,6 +31,12 @@ public interface Response {
     void returnFile(ResponseFile responseFile);
 
     void returnBytes(byte[] bytes);
+
+    // 请求转发
+    void returnForward(String forwardPath);
+
+    // 重定向
+    void returnRedirect(String url);
 
     // 设置响应http的状态码，默认 200
     void setStatusCode(int code);
@@ -51,13 +56,11 @@ public interface Response {
 
     Map<String, Object> getTemplateMap();
 
-    // 重定向
-    void sendRedirect(String url);
-
     ResponseFile getResponseFile();
 
     int getStatusCode();
 
     byte[] getContent();
 
+    String getForwardPath();
 }

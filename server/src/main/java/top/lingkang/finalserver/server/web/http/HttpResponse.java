@@ -10,7 +10,6 @@ import top.lingkang.finalserver.server.error.FinalServerException;
 import top.lingkang.finalserver.server.web.entity.ResponseFile;
 
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -29,9 +28,10 @@ public class HttpResponse implements Response {
     private boolean isTemplate;
     private String templatePath;
     private Map<String, Object> map;
-    private byte[] content;
+    private byte[] content = new byte[0];
     private int code = 200;
     private Set<Cookie> cookies = new TreeSet<>();
+    private String forwardPath;
 
     public HttpResponse(ChannelHandlerContext ctx) {
         this.ctx = ctx;
@@ -43,10 +43,10 @@ public class HttpResponse implements Response {
     }
 
     @Override
-    public void returnString(String obj) {
+    public void returnString(String str) {
         checkReady();
-        if (obj != null) {
-            content = obj.getBytes(StandardCharsets.UTF_8);
+        if (str != null) {
+            content = str.getBytes(StandardCharsets.UTF_8);
             if (!headers.contains(HttpHeaderNames.CONTENT_TYPE))
                 headers.set(HttpHeaderNames.CONTENT_TYPE, "text/plain; charset=UTF-8");
         }
@@ -92,10 +92,27 @@ public class HttpResponse implements Response {
     }
 
     @Override
+    public void returnForward(String forwardPath) {
+        checkReady();
+        isReady = true;
+        this.forwardPath = forwardPath;
+    }
+
+    @Override
     public void returnBytes(byte[] bytes) {
         checkReady();
         isReady = true;
         this.content = bytes;
+    }
+
+    @Override
+    public void returnRedirect(String url) {
+        checkReady();
+        isReady = true;
+        code = 302;
+        if (StrUtil.isBlank(url))
+            url = "/";
+        headers.set(HttpHeaderNames.LOCATION, url);
     }
 
     @Override
@@ -139,14 +156,6 @@ public class HttpResponse implements Response {
     }
 
     @Override
-    public void sendRedirect(String url) {
-        code = 302;
-        if (StrUtil.isBlank(url))
-            url = "/";
-        headers.set(HttpHeaderNames.LOCATION, url);
-    }
-
-    @Override
     public ResponseFile getResponseFile() {
         return responseFile;
     }
@@ -154,6 +163,11 @@ public class HttpResponse implements Response {
     @Override
     public int getStatusCode() {
         return code;
+    }
+
+    @Override
+    public String getForwardPath() {
+        return forwardPath;
     }
 
     private void checkReady() {

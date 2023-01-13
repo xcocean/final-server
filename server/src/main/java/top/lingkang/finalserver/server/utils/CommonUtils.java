@@ -1,13 +1,20 @@
 package top.lingkang.finalserver.server.utils;
 
 import cn.hutool.core.io.FileUtil;
-import io.netty.handler.codec.http.HttpHeaderNames;
-import io.netty.handler.codec.http.HttpHeaders;
+import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.*;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.http.*;
+import io.netty.handler.stream.ChunkedWriteHandler;
 import top.lingkang.finalserver.server.core.FinalServerConfiguration;
+import top.lingkang.finalserver.server.core.FinalServerProperties;
 import top.lingkang.finalserver.server.core.WebListener;
 import top.lingkang.finalserver.server.web.entity.ResponseFile;
 import top.lingkang.finalserver.server.web.http.FinalServerContext;
 import top.lingkang.finalserver.server.web.http.StaticMimes;
+import top.lingkang.finalserver.server.web.nio.FinalHttpObjectAggregator;
 
 import java.net.URLEncoder;
 

@@ -7,6 +7,7 @@ import top.lingkang.finalserver.server.annotation.FinalServerBoot;
 import top.lingkang.finalserver.server.annotation.GET;
 import top.lingkang.finalserver.server.core.FinalServerConfiguration;
 import top.lingkang.finalserver.server.core.impl.DefaultWebExceptionHandler;
+import top.lingkang.finalserver.server.web.http.FinalServerContext;
 import top.lingkang.finalserver.server.web.http.HttpUtils;
 
 import java.util.HashMap;
@@ -44,6 +45,12 @@ public class Test02WebApp {
     public String e() throws Exception {
         if (1 == 1)
             throw new RuntimeException("6666666");
+        return "ok";
+    }
+
+    @GET("/r")
+    public String r() throws Exception {
+        FinalServerContext.currentContext().getResponse().returnRedirect("/e");
         return "ok";
     }
 }
