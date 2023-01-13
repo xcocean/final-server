@@ -18,9 +18,9 @@ import java.util.Map;
  **/
 @Controller
 @FinalServerBoot
-public class WebApp {
+public class Test02WebApp {
     public static void main(String[] args) {
-        FinalServerApplication.run(WebApp.class, args);
+        FinalServerApplication.run(Test02WebApp.class, args);
     }
 
     @GET("")

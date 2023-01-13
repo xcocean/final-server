@@ -64,7 +64,7 @@ class HandlerHttpRequest extends SimpleChannelInboundHandler<FinalServerContext>
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         // http处理后仍出现异常
-        log.warn("http处理后仍出现异常，请检查异常处理是否异常。");
+        log.error("http异常处理后仍出现异常，请检查异常处理是否正确：", cause);
         if (ctx.channel().isActive()) {// 未关闭时手动关闭
             HttpUtils.sendString(ctx, "服务错误", 500);
         }
