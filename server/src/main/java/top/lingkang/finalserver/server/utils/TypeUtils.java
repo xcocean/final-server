@@ -1,5 +1,8 @@
 package top.lingkang.finalserver.server.utils;
 
+import cn.hutool.core.convert.BasicType;
+import top.lingkang.finalserver.server.annotation.NotNull;
+
 /**
  * @author lingkang
  * Created by 2023/1/14
@@ -18,5 +21,12 @@ public class TypeUtils {
         else if (type == Float.class || type == float.class)
             return Float.parseFloat(str);
         return null;
+    }
+
+    /**
+     * 判断是否是基础类型，或其包装类
+     */
+    public static boolean isBaseType(@NotNull Class<?> clazz) {
+        return clazz.isPrimitive() || BasicType.WRAPPER_PRIMITIVE_MAP.containsKey(clazz);
     }
 }

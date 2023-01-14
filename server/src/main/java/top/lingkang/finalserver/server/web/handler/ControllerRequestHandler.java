@@ -1,16 +1,17 @@
 package top.lingkang.finalserver.server.web.handler;
 
-import cn.hutool.core.util.ObjectUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import top.lingkang.finalserver.server.core.FinalServerConfiguration;
+import top.lingkang.finalserver.server.web.entity.CacheRequestHandler;
 import top.lingkang.finalserver.server.web.entity.RequestInfo;
 import top.lingkang.finalserver.server.web.http.FinalServerContext;
 import top.lingkang.finalserver.server.web.http.ViewTemplate;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author lingkang
@@ -19,9 +20,10 @@ import java.util.HashMap;
  */
 public class ControllerRequestHandler implements RequestHandler {
     private static final Logger log = LoggerFactory.getLogger(ControllerRequestHandler.class);
-    private HashMap<String, RequestInfo> absolutePath = new HashMap<>();
+    private HashMap<String, RequestInfo> absolutePath;
     private ApplicationContext applicationContext;
     private MethodHandlerParam handlerParam = new MethodHandlerParam();
+    public static Map<String, CacheRequestHandler> cacheRequestHandler = new HashMap<>();
 
     public ControllerRequestHandler(HashMap<String, RequestInfo> absolutePath, ApplicationContext applicationContext) {
         this.absolutePath = absolutePath;
@@ -29,23 +31,33 @@ public class ControllerRequestHandler implements RequestHandler {
     }
 
     public boolean handler(FinalServerContext context) throws Exception {
-        RequestInfo requestInfo = absolutePath.get(context.getRequest().getHttpMethod().name() + "_" + context.getRequest().getPath());
+        String reqURL = context.getRequest().getHttpMethod().name() + "_" + context.getRequest().getPath();
+        RequestInfo requestInfo = absolutePath.get(reqURL);
         if (requestInfo != null) {
             if (requestInfo.getBeanName() == null) {// 自定义的请求处理
                 requestInfo.getCustomRequestHandler().handler(context);
                 return true;
             }
-            Object bean = applicationContext.getBean(requestInfo.getBeanName());
-            Method method = bean.getClass().getDeclaredMethod(requestInfo.getMethodName(), requestInfo.getParamType());
+
+            // 缓存
+            CacheRequestHandler handler = cacheRequestHandler.get(reqURL);
+            if (handler == null) {
+                // 没有时从上下文中获取
+                Object bean = applicationContext.getBean(requestInfo.getBeanName());
+                Method method = bean.getClass().getDeclaredMethod(requestInfo.getMethodName(), requestInfo.getParamType());
+                handler = new CacheRequestHandler(bean, method);
+                cacheRequestHandler.put(reqURL, handler);
+            }
+
             Object[] param = joinParam(requestInfo, context);
-            Object result = method.invoke(bean, param);
+            Object result = handler.getMethod().invoke(handler.getBean(), param);
             if (context.getResponse().isReady())
                 return true;
+
+            // 无模板，返回值时
             if (result == null) {
                 // 返回空时，直接输出空字符串
                 context.getResponse().returnString("");
-            } else if (ObjectUtil.isBasicType(result)) {
-                context.getResponse().returnBytes(FinalServerConfiguration.serializable.jsonTo(result));
             } else if (result instanceof ViewTemplate) {// 返回视图模板时
                 ViewTemplate template = (ViewTemplate) result;
                 if (context.getResponse().getTemplateMap() == null) {
@@ -55,8 +67,8 @@ public class ControllerRequestHandler implements RequestHandler {
                     context.getResponse().returnTemplate(template.getTemplate());
                 }
             } else {
-                // 其他结果返回toString
-                context.getResponse().returnString(result.toString());
+                // 其他结果返回JSON格式化尝试
+                context.getResponse().returnBytes(FinalServerConfiguration.serializable.jsonTo(result));
             }
         }
         return true;

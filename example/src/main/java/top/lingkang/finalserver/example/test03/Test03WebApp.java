@@ -6,6 +6,9 @@ import top.lingkang.finalserver.server.annotation.FinalServerBoot;
 import top.lingkang.finalserver.server.annotation.GET;
 import top.lingkang.finalserver.server.web.http.FinalServerContext;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author lingkang
  * 2023/1/13
@@ -18,9 +21,14 @@ public class Test03WebApp {
     }
 
     @GET("")
-    public String index(String a) {
+    public Object index(String a) {
         System.out.println(a);
-        return "index:666中文：" + a;
+        Map map = new HashMap();
+        map.put("hello", "asdasdsadsaas");
+        // return map;
+        MyUser myUser = new MyUser();
+        myUser.setUsername("asd");
+        return myUser;
     }
 
     @GET("/f")
