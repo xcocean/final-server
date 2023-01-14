@@ -9,6 +9,10 @@ public class FinalServerException extends RuntimeException{
         super(message);
     }
 
+    public FinalServerException(Throwable cause) {
+        super(cause);
+    }
+
     public FinalServerException(String message, Throwable cause) {
         super(message, cause);
     }
