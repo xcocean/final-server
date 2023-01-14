@@ -39,7 +39,7 @@ class HandlerHttpRequest extends SimpleChannelInboundHandler<FinalServerContext>
             Request request = context.getRequest();
             // 在此更新会话访问
             request.getSession().updateLastAccessTime();
-            // 过滤器
+            // 过滤器、处理链
             new FilterChain(FinalServerInitializer.filters, FinalServerInitializer.requestHandlers).doFilter(context);
             Response response = context.getResponse();
             if (response.isReady()) {
@@ -56,7 +56,7 @@ class HandlerHttpRequest extends SimpleChannelInboundHandler<FinalServerContext>
                                     HttpUtils.getReturnFinalTemplateMap(context)),
                             200);
                 } else { // 其他内容
-                    if (response.getForwardPath() != null) {
+                    if (response.getForwardPath() != null) {// 是否使用了转发
                         if (request.getPath().equals(response.getForwardPath())) {
                             throw new FinalServerException("006请求路径不能与转发路径相同！请求路径：" + request.getPath() + "  转发路径：" + request.getPath());
                         }
@@ -66,7 +66,7 @@ class HandlerHttpRequest extends SimpleChannelInboundHandler<FinalServerContext>
                         BeanUtils.updateAttributeValue(queryUri, "path", response.getForwardPath());
                         BeanUtils.updateAttributeValue(request, "queryUri", queryUri);
                         BeanUtils.updateAttributeValue(response, "isReady", false);
-                        // 过滤器
+                        // 过滤器、处理链
                         new FilterChain(FinalServerInitializer.filters, FinalServerInitializer.requestHandlers).doFilter(context);
                     }
                     HttpUtils.sendResponse(ctx, response, response.getStatusCode());

@@ -6,6 +6,7 @@ import io.netty.channel.ChannelHandlerContext;
  * @author lingkang
  * Created by 2022/12/6
  * @since 1.0.0
+ * 上下文会再连接断开时移除
  */
 public class FinalServerContext {
     public FinalServerContext(ChannelHandlerContext ctx) {
