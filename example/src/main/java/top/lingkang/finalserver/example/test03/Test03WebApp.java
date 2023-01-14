@@ -1,6 +1,7 @@
 package top.lingkang.finalserver.example.test03;
 
 import org.springframework.stereotype.Controller;
+import top.lingkang.finalserver.example.test03.dto.ResponseResult;
 import top.lingkang.finalserver.server.FinalServerApplication;
 import top.lingkang.finalserver.server.annotation.FinalServerBoot;
 import top.lingkang.finalserver.server.annotation.GET;
@@ -28,7 +29,8 @@ public class Test03WebApp {
         // return map;
         MyUser myUser = new MyUser();
         myUser.setUsername("asd");
-        return myUser;
+        myUser.setPassword("中文啊实打实很asda2446678偌大的");
+        return new ResponseResult<>().ok("中文啊实打实很asda2446678偌大的");
     }
 
     @GET("/f")

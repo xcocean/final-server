@@ -51,7 +51,7 @@ public final class HttpUtils {
                 Unpooled.copiedBuffer(bytes)
         );
         response.headers().set(HttpHeaderNames.CONTENT_LENGTH, bytes.length);
-        response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain; charset=UTF-8");
+        response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain; charset=utf-8");
         responseBeforeHandler(response);
         context.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
     }
@@ -65,7 +65,7 @@ public final class HttpUtils {
                 Unpooled.copiedBuffer(new byte[0])
         );
         response.headers().set(HttpHeaderNames.CONTENT_LENGTH, 0);
-        // response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain; charset=UTF-8");
+        response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain; charset=utf-8");
         responseBeforeHandler(response);
         context.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
     }
@@ -73,11 +73,8 @@ public final class HttpUtils {
     /**
      * 返回json字符串
      */
-    public static void sendJSON(ChannelHandlerContext context, String json, int statusCode) {
-        if (json == null)
-            sendJSONBytes(context, null, statusCode);
-        else
-            sendJSONBytes(context, json.getBytes(StandardCharsets.UTF_8), statusCode);
+    public static void sendJSONString(ChannelHandlerContext context, String json, int statusCode) {
+        sendJSONBytes(context, json == null ? null : json.getBytes(StandardCharsets.UTF_8), statusCode);
     }
 
     /**
@@ -98,7 +95,7 @@ public final class HttpUtils {
         response.headers().set(HttpHeaderNames.CONTENT_LENGTH, json.length);
         responseBeforeHandler(response);
         // 提升优先级
-        response.headers().set(HttpHeaderNames.CONTENT_TYPE, "application/json; charset=UTF-8");
+        response.headers().set(HttpHeaderNames.CONTENT_TYPE, "application/json; charset=utf-8");
         context.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
     }
 

@@ -68,7 +68,7 @@ public class ControllerRequestHandler implements RequestHandler {
                 }
             } else {
                 // 其他结果返回JSON格式化尝试
-                context.getResponse().returnBytes(FinalServerConfiguration.serializable.jsonTo(result));
+                context.getResponse().returnJsonObject(result);
             }
         }
         return true;

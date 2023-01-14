@@ -8,5 +8,5 @@ package top.lingkang.finalserver.server.constant;
 public final class FinalServerConstants {
     public static final String version = "Final Server 1.0.0";
 
-    public static String encoding = "UTF-8";
+    public static String encoding = "utf-8";
 }

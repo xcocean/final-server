@@ -23,7 +23,7 @@ public class DefaultWebExceptionHandler implements WebExceptionHandler {
         log.error("默认web异常输出：", cause);
         String msg = getErrorMsg(cause);
         String type = FinalServerContext.currentContext().getRequest().getHeaders().get(HttpHeaderNames.CONTENT_TYPE);
-        if (type != null && type.toLowerCase().contains("json")) {
+        if (type != null && type.toLowerCase().contains("application")) {
             JSONObject json = new JSONObject();
             json.put("code", 500);
             json.put("msg", msg);
