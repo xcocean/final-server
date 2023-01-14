@@ -69,14 +69,15 @@ public class HttpRequest implements Request {
     @Override
     public Map<String, String> getParams() {
         Map<String, String> map = new HashMap<>();
-        if (msg.method() == HttpMethod.GET) {
-            checkQueryUri();
-            Map<String, List<String>> parameters = queryUri.parameters();
-            for (Map.Entry<String, List<String>> entry : parameters.entrySet()) {
-                if (!entry.getValue().isEmpty())
-                    map.put(entry.getKey(), entry.getValue().get(0));
-            }
-        } else if (msg.method() == HttpMethod.POST || msg.method() == HttpMethod.PUT || msg.method() == HttpMethod.DELETE) {
+        checkQueryUri();
+        Map<String, List<String>> parameters = queryUri.parameters();
+        for (Map.Entry<String, List<String>> entry : parameters.entrySet()) {
+            if (!entry.getValue().isEmpty())
+                map.put(entry.getKey(), entry.getValue().get(0));
+        }
+
+        // 其他请求的入参，将url的入参覆盖
+        if (msg.method() == HttpMethod.POST || msg.method() == HttpMethod.PUT || msg.method() == HttpMethod.DELETE) {
             checkQueryBody();
             List<InterfaceHttpData> bodyHttpDatas = queryBody.getBodyHttpDatas();
             for (InterfaceHttpData data : bodyHttpDatas) {

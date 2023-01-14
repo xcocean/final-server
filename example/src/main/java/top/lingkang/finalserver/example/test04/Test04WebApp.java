@@ -1,9 +1,7 @@
 package top.lingkang.finalserver.example.test04;
 
 import top.lingkang.finalserver.server.FinalServerApplication;
-import top.lingkang.finalserver.server.annotation.Controller;
-import top.lingkang.finalserver.server.annotation.FinalServerBoot;
-import top.lingkang.finalserver.server.annotation.GET;
+import top.lingkang.finalserver.server.annotation.*;
 
 /**
  * @author lingkang
@@ -23,5 +21,26 @@ public class Test04WebApp {
         if (info != null)
             System.out.println(info.getName() == null);
         return "ok";
+    }
+
+    @POST("/p")
+    public Object p(String name, ParamInfo info) {
+        System.out.println("name=" + name);
+        System.out.println(info);
+        return "post";
+    }
+
+    @PUT("/put")
+    public Object put(String name, ParamInfo info) {
+        System.out.println("name=" + name);
+        System.out.println(info);
+        return "post";
+    }
+
+    @DELETE("/d")
+    public Object d(String name, ParamInfo info) {
+        System.out.println("name=" + name);
+        System.out.println(info);
+        return "post";
     }
 }
