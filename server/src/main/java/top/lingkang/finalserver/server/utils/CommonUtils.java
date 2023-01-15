@@ -1,15 +1,20 @@
 package top.lingkang.finalserver.server.utils;
 
 import cn.hutool.core.io.FileUtil;
+import com.alibaba.fastjson2.JSON;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaders;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import top.lingkang.finalserver.server.core.FinalServerConfiguration;
 import top.lingkang.finalserver.server.core.WebListener;
+import top.lingkang.finalserver.server.error.FinalServerException;
 import top.lingkang.finalserver.server.web.entity.ResponseFile;
 import top.lingkang.finalserver.server.web.http.FinalServerContext;
 import top.lingkang.finalserver.server.web.http.StaticMimes;
 
 import java.net.URLEncoder;
+import java.util.Map;
 
 /**
  * @author lingkang
@@ -17,6 +22,8 @@ import java.net.URLEncoder;
  * @since 1.0.0
  */
 public class CommonUtils {
+    private static final Logger log = LoggerFactory.getLogger(CommonUtils.class);
+
     public static void setResponseHeadName(ResponseFile responseFile, HttpHeaders headers) throws Exception {
         int index = responseFile.getFilePath().lastIndexOf(".");
         if (index == -1) return;
@@ -43,6 +50,19 @@ public class CommonUtils {
     public static void pushWebListenerAfter() throws Exception {
         for (WebListener listener : FinalServerConfiguration.webListener) {
             listener.after();
+        }
+    }
+
+    public static <T> T paramToBean(String name, Class<T> type, FinalServerContext context) {
+        // 此时参数可能是对象
+        try {
+            Map<String, String> params = context.getRequest().getParams();
+            if (params.isEmpty())
+                return null;
+            return JSON.parseObject(JSON.toJSONString(params), type);
+        } catch (Exception e) {
+            log.error("尝试给接收参数对象进行赋值异常，接收入参名称：{}  类型： {}", name, type.getName());
+            throw new FinalServerException(e);
         }
     }
 }

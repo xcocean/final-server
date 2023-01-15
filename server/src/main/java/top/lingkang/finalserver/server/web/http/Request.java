@@ -4,7 +4,6 @@ import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.cookie.Cookie;
-import io.netty.handler.codec.http.multipart.FileUpload;
 
 import java.util.List;
 import java.util.Map;
@@ -21,6 +20,8 @@ public interface Request {
     String getPath();
 
     String getParam(String name);
+
+    <T> T getParamToBean(Class<T> beanClass);
 
     Map<String,String> getParams();
 

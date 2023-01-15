@@ -3,7 +3,6 @@ package top.lingkang.finalserver.server.web.handler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
-import top.lingkang.finalserver.server.core.FinalServerConfiguration;
 import top.lingkang.finalserver.server.web.entity.CacheRequestHandler;
 import top.lingkang.finalserver.server.web.entity.RequestInfo;
 import top.lingkang.finalserver.server.web.http.FinalServerContext;

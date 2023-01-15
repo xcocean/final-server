@@ -15,9 +15,7 @@ import top.lingkang.finalserver.server.web.http.ViewTemplate;
 @Controller
 public class Test05WebApp {
     public static void main(String[] args) {
-        long start = System.currentTimeMillis();
         FinalServerApplication.run(Test05WebApp.class, args);
-        System.out.println(System.currentTimeMillis()-start);
     }
 
     @GET

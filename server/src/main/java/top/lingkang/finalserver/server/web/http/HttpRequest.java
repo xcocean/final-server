@@ -1,5 +1,6 @@
 package top.lingkang.finalserver.server.web.http;
 
+import com.alibaba.fastjson2.JSON;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.*;
 import io.netty.handler.codec.http.cookie.Cookie;
@@ -64,6 +65,14 @@ public class HttpRequest implements Request {
         if (param == null)
             return null;
         return param.get(0);
+    }
+
+    @Override
+    public <T> T getParamToBean(Class<T> beanClass) {
+        Map<String, String> params = getParams();
+        if (params.isEmpty())
+            return null;
+        return JSON.parseObject(JSON.toJSONString(params), beanClass);
     }
 
     @Override

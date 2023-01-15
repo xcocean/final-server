@@ -2,6 +2,7 @@ package top.lingkang.finalserver.example.test04;
 
 import top.lingkang.finalserver.server.FinalServerApplication;
 import top.lingkang.finalserver.server.annotation.*;
+import top.lingkang.finalserver.server.web.http.FinalServerContext;
 
 /**
  * @author lingkang
@@ -42,5 +43,11 @@ public class Test04WebApp {
         System.out.println("name=" + name);
         System.out.println(info);
         return "post";
+    }
+
+    @GET("/c")
+    public Object c(FinalServerContext context) {
+        ParamInfo paramToBean = context.getRequest().getParamToBean(ParamInfo.class);
+        return paramToBean;
     }
 }

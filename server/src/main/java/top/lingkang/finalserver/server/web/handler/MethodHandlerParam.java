@@ -1,9 +1,8 @@
 package top.lingkang.finalserver.server.web.handler;
 
-import com.alibaba.fastjson2.JSON;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import top.lingkang.finalserver.server.error.FinalServerException;
+import top.lingkang.finalserver.server.utils.CommonUtils;
 import top.lingkang.finalserver.server.utils.TypeUtils;
 import top.lingkang.finalserver.server.web.http.*;
 
@@ -25,39 +24,12 @@ public class MethodHandlerParam {
         HandlerParam handlerParam = handlerMap.get(type);
         if (handlerParam == null) {
             // 没有的处理类型, 尝试对象转换
-            return paramToBean(name, type, context);
+            return CommonUtils.paramToBean(name, type, context);
         }
         Object handler = handlerParam.handler(name, type, context);
         if (handler == null)
             return initValue.get(type);
         return handler;
-    }
-
-    private Object paramToBean(String name, Class<?> type, FinalServerContext context) {
-        // 此时参数可能是对象
-        try {
-            Map<String, String> params = context.getRequest().getParams();
-            if (params.isEmpty())
-                return null;
-            return JSON.parseObject(JSON.toJSONString(params), type);
-                /*if (params.isEmpty())
-                    return null;
-                Field[] fields = type.getDeclaredFields();
-                if (fields.length == 0)
-                    return null;
-                Object instance = type.newInstance();
-                for (Map.Entry<String, String> entry : params.entrySet()) {
-                    if (BeanUtils.hasAttribute(fields, entry.getKey())) {
-                        Field field = type.getDeclaredField(entry.getKey());
-                        field.setAccessible(true);
-                        field.set(instance, TypeUtils.stringToObject(entry.getValue(), field.getType()));
-                    }
-                }
-                return instance;*/
-        } catch (Exception e) {
-            log.error("尝试给接收参数对象进行赋值异常，接收入参名称：{}  类型： {}", name, type.getName());
-            throw new FinalServerException(e);
-        }
     }
 
     interface HandlerParam {
