@@ -48,19 +48,24 @@ public class HttpSession implements Session, Serializable {
 
     @Override
     public void setAttribute(String name, Object value) {
-        hasUpdateAttribute =true;
+        hasUpdateAttribute = true;
         attributes.put(name, value);
     }
 
     @Override
+    public boolean hasAttribute(String name) {
+        return attributes.containsKey(name);
+    }
+
+    @Override
     public void removeAttribute(String name) {
-        hasUpdateAttribute =true;
+        hasUpdateAttribute = true;
         attributes.remove(name);
     }
 
     @Override
     public void removeAllAttribute() {
-        hasUpdateAttribute =true;
+        hasUpdateAttribute = true;
         attributes.clear();
     }
 

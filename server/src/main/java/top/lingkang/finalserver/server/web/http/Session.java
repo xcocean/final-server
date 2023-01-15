@@ -18,6 +18,8 @@ public interface Session {
 
     void setAttribute(String name, Object value);
 
+    boolean hasAttribute(String name);
+
     void removeAttribute(String name);
 
     void removeAllAttribute();
