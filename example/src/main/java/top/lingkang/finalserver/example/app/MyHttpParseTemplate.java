@@ -1,7 +1,7 @@
 package top.lingkang.finalserver.example.app;
 
-import org.springframework.stereotype.Component;
 import top.lingkang.finalserver.server.core.HttpParseTemplate;
+import top.lingkang.finalserver.server.web.http.FinalServerContext;
 
 import java.util.Map;
 
@@ -18,7 +18,7 @@ public class MyHttpParseTemplate implements HttpParseTemplate {
     }
 
     @Override
-    public byte[] getTemplate(String template, Map map) throws Exception {
+    public byte[] getTemplate(String template, Map<String, Object> map, FinalServerContext context) throws Exception {
         // 在此处进行模板渲染，返回输出结果
         return null;
     }

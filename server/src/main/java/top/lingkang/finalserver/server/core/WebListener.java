@@ -17,7 +17,7 @@ public interface WebListener {
 
     /**
      * http处理完毕
-     * 此时，已经返回了http响应到客户端。即此时已经断开了连接
+     * 此时，内容已经返回了http响应到客户端。即此时即将要断开连接
      * 常用于事务的最后提交
      */
     void after() throws Exception;

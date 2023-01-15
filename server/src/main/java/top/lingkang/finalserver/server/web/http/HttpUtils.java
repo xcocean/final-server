@@ -148,7 +148,8 @@ public final class HttpUtils {
     public static void sendTemplate(ChannelHandlerContext context, String template, int statusCode) throws Exception {
         byte[] content = FinalServerConfiguration.httpParseTemplate.getTemplate(
                 template,
-                HttpUtils.getReturnFinalTemplateMap(FinalServerContext.currentContext())
+                HttpUtils.getReturnFinalTemplateMap(FinalServerContext.currentContext()),
+                FinalServerContext.currentContext()
         );
 
         sendTemplate(context, content, statusCode);

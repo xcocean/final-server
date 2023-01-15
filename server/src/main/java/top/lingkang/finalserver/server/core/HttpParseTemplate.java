@@ -1,5 +1,7 @@
 package top.lingkang.finalserver.server.core;
 
+import top.lingkang.finalserver.server.web.http.FinalServerContext;
+
 import java.util.Map;
 
 /**
@@ -13,5 +15,5 @@ public interface HttpParseTemplate {
     // 初始化模板，每次启动只会执行一次
     void init(String templatePath);
 
-    byte[] getTemplate(String template, Map map) throws Exception;
+    byte[] getTemplate(String template, Map<String,Object> map, FinalServerContext context) throws Exception;
 }

@@ -2,6 +2,7 @@ package top.lingkang.finalserver.server.core.impl;
 
 import io.netty.handler.codec.http.DefaultHttpHeaders;
 import io.netty.handler.codec.http.HttpHeaderNames;
+import io.netty.handler.codec.http.HttpHeaderValues;
 import io.netty.handler.codec.http.HttpHeaders;
 import top.lingkang.finalserver.server.constant.FinalServerConstants;
 import top.lingkang.finalserver.server.core.ServerDefaultHttpHeaders;
@@ -14,14 +15,16 @@ import top.lingkang.finalserver.server.core.ServerDefaultHttpHeaders;
 public class FinalServerDefaultHttpHeaders implements ServerDefaultHttpHeaders {
     private static final HttpHeaders def = new DefaultHttpHeaders()
             .remove(HttpHeaderNames.CONTENT_TYPE)
-            .set(HttpHeaderNames.CONTENT_ENCODING, FinalServerConstants.encoding)
+            .set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE)
+            .set("keep-alive","timeout=30")
             .set("Server", FinalServerConstants.version);
 
     public HttpHeaders get(boolean isNew) {
         if (isNew)
             return new DefaultHttpHeaders()
                     .remove(HttpHeaderNames.CONTENT_TYPE)
-                    .set(HttpHeaderNames.CONTENT_ENCODING, FinalServerConstants.encoding)
+                    .set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE)
+                    .set("keep-alive","timeout=30")
                     .set("Server", FinalServerConstants.version);
         else
             return def;

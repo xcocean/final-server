@@ -20,6 +20,7 @@ import top.lingkang.finalserver.server.web.FinalServerInitializer;
 
 import java.io.File;
 import java.io.RandomAccessFile;
+import java.util.Date;
 
 
 /**
@@ -53,7 +54,7 @@ class HandlerHttpRequest extends SimpleChannelInboundHandler<FinalServerContext>
                             ctx,
                             FinalServerConfiguration.httpParseTemplate.getTemplate(
                                     response.getTemplatePath(),
-                                    HttpUtils.getReturnFinalTemplateMap(context)),
+                                    HttpUtils.getReturnFinalTemplateMap(context), context),
                             200);
                 } else { // 其他内容
                     if (response.getForwardPath() != null) {// 是否使用了转发
@@ -118,6 +119,8 @@ class HandlerHttpRequest extends SimpleChannelInboundHandler<FinalServerContext>
         HttpHeaders headers = new DefaultHttpHeaders();
         headers.set(HttpHeaderNames.ACCEPT_RANGES, HttpHeaderValues.BYTES);
         headers.set(HttpHeaderNames.CONTENT_LENGTH, randomAccessFile.length());
+        headers.set(HttpHeaderNames.LAST_MODIFIED, new Date(file.lastModified()));
+        headers.set(HttpHeaderNames.TRANSFER_ENCODING, HttpHeaderValues.CHUNKED);
         // 设置文件请求头
         CommonUtils.setResponseHeadName(context.getResponse().getResponseFile(), headers);
 

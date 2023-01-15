@@ -1,5 +1,6 @@
 package top.lingkang.finalserver.server.core.impl;
 
+import io.netty.handler.codec.http.HttpHeaderNames;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.templatemode.TemplateMode;
@@ -7,6 +8,7 @@ import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 import org.thymeleaf.util.Validate;
 import top.lingkang.finalserver.server.core.FinalServerProperties;
 import top.lingkang.finalserver.server.core.HttpParseTemplate;
+import top.lingkang.finalserver.server.web.http.FinalServerContext;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
@@ -40,7 +42,7 @@ public class DefaultHttpParseTemplate implements HttpParseTemplate {
     }
 
     @Override
-    public byte[] getTemplate(String template, Map map) throws Exception {
+    public byte[] getTemplate(String template, Map<String, Object> map, FinalServerContext context) throws Exception {
         return templateEngine.process(template, new TemplateContext(Locale.ROOT, map)).getBytes(StandardCharsets.UTF_8);
     }
 
