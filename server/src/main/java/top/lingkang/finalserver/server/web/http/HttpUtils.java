@@ -179,9 +179,10 @@ public final class HttpUtils {
      */
     public static Map<String, Object> getReturnFinalTemplateMap(FinalServerContext context) {
         // 将会话的值追加到目标渲染
-        Map<String, Object> templateMap = context.getResponse().getTemplateMap();
-        if (templateMap == null)
-            templateMap = new HashMap<>();
+        // 这时一个特殊的map，只会在获取时将会获取到配置的全局变量，为了减少不必要的遍历开支
+        TemplateMap templateMap=new TemplateMap(context.getResponse().getTemplateMap());
+
+        // 添加固有参数
         templateMap.put("request", context.getRequest());
         templateMap.put("session", context.getRequest().getSession().getAttributeMap());
         return templateMap;

@@ -42,9 +42,7 @@ public class HandlerHttpWrapper extends SimpleChannelInboundHandler<FullHttpRequ
 
     private void httpHandler(ChannelHandlerContext ctx, FullHttpRequest msg) throws Exception {
         // 构建上下文
-        FinalServerContext context = new FinalServerContext(ctx);
-        context.setRequest(new HttpRequest(ctx, msg));
-        context.setResponse(new HttpResponse(ctx));
+        FinalServerContext context = new FinalServerContext(ctx, new HttpRequest(ctx, msg), new HttpResponse(ctx));
 
         // 写内容
         ctx.pipeline().addLast(new ChunkedWriteHandler());
