@@ -3,12 +3,16 @@ package top.lingkang.finalserver.server.web.entity;
 import top.lingkang.finalserver.server.web.handler.CustomRequestHandler;
 import top.lingkang.finalserver.server.web.http.RequestMethod;
 
+import java.util.Arrays;
+
 /**
  * @author lingkang
  * Created by 2022/12/7
  * @since 1.0.0
  */
 public class RequestInfo {
+    private String path;
+    private String[] restFulParam;
     private String beanName;
     private String methodName;
     private Class<?>[] paramType;
@@ -16,6 +20,22 @@ public class RequestInfo {
     private Class<?> returnType;
     private RequestMethod requestMethod;
     private CustomRequestHandler customRequestHandler;
+
+    public String[] getRestFulParam() {
+        return restFulParam;
+    }
+
+    public void setRestFulParam(String[] restFulParam) {
+        this.restFulParam = restFulParam;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
 
     public CustomRequestHandler getCustomRequestHandler() {
         return customRequestHandler;
@@ -71,5 +91,20 @@ public class RequestInfo {
 
     public void setMethodName(String methodName) {
         this.methodName = methodName;
+    }
+
+    @Override
+    public String toString() {
+        return "RequestInfo{" +
+                "path='" + path + '\'' +
+                ", restFulParam=" + Arrays.toString(restFulParam) +
+                ", beanName='" + beanName + '\'' +
+                ", methodName='" + methodName + '\'' +
+                ", paramType=" + Arrays.toString(paramType) +
+                ", paramName=" + Arrays.toString(paramName) +
+                ", returnType=" + returnType +
+                ", requestMethod=" + requestMethod +
+                ", customRequestHandler=" + customRequestHandler +
+                '}';
     }
 }

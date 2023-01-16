@@ -6,6 +6,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 import top.lingkang.finalserver.server.annotation.*;
 import top.lingkang.finalserver.server.utils.BeanUtils;
+import top.lingkang.finalserver.server.utils.MatchUtils;
 import top.lingkang.finalserver.server.web.entity.RequestInfo;
 import top.lingkang.finalserver.server.web.http.RequestMethod;
 
@@ -27,6 +28,7 @@ public class BuildControllerHandler {
     }
 
     private HashMap<String, RequestInfo> absolutePath = new HashMap<>();
+    private List<RequestInfo> restFulPath = new ArrayList<>();
 
     public ControllerRequestHandler build() {
         log.debug("开始加载 Controller 请求处理");
@@ -55,7 +57,7 @@ public class BuildControllerHandler {
             Method[] methods = bean.getClass().getDeclaredMethods();
             for (Method method : methods) {
                 RequestInfo info = new RequestInfo();
-                RequestType requestType = getValue(method);
+                RequestType requestType = getAnnotationPathValue(method);
                 if (requestType != null) {
                     String path = basePath + checkMapping(requestType.value);
                     if (path.length() > 1 && path.endsWith("/"))
@@ -65,22 +67,36 @@ public class BuildControllerHandler {
                         throw new IllegalArgumentException("存在重复的URL处理：" + path + "  " + requestType.requestMethod.name() + "  " + bean.getClass().getName());
                     }
 
-                    path = requestType.requestMethod.name() + "_" + path;
+                    info.setRequestMethod(requestType.requestMethod);
                     info.setBeanName(name);
                     info.setMethodName(method.getName());
                     info.setReturnType(method.getReturnType());
                     info.setParamName(getParamNames(method.getName(), bean.getClass(), method.getParameterTypes()));
                     info.setParamType(method.getParameterTypes());
-                    absolutePath.put(path, info);
+                    // REST ful API
+                    if (path.contains("{")) {
+                        path = path.replaceAll(" ", "");
+                        String[] fulParam = MatchUtils.getRestFulParam(path);
+                        info.setRestFulParam(fulParam);
+                        info.setPath(path);
+                        restFulPath.add(info);
+                    } else {
+                        // 方法名_path
+                        path = requestType.requestMethod.name() + "_" + path;
+                        info.setPath(path);
+                        absolutePath.put(path, info);
+                    }
                 }
             }
         }
         if (log.isDebugEnabled()) {
             for (Map.Entry<String, RequestInfo> entry : absolutePath.entrySet())
                 log.debug(entry.getKey());
+            for (RequestInfo name : restFulPath)
+                log.debug(name.toString());
         }
         log.debug("Controller 请求处理加载完成");
-        return new ControllerRequestHandler(absolutePath, applicationContext);
+        return new ControllerRequestHandler(absolutePath, restFulPath, applicationContext);
     }
 
     // @RequestMapping 检查前后缀
@@ -109,7 +125,7 @@ public class BuildControllerHandler {
         return new String[0];
     }
 
-    private RequestType getValue(Method method) {
+    private RequestType getAnnotationPathValue(Method method) {
         GET get = method.getAnnotation(GET.class);
         if (get != null)
             return new RequestType(get.value(), RequestMethod.GET);
@@ -142,5 +158,13 @@ public class BuildControllerHandler {
 
         public String value;
         public RequestMethod requestMethod;
+
+        @Override
+        public String toString() {
+            return "RequestType{" +
+                    "value='" + value + '\'' +
+                    ", requestMethod=" + requestMethod +
+                    '}';
+        }
     }
 }
