@@ -22,13 +22,13 @@ public class Test06Webapp {
         return "index";
     }
 
-    @GET("/h_{param}")
+    @GET("/{param}")
     public Object get(String param){
         return param;
     }
 
-    /*@GET("/2{param}")
+    @GET("/a/{param}")
     public Object get2(String param){
         return param;
-    }*/
+    }
 }
