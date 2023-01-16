@@ -20,11 +20,13 @@ public class MatchUtils {
         if (root.length != node.length)
             return null;
         Map<String, String> map = new HashMap<>();
-        int index=0;
+        int index = 0;
         for (int i = 1; i < root.length; i++) {
             if (root[i].contains("{")) {
                 map.put(param[index], node[i]);
                 index++;
+            } else if (!root[i].equals(node[i])) {
+                return null;
             }
         }
         return map;
