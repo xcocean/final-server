@@ -7,26 +7,21 @@ import io.netty.handler.codec.http.HttpHeaders;
 import top.lingkang.finalserver.server.constant.FinalServerConstants;
 import top.lingkang.finalserver.server.core.ServerDefaultHttpHeaders;
 
+import java.util.Date;
+
 /**
  * @author lingkang
  * Created by 2022/12/8
  * @since 1.0.0
  */
 public class FinalServerDefaultHttpHeaders implements ServerDefaultHttpHeaders {
-    private static final HttpHeaders def = new DefaultHttpHeaders()
-            .remove(HttpHeaderNames.CONTENT_TYPE)
-            .set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE)
-            .set("keep-alive","timeout=30")
-            .set("Server", FinalServerConstants.version);
 
-    public HttpHeaders get(boolean isNew) {
-        if (isNew)
-            return new DefaultHttpHeaders()
-                    .remove(HttpHeaderNames.CONTENT_TYPE)
-                    .set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE)
-                    .set("keep-alive","timeout=30")
-                    .set("Server", FinalServerConstants.version);
-        else
-            return def;
+    public HttpHeaders get() {
+        return new DefaultHttpHeaders()
+                .remove(HttpHeaderNames.CONTENT_TYPE)
+                .set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE)
+                .set("keep-alive", "timeout=30")
+                .set(HttpHeaderNames.DATE, new Date())
+                .set("Server", FinalServerConstants.version);
     }
 }

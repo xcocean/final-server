@@ -166,7 +166,7 @@ public final class HttpUtils {
     public static void closeHttpWebsocket(ChannelHandlerContext context, String msg) {
         FullHttpResponse response = new DefaultFullHttpResponse(
                 HTTP_1_1, HttpResponseStatus.BAD_REQUEST, Unpooled.wrappedBuffer(msg.getBytes()));
-        response.headers().set(response.headers().set(FinalServerConfiguration.defaultResponseHeaders.get(false)));
+        response.headers().set(response.headers().set(FinalServerConfiguration.defaultResponseHeaders.get()));
         responseBeforeHandler(response);
         context.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
     }
@@ -179,7 +179,7 @@ public final class HttpUtils {
     public static Map<String, Object> getReturnFinalTemplateMap(FinalServerContext context) {
         // 将会话的值追加到目标渲染
         // 这时一个特殊的map，只会在获取时将会获取到配置的全局变量，为了减少不必要的遍历开支
-        ViewMap viewMap =new ViewMap(context.getResponse().getTemplateMap());
+        ViewMap viewMap = new ViewMap(context.getResponse().getTemplateMap());
 
         // 添加固有参数
         viewMap.put("request", context.getRequest());

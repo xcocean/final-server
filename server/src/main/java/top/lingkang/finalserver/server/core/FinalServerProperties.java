@@ -23,7 +23,7 @@ public class FinalServerProperties {
     public static int websocket_maxMessage = 65536;
     public static long websocket_timeout = 12000;
     public static String server_session_name = "sid";
-    public static int server_session_age = 1800000;
+    public static long server_session_age = 1800000;
     public static int server_maxContentLength = 3145728;
     public static long server_uploadFileBuffer = 3145728L;
     public static long server_fileFtpSize = 1048576L;
@@ -50,7 +50,7 @@ public class FinalServerProperties {
         websocket_maxMessage = SystemPropsUtil.getInt("websocket.maxMessage", websocket_maxMessage);
         websocket_timeout = SystemPropsUtil.getLong("websocket.timeout", websocket_timeout);
         server_session_name = SystemPropsUtil.get("server.session.name", server_session_name);
-        server_session_age = SystemPropsUtil.getInt("server.session.age", server_session_age);
+        server_session_age = SystemPropsUtil.getLong("server.session.age", server_session_age);
         server_maxContentLength = SystemPropsUtil.getInt("server.maxContentLength", server_maxContentLength);
         server_uploadFileBuffer = SystemPropsUtil.getLong("server.uploadFileBuffer", server_uploadFileBuffer);
         server_fileFtpSize = SystemPropsUtil.getLong("server.fileFtpSize", server_fileFtpSize);

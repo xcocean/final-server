@@ -21,7 +21,7 @@ import java.util.TreeSet;
  */
 public class HttpResponse implements Response {
     private ChannelHandlerContext ctx;
-    private HttpHeaders headers = FinalServerConfiguration.defaultResponseHeaders.get(true);
+    private HttpHeaders headers = FinalServerConfiguration.defaultResponseHeaders.get();
 
     private boolean isReady;
     private ResponseFile responseFile;

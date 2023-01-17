@@ -27,6 +27,12 @@ public class Test06Webapp {
         return param;
     }
 
+    @GET("/{param}")
+    public Object get3(String param){
+        System.out.println(3);
+        return param;
+    }
+
     @GET("/a/{param}")
     public Object get2(String param){
         return param;

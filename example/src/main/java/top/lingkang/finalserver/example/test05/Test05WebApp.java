@@ -4,6 +4,7 @@ import top.lingkang.finalserver.server.FinalServerApplication;
 import top.lingkang.finalserver.server.annotation.Controller;
 import top.lingkang.finalserver.server.annotation.FinalServerBoot;
 import top.lingkang.finalserver.server.annotation.GET;
+import top.lingkang.finalserver.server.web.http.FinalServerContext;
 import top.lingkang.finalserver.server.web.http.ViewTemplate;
 
 /**
@@ -21,6 +22,11 @@ public class Test05WebApp {
     @GET
     public Object index(){
         return new ViewTemplate("index");
+    }
+
+    @GET("/index")
+    public void index2(FinalServerContext context){
+        context.getResponse().returnTemplate("index");
     }
 
 }

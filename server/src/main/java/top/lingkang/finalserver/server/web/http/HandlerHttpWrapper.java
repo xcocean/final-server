@@ -11,9 +11,9 @@ import top.lingkang.finalserver.server.constant.FinalServerConstants;
 import top.lingkang.finalserver.server.core.FinalServerProperties;
 import top.lingkang.finalserver.server.utils.BeanUtils;
 import top.lingkang.finalserver.server.web.ws.FinalWebSocketServerProtocolHandler;
+import top.lingkang.finalserver.server.web.ws.WebSocketDispatch;
 import top.lingkang.finalserver.server.web.ws.WebSocketHandler;
 import top.lingkang.finalserver.server.web.ws.WebSocketInitializer;
-import top.lingkang.finalserver.server.web.ws.WebSocketDispatch;
 
 import java.net.URLDecoder;
 
@@ -42,7 +42,8 @@ public class HandlerHttpWrapper extends SimpleChannelInboundHandler<FullHttpRequ
 
     private void httpHandler(ChannelHandlerContext ctx, FullHttpRequest msg) throws Exception {
         // 构建上下文
-        FinalServerContext context = new FinalServerContext(ctx, new HttpRequest(ctx, msg), new HttpResponse(ctx));
+        FinalServerContext context = new FinalServerContext(ctx, new HttpRequest(ctx, msg));
+        context.setResponse(new HttpResponse(ctx));
 
         // 写内容
         ctx.pipeline().addLast(new ChunkedWriteHandler());

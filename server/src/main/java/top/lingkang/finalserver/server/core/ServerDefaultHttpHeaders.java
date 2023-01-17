@@ -9,5 +9,9 @@ import io.netty.handler.codec.http.HttpHeaders;
  **/
 public interface ServerDefaultHttpHeaders {
 
-    HttpHeaders get(boolean isNew);
+    /**
+     * 此时已经可以获取请求头了：
+     * FinalServerContext.currentContext().getRequest()
+     */
+    HttpHeaders get();
 }

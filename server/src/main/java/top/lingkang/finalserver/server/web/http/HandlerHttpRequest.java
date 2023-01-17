@@ -120,7 +120,7 @@ class HandlerHttpRequest extends SimpleChannelInboundHandler<FinalServerContext>
         headers.set(HttpHeaderNames.ACCEPT_RANGES, HttpHeaderValues.BYTES);
         headers.set(HttpHeaderNames.CONTENT_LENGTH, randomAccessFile.length());
         headers.set(HttpHeaderNames.LAST_MODIFIED, new Date(file.lastModified()));
-        headers.set(HttpHeaderNames.TRANSFER_ENCODING, HttpHeaderValues.CHUNKED);
+        headers.set(HttpHeaderNames.CACHE_CONTROL, HttpHeaderValues.NO_STORE);
         // 设置文件请求头
         CommonUtils.setResponseHeadName(context.getResponse().getResponseFile(), headers);
 
@@ -151,7 +151,7 @@ class HandlerHttpRequest extends SimpleChannelInboundHandler<FinalServerContext>
                     length = length - offset;
                 }
                 headers.set(HttpHeaderNames.CONTENT_LENGTH, length);// 重写响应长度
-                status = HttpResponseStatus.PARTIAL_CONTENT;
+                status = HttpResponseStatus.PARTIAL_CONTENT; // 206
             } catch (Exception e) {
                 log.warn("断点续传解析错误", e);
             }
@@ -161,16 +161,15 @@ class HandlerHttpRequest extends SimpleChannelInboundHandler<FinalServerContext>
         response.headers().set(headers);
 
         ctx.write(response);
-        ctx.write(
+        ctx.writeAndFlush(
                 new ChunkedFile(randomAccessFile, offset, length, 1024),
-                ctx.newProgressivePromise());
-
-        // 检查文件删除
+                ctx.newProgressivePromise()
+        );
         ctx.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(new ChannelFutureListener() {
             @Override
             public void operationComplete(ChannelFuture future) {
                 future.channel().close();
-                if (context.getResponse().getResponseFile().isDelete())
+                if (context.getResponse().getResponseFile().isDelete())// 检查文件删除
                     file.delete();
             }
         });

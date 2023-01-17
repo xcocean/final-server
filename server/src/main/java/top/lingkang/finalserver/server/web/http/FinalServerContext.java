@@ -12,11 +12,10 @@ import java.util.Map;
  * 上下文会再连接断开时移除
  */
 public class FinalServerContext {
-    public FinalServerContext(ChannelHandlerContext ctx, Request request, Response response) {
+    public FinalServerContext(ChannelHandlerContext ctx, Request request) {
         this.ctx = ctx;
-        finalServerContext.set(this);
         this.request = request;
-        this.response = response;
+        finalServerContext.set(this);
     }
 
     public static final ThreadLocal<FinalServerContext> finalServerContext = new ThreadLocal<>();
@@ -35,6 +34,10 @@ public class FinalServerContext {
 
     public Response getResponse() {
         return response;
+    }
+
+    public void setResponse(Response response) {
+        this.response = response;
     }
 
     /**
