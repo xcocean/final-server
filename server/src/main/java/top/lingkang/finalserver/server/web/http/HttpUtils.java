@@ -179,7 +179,9 @@ public final class HttpUtils {
     public static Map<String, Object> getReturnFinalTemplateMap(FinalServerContext context) {
         // 模板全局map
         Map<String, Object> map = FinalServerContext.getTemplateGlobalMap();
-        map.putAll(context.getResponse().getTemplateMap());
+
+        if (context.getResponse().getTemplateMap() != null)
+            map.putAll(context.getResponse().getTemplateMap());
 
         // 添加固有参数
         map.put("request", context.getRequest());
