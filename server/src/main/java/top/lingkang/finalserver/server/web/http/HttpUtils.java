@@ -177,14 +177,14 @@ public final class HttpUtils {
      * 返回模板的最终 map
      */
     public static Map<String, Object> getReturnFinalTemplateMap(FinalServerContext context) {
-        // 将会话的值追加到目标渲染
-        // 这时一个特殊的map，只会在获取时将会获取到配置的全局变量，为了减少不必要的遍历开支
-        ViewMap viewMap = new ViewMap(context.getResponse().getTemplateMap());
+        // 模板全局map
+        Map<String, Object> map = FinalServerContext.getTemplateGlobalMap();
+        map.putAll(context.getResponse().getTemplateMap());
 
         // 添加固有参数
-        viewMap.put("request", context.getRequest());
-        viewMap.put("session", context.getRequest().getSession().getAttributeMap());
-        return viewMap;
+        map.put("request", context.getRequest());
+        map.put("session", context.getRequest().getSession().getAttributeMap());
+        return map;
     }
 
     // -----------------------------------------------------------------------------------------------------------------
