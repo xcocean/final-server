@@ -39,6 +39,7 @@ public class Demo01 {
         HashMap<String, Object> map = new HashMap<>();
         map.put("vv","直接输出模板渲染的变量vv");
         response.returnTemplate("index",map);
+        System.out.println(name);
 //        count++;
 //        System.out.println(count);
     }

@@ -73,8 +73,15 @@ public class ControllerRequestHandler implements RequestHandler {
                     cacheRequestHandler.put(reqURL, handler);
                 }
 
-                Object[] param = joinParam(requestInfo, context);
-                result = handler.getMethod().invoke(handler.getBean(), param);
+                Object bean = applicationContext.getBean(requestInfo.getBeanName(),requestInfo.getControllerClass());
+
+                Method declaredMethod = bean.getClass().getDeclaredMethod(requestInfo.getMethodName(),
+                        requestInfo.getParamType());
+
+                result= declaredMethod.invoke(bean,new Object[]{FinalServerContext.currentContext().getResponse(),"asdasd",FinalServerContext.currentContext().getRequest()});
+
+//                Object[] param = joinParam(requestInfo, context);
+//                result = handler.getMethod().invoke(handler.getBean(), param);
             }
 
             // 结果处理 ----------------------------------------------------------------------------------------------

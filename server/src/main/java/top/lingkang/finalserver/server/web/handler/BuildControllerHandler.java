@@ -68,6 +68,7 @@ public class BuildControllerHandler {
                         throw new IllegalArgumentException("存在重复的URL处理：" + path + "  " + requestType.requestMethod.name() + "  " + bean.getClass().getName());
                     }
 
+                    info.setControllerClass(bean.getClass());
                     info.setRequestMethod(requestType.requestMethod);
                     info.setBeanName(name);
                     info.setMethodName(method.getName());

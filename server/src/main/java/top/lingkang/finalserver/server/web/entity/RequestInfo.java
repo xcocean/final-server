@@ -20,6 +20,15 @@ public class RequestInfo {
     private Class<?> returnType;
     private RequestMethod requestMethod;
     private CustomRequestHandler customRequestHandler;
+    private Class<?> controllerClass;
+
+    public Class<?> getControllerClass() {
+        return controllerClass;
+    }
+
+    public void setControllerClass(Class<?> controllerClass) {
+        this.controllerClass = controllerClass;
+    }
 
     public String[] getRestFulParam() {
         return restFulParam;
