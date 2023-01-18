@@ -2,8 +2,8 @@ package top.lingkang.finalserver.server.web.handler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.core.StandardReflectionParameterNameDiscoverer;
 import top.lingkang.finalserver.server.annotation.*;
 import top.lingkang.finalserver.server.utils.BeanUtils;
 import top.lingkang.finalserver.server.utils.MatchUtils;
@@ -19,19 +19,14 @@ import java.util.*;
  * @since 1.0.0
  * spring初始化完成后，将会在此构建静态资源文件映射、controller请求处理等
  */
-public class BuildControllerHandler {
+class BuildControllerHandler {
     private static final Logger log = LoggerFactory.getLogger(BuildControllerHandler.class);
+    @Autowired
     protected ApplicationContext applicationContext;
-    private StandardReflectionParameterNameDiscoverer getParameterNames = new StandardReflectionParameterNameDiscoverer();
-
-    public BuildControllerHandler(ApplicationContext applicationContext) {
-        this.applicationContext = applicationContext;
-    }
-
     protected HashMap<String, RequestInfo> absolutePath = new HashMap<>();
     protected List<RequestInfo> restFulPath = new ArrayList<>();
 
-    public ControllerRequestHandler build() {
+    public void build() {
         log.debug("开始加载 Controller 请求处理");
         String[] allName = applicationContext.getBeanNamesForAnnotation(Controller.class);
         // 兼容spring的controller注解
@@ -43,11 +38,6 @@ public class BuildControllerHandler {
         // 遍历缓存处理
         for (String name : allName) {
             Object bean = BeanUtils.getTarget(applicationContext.getBean(name));
-            /*Object annotation = bean.getClass().getAnnotation(Controller.class);
-            if (annotation == null)
-                annotation = bean.getClass().getAnnotation(org.springframework.stereotype.Controller.class);
-            if (annotation == null)
-                continue;*/
             log.debug(BeanUtils.getSpringProxyBeanName(bean.getClass()));
 
             String basePath = "/";
@@ -58,7 +48,8 @@ public class BuildControllerHandler {
             }
 
             Method[] methods = bean.getClass().getDeclaredMethods();
-            for (Method method : methods) {
+            for (int index = 0; index < methods.length; index++) {
+                Method method = methods[index];
                 RequestInfo info = new RequestInfo();
                 RequestType requestType = getAnnotationPathValue(method);
                 if (requestType != null) {
@@ -70,13 +61,12 @@ public class BuildControllerHandler {
                         throw new IllegalArgumentException("存在重复的URL处理：" + path + "  " + requestType.requestMethod.name() + "  " + bean.getClass().getName());
                     }
 
-                    info.setControllerClass(bean.getClass());
-                    info.setRequestMethod(requestType.requestMethod);
                     info.setBeanName(name);
-                    info.setMethodName(method.getName());
-                    info.setReturnType(method.getReturnType());
-                    info.setParamName(getParamNames(method.getName(), bean.getClass(), method.getParameterTypes()));
-                    info.setParamType(method.getParameterTypes());
+                    info.setControllerClass(bean.getClass());
+                    info.setRequestMethod(requestType.requestMethod.name());
+                    info.setParamNum(method.getParameterTypes().length);
+                    info.setMethod(method);
+
                     // REST ful API
                     if (path.contains("{")) {
                         path = path.replaceAll(" ", "");
@@ -100,7 +90,7 @@ public class BuildControllerHandler {
                 log.debug(name.toString());
         }
         log.debug("Controller 请求处理加载完成");
-        return null;//new ControllerRequestHandler(absolutePath, restFulPath, applicationContext);
+        // return null;//new ControllerRequestHandler(absolutePath, restFulPath, applicationContext);
     }
 
     // @RequestMapping 检查前后缀
@@ -117,16 +107,6 @@ public class BuildControllerHandler {
             path = path.substring(1);
         }
         return path;
-    }
-
-    private String[] getParamNames(String methodName, Class<?> clazz, Class<?>... parameterTypes) {
-        try {
-            Method method = clazz.getMethod(methodName, parameterTypes);
-            return getParameterNames.getParameterNames(method);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return new String[0];
     }
 
     private RequestType getAnnotationPathValue(Method method) {

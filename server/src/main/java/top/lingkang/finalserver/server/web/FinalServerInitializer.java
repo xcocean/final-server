@@ -12,7 +12,7 @@ import top.lingkang.finalserver.server.core.impl.DefaultHttpSessionManage;
 import top.lingkang.finalserver.server.core.impl.DefaultIdGenerateFactory;
 import top.lingkang.finalserver.server.core.impl.DefaultWebExceptionHandler;
 import top.lingkang.finalserver.server.utils.BeanUtils;
-import top.lingkang.finalserver.server.web.handler.BuildControllerHandler;
+import top.lingkang.finalserver.server.web.handler.ControllerRequestHandler;
 import top.lingkang.finalserver.server.web.handler.LocalStaticMapping;
 import top.lingkang.finalserver.server.web.handler.RequestHandler;
 import top.lingkang.finalserver.server.web.handler.StaticRequestHandler;
@@ -51,7 +51,11 @@ public class FinalServerInitializer {
         // 注入
         handlers.add(applicationContext.getBean(StaticRequestHandler.class));// 项目静态文件
 
-        handlers.add(new BuildControllerHandler(applicationContext).build());// controller转发
+        ControllerRequestHandler controllerBean = applicationContext.getBean(ControllerRequestHandler.class);
+        controllerBean.build();// 构建
+        handlers.add(controllerBean);
+
+        // handlers.add(new BuildControllerHandler(applicationContext).build());// controller转发
         requestHandlers = handlers.toArray(new RequestHandler[0]);
 
         String[] namesForType = applicationContext.getBeanNamesForType(Filter.class);

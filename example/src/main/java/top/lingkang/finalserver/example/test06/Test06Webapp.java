@@ -18,23 +18,27 @@ public class Test06Webapp {
     }
 
     @GET()
-    public Object index(){
+    public Object index(String param){
+        System.out.println(param);
         return "index";
     }
 
     @GET("/{param}")
     public Object get(String param){
+        System.out.println(param);
         return param;
     }
 
     @GET("/{param}")
     public Object get3(String param){
         System.out.println(3);
+        System.out.println(param);
         return param;
     }
 
     @GET("/a/{param}")
     public Object get2(String param){
+        System.out.println(param);
         return param;
     }
 }

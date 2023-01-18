@@ -2,17 +2,13 @@ package top.lingkang.finalserver.server.web.handler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
 import top.lingkang.finalserver.server.utils.MatchUtils;
 import top.lingkang.finalserver.server.utils.TypeUtils;
-import top.lingkang.finalserver.server.web.entity.CacheRequestHandler;
 import top.lingkang.finalserver.server.web.entity.RequestInfo;
 import top.lingkang.finalserver.server.web.http.FinalServerContext;
 import top.lingkang.finalserver.server.web.http.ViewTemplate;
 
-import java.lang.reflect.Method;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -22,24 +18,7 @@ import java.util.Map;
  */
 public class ControllerRequestHandler extends BuildControllerHandler implements RequestHandler {
     private static final Logger log = LoggerFactory.getLogger(ControllerRequestHandler.class);
-    /*private HashMap<String, RequestInfo> absolutePath;
-    private List<RequestInfo> restFulPath;*/
-    private MethodHandlerParam handlerParam = new MethodHandlerParam();
-    public static Map<String, CacheRequestHandler> cacheRequestHandler = new HashMap<>();
-
-    public ControllerRequestHandler(ApplicationContext applicationContext) {
-        super(applicationContext);
-
-    }
-
-
-
-    /*public ControllerRequestHandler(HashMap<String, RequestInfo> absolutePath, List<RequestInfo> restFulPath, ApplicationContext applicationContext) {
-        this.absolutePath = absolutePath;
-        this.applicationContext = applicationContext;
-        this.restFulPath = restFulPath;
-    }*/
-
+    public static Map<String, Object> cacheControllerBean = new HashMap<>();
 
     public boolean handler(FinalServerContext context) throws Exception {
         String reqURL = context.getRequest().getHttpMethod().name() + "_" + context.getRequest().getPath();
@@ -47,7 +26,7 @@ public class ControllerRequestHandler extends BuildControllerHandler implements 
         Map<String, String> matcherRestFul = null;
         if (requestInfo == null) {// 绝对路径匹配为空时，匹配 rest ful
             for (RequestInfo info : restFulPath) {
-                if (info.getRequestMethod().name().equals(context.getRequest().getHttpMethod().name())) {
+                if (info.getRequestMethod().equals(context.getRequest().getHttpMethod().name())) {
                     matcherRestFul = MatchUtils.matcherRestFul(info.getPath(), context.getRequest().getPath(), info.getRestFulParam());
                     if (matcherRestFul != null) {
                         requestInfo = info;
@@ -58,38 +37,21 @@ public class ControllerRequestHandler extends BuildControllerHandler implements 
         }
         if (requestInfo != null) {
             Object result = null;
-            if (requestInfo.getBeanName() == null) {// 自定义的请求处理
+            /*if (requestInfo.getBeanName() == null) {// 自定义的请求处理
                 requestInfo.getCustomRequestHandler().handler(context);
                 return true;
+            }*/
+
+            // 缓存
+            Object controllerBean = cacheControllerBean.get(requestInfo.getBeanName());
+            if (controllerBean == null) {
+                // 没有时从上下文中获取
+                controllerBean = applicationContext.getBean(requestInfo.getBeanName(), requestInfo.getControllerClass());
+                cacheControllerBean.put(requestInfo.getBeanName(), controllerBean);
             }
 
-            // rest ful 请求
-            if (matcherRestFul != null) {
-                Object bean = applicationContext.getBean(requestInfo.getBeanName());
-                Method method = bean.getClass().getDeclaredMethod(requestInfo.getMethodName(), requestInfo.getParamType());
-                Object[] param = joinRestFulParam(requestInfo, context, matcherRestFul);
-                result = method.invoke(bean, param);
-            } else { // 绝对路径请求
-                // 缓存
-                CacheRequestHandler handler = cacheRequestHandler.get(reqURL);
-                if (handler == null) {
-                    // 没有时从上下文中获取
-                    Object bean = applicationContext.getBean(requestInfo.getBeanName());
-                    Method method = bean.getClass().getDeclaredMethod(requestInfo.getMethodName(), requestInfo.getParamType());
-                    handler = new CacheRequestHandler(bean, method);
-                    cacheRequestHandler.put(reqURL, handler);
-                }
-
-                Object bean = applicationContext.getBean(requestInfo.getBeanName(), requestInfo.getControllerClass());
-
-                Method declaredMethod = bean.getClass().getDeclaredMethod(requestInfo.getMethodName(),
-                        requestInfo.getParamType());
-
-                result = declaredMethod.invoke(bean, new Object[]{FinalServerContext.currentContext().getResponse(), "asdasd", FinalServerContext.currentContext().getRequest()});
-
-//                Object[] param = joinParam(requestInfo, context);
-//                result = handler.getMethod().invoke(handler.getBean(), param);
-            }
+            // 绝对路径请求、 rest ful 请求、 aop赋值
+            result = requestInfo.getMethod().invoke(controllerBean, new Object[requestInfo.getParamNum()]);
 
             // 结果处理 ----------------------------------------------------------------------------------------------
             if (context.getResponse().isReady())
@@ -120,18 +82,8 @@ public class ControllerRequestHandler extends BuildControllerHandler implements 
         return true;
     }
 
-    private Object[] joinParam(RequestInfo handler, FinalServerContext context) {
-        if (handler.getParamType().length == 0)
-            return handler.getParamType();
-        Object[] params = new Object[handler.getParamType().length];
-        for (int i = 0; i < handler.getParamType().length; i++) {
-            params[i] = handlerParam.match(handler.getParamName()[i], handler.getParamType()[i], context);
-        }
-        return params;
-    }
-
     private Object[] joinRestFulParam(RequestInfo handler, FinalServerContext context, Map<String, String> matcherRestFul) {
-        if (handler.getParamType().length == 0)
+       /* if (handler.getParamType().length == 0)
             return handler.getParamType();
         Object[] params = new Object[handler.getParamType().length];
         for (int i = 0; i < handler.getParamType().length; i++) {
@@ -142,6 +94,7 @@ public class ControllerRequestHandler extends BuildControllerHandler implements 
                 params[i] = handlerParam.match(handler.getParamName()[i], handler.getParamType()[i], context);
             }
         }
-        return params;
+        return params;*/
+        return new Object[0];
     }
 }

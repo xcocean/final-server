@@ -12,10 +12,14 @@
     <context:annotation-config/>
     <!-- 使@Aspect注解生效 -->
     <aop:aspectj-autoproxy/>
+    <!--controller AOP-->
+    <bean id="handlerParamAspect" class="top.lingkang.finalserver.server.aop.HandlerParamAspect"/>
     <!--静态文件-->
-    <bean id="staticRequestHandler" class="top.lingkang.finalserver.server.web.handler.StaticRequestHandler"></bean>
+    <bean id="staticRequestHandler" class="top.lingkang.finalserver.server.web.handler.StaticRequestHandler"/>
+    <!--controller初始化-->
+    <bean id="controllerRequestHandler" class="top.lingkang.finalserver.server.web.handler.ControllerRequestHandler"/>
     <!--初始化各种配置-->
-    <bean id="finalServerInit" class="top.lingkang.finalserver.server.web.FinalServerInitializer"></bean>
+    <bean id="finalServerInit" class="top.lingkang.finalserver.server.web.FinalServerInitializer"/>
     <!--初始化web-->
-    <bean id="finalServerWeb" class="top.lingkang.finalserver.server.web.FinalServerWeb" init-method="init"></bean>
+    <bean id="finalServerWeb" class="top.lingkang.finalserver.server.web.FinalServerWeb" init-method="init"/>
 </beans>

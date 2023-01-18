@@ -2,7 +2,6 @@ package top.lingkang.finalserver.server;
 
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.IoUtil;
-import cn.hutool.core.lang.Assert;
 import cn.hutool.core.net.NetUtil;
 import cn.hutool.core.util.IdUtil;
 import org.slf4j.Logger;
@@ -17,22 +16,18 @@ import top.lingkang.finalserver.server.core.impl.ShutdownEventRemoveTempConfigFi
 import top.lingkang.finalserver.server.error.FinalServerException;
 import top.lingkang.finalserver.server.log.FinalServerLogConfig;
 import top.lingkang.finalserver.server.log.FinalSystemOut;
-import top.lingkang.finalserver.server.web.FinalServerWeb;
-import top.lingkang.finalserver.server.web.entity.RequestInfo;
-import top.lingkang.finalserver.server.web.handler.ControllerRequestHandler;
 import top.lingkang.finalserver.server.web.handler.CustomRequestHandler;
-import top.lingkang.finalserver.server.web.handler.RequestHandler;
-import top.lingkang.finalserver.server.web.http.FilterChain;
-import top.lingkang.finalserver.server.web.http.FinalServerContext;
 import top.lingkang.finalserver.server.web.http.RequestMethod;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * @author lingkang
@@ -119,7 +114,7 @@ public class FinalServerApplication {
      * 用于动态添加http处理
      */
     public static void addRequestHandler(String path, RequestMethod method, CustomRequestHandler customRequestHandler) throws Exception {
-        Assert.notBlank(path, "处理路径不能为空");
+        /*Assert.notBlank(path, "处理路径不能为空");
         Assert.notNull(method, "请求方法不能为空");
         Assert.notNull(customRequestHandler, "自定义处理不能为空");
         if (!path.startsWith("/"))
@@ -150,7 +145,7 @@ public class FinalServerApplication {
                 log.info("添加自定义请求处理成功：" + method.name() + "  " + path);
                 break;
             }
-        }
+        }*/
     }
 
 
