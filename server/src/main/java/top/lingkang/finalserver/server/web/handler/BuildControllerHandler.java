@@ -3,7 +3,7 @@ package top.lingkang.finalserver.server.web.handler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
+import org.springframework.core.StandardReflectionParameterNameDiscoverer;
 import top.lingkang.finalserver.server.annotation.*;
 import top.lingkang.finalserver.server.utils.BeanUtils;
 import top.lingkang.finalserver.server.utils.MatchUtils;
@@ -22,6 +22,7 @@ import java.util.*;
 public class BuildControllerHandler {
     private static final Logger log = LoggerFactory.getLogger(BuildControllerHandler.class);
     private ApplicationContext applicationContext;
+    private StandardReflectionParameterNameDiscoverer getParameterNames = new StandardReflectionParameterNameDiscoverer();
 
     public BuildControllerHandler(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
@@ -118,7 +119,7 @@ public class BuildControllerHandler {
     private String[] getParamNames(String methodName, Class<?> clazz, Class<?>... parameterTypes) {
         try {
             Method method = clazz.getMethod(methodName, parameterTypes);
-            return new LocalVariableTableParameterNameDiscoverer().getParameterNames(method);
+            return getParameterNames.getParameterNames(method);
         } catch (Exception e) {
             e.printStackTrace();
         }

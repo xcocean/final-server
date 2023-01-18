@@ -94,8 +94,13 @@ public class ControllerRequestHandler implements RequestHandler {
                     context.getResponse().returnTemplate(template.getTemplate());
                 }
             } else {
-                // 其他结果返回JSON格式化尝试
-                context.getResponse().returnJsonObject(result);
+                if (TypeUtils.isBaseType(result.getClass())) {
+                    // 基础类型
+                    context.getResponse().returnString(result.toString());
+                } else {
+                    // json
+                    context.getResponse().returnJsonObject(result);
+                }
             }
         }
         return true;
