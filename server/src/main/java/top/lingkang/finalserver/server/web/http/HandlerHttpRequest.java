@@ -45,7 +45,7 @@ class HandlerHttpRequest extends SimpleChannelInboundHandler<FinalServerContext>
             Response response = context.getResponse();
             if (response.isReady()) {
                 if (response.getResponseFile() != null) {
-                    returnStaticFile(response.getResponseFile().getFilePath(), ctx);
+                    returnStaticFile(response.getResponseFile().getFile(), ctx);
                     return;
                 }
 
@@ -107,8 +107,7 @@ class HandlerHttpRequest extends SimpleChannelInboundHandler<FinalServerContext>
     /**
      * 返回文件处理
      */
-    private void returnStaticFile(String filePath, ChannelHandlerContext ctx) throws Exception {
-        File file = new File(filePath);
+    private void returnStaticFile(File file, ChannelHandlerContext ctx) throws Exception {
         if (!file.exists()) {
             log.warn("文件不存在：{}", file.getAbsolutePath());
             FinalServerConfiguration.webExceptionHandler.notHandler(ctx);
@@ -120,9 +119,9 @@ class HandlerHttpRequest extends SimpleChannelInboundHandler<FinalServerContext>
         headers.set(HttpHeaderNames.ACCEPT_RANGES, HttpHeaderValues.BYTES);
         headers.set(HttpHeaderNames.CONTENT_LENGTH, randomAccessFile.length());
         headers.set(HttpHeaderNames.LAST_MODIFIED, new Date(file.lastModified()));
-        headers.set(HttpHeaderNames.CACHE_CONTROL, HttpHeaderValues.NO_STORE);
+        headers.set(HttpHeaderNames.CACHE_CONTROL, HttpHeaderValues.NO_CACHE);
         // 设置文件请求头
-        CommonUtils.setResponseHeadName(context.getResponse().getResponseFile(), headers);
+        HttpUtils.setResponseHeadName(context.getResponse().getResponseFile(), headers);
 
         // 添加会话到cookie
         FinalServerConfiguration.httpSessionManage.addSessionIdToCurrentHttp(context);

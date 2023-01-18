@@ -20,19 +20,26 @@ import java.util.Map;
  * Created by 2022/12/7
  * @since 1.0.0
  */
-public class ControllerRequestHandler implements RequestHandler {
+public class ControllerRequestHandler extends BuildControllerHandler implements RequestHandler {
     private static final Logger log = LoggerFactory.getLogger(ControllerRequestHandler.class);
-    private HashMap<String, RequestInfo> absolutePath;
-    private List<RequestInfo> restFulPath;
-    private ApplicationContext applicationContext;
+    /*private HashMap<String, RequestInfo> absolutePath;
+    private List<RequestInfo> restFulPath;*/
     private MethodHandlerParam handlerParam = new MethodHandlerParam();
     public static Map<String, CacheRequestHandler> cacheRequestHandler = new HashMap<>();
 
-    public ControllerRequestHandler(HashMap<String, RequestInfo> absolutePath, List<RequestInfo> restFulPath, ApplicationContext applicationContext) {
+    public ControllerRequestHandler(ApplicationContext applicationContext) {
+        super(applicationContext);
+
+    }
+
+
+
+    /*public ControllerRequestHandler(HashMap<String, RequestInfo> absolutePath, List<RequestInfo> restFulPath, ApplicationContext applicationContext) {
         this.absolutePath = absolutePath;
         this.applicationContext = applicationContext;
         this.restFulPath = restFulPath;
-    }
+    }*/
+
 
     public boolean handler(FinalServerContext context) throws Exception {
         String reqURL = context.getRequest().getHttpMethod().name() + "_" + context.getRequest().getPath();
@@ -73,12 +80,12 @@ public class ControllerRequestHandler implements RequestHandler {
                     cacheRequestHandler.put(reqURL, handler);
                 }
 
-                Object bean = applicationContext.getBean(requestInfo.getBeanName(),requestInfo.getControllerClass());
+                Object bean = applicationContext.getBean(requestInfo.getBeanName(), requestInfo.getControllerClass());
 
                 Method declaredMethod = bean.getClass().getDeclaredMethod(requestInfo.getMethodName(),
                         requestInfo.getParamType());
 
-                result= declaredMethod.invoke(bean,new Object[]{FinalServerContext.currentContext().getResponse(),"asdasd",FinalServerContext.currentContext().getRequest()});
+                result = declaredMethod.invoke(bean, new Object[]{FinalServerContext.currentContext().getResponse(), "asdasd", FinalServerContext.currentContext().getRequest()});
 
 //                Object[] param = joinParam(requestInfo, context);
 //                result = handler.getMethod().invoke(handler.getBean(), param);

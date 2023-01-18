@@ -1,19 +1,13 @@
 package top.lingkang.finalserver.server.utils;
 
-import cn.hutool.core.io.FileUtil;
 import com.alibaba.fastjson2.JSON;
-import io.netty.handler.codec.http.HttpHeaderNames;
-import io.netty.handler.codec.http.HttpHeaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.lingkang.finalserver.server.core.FinalServerConfiguration;
 import top.lingkang.finalserver.server.core.WebListener;
 import top.lingkang.finalserver.server.error.FinalServerException;
-import top.lingkang.finalserver.server.web.entity.ResponseFile;
 import top.lingkang.finalserver.server.web.http.FinalServerContext;
-import top.lingkang.finalserver.server.web.http.StaticMimes;
 
-import java.net.URLEncoder;
 import java.util.Map;
 
 /**
@@ -23,23 +17,6 @@ import java.util.Map;
  */
 public class CommonUtils {
     private static final Logger log = LoggerFactory.getLogger(CommonUtils.class);
-
-    public static void setResponseHeadName(ResponseFile responseFile, HttpHeaders headers) throws Exception {
-        int index = responseFile.getFilePath().lastIndexOf(".");
-        if (index == -1) return;
-
-        if (!headers.contains(HttpHeaderNames.CONTENT_TYPE)) {
-            String type = StaticMimes.get(responseFile.getFilePath().substring(index));
-            headers.set(HttpHeaderNames.CONTENT_TYPE, type);
-
-            // 是否为下载
-            if (responseFile.isDownload() && !headers.contains(HttpHeaderNames.CONTENT_DISPOSITION)) {
-                if (responseFile.getName() == null)// 设置名称
-                    responseFile.setName(FileUtil.getName(responseFile.getFilePath()));
-                headers.set(HttpHeaderNames.CONTENT_DISPOSITION, "attachment;filename=" + URLEncoder.encode(responseFile.getName(), "UTF-8"));
-            }
-        }
-    }
 
     public static void pushWebListenerBefore(FinalServerContext context) throws Exception {
         for (WebListener listener : FinalServerConfiguration.webListener) {

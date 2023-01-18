@@ -12,7 +12,10 @@ import top.lingkang.finalserver.server.core.impl.DefaultHttpSessionManage;
 import top.lingkang.finalserver.server.core.impl.DefaultIdGenerateFactory;
 import top.lingkang.finalserver.server.core.impl.DefaultWebExceptionHandler;
 import top.lingkang.finalserver.server.utils.BeanUtils;
-import top.lingkang.finalserver.server.web.handler.*;
+import top.lingkang.finalserver.server.web.handler.BuildControllerHandler;
+import top.lingkang.finalserver.server.web.handler.LocalStaticMapping;
+import top.lingkang.finalserver.server.web.handler.RequestHandler;
+import top.lingkang.finalserver.server.web.handler.StaticRequestHandler;
 import top.lingkang.finalserver.server.web.http.Filter;
 import top.lingkang.finalserver.server.web.ws.WebSocketDispatch;
 
@@ -36,18 +39,18 @@ public class FinalServerInitializer {
         this.applicationContext = applicationContext;
         List<RequestHandler> handlers = new ArrayList<>();
         String[] beanNamesForType = applicationContext.getBeanNamesForType(LocalStaticMapping.class);
-        if (beanNamesForType.length > 0) {
-            for (String name : beanNamesForType) {
-
-                LocalStaticMapping bean = applicationContext.getBean(name, LocalStaticMapping.class);
-                bean.init();
-                for (String path : bean.getPaths()) {
-                    handlers.add(new LocalStaticRequestHandler(path));
-                    log.info("本地静态文件映射：" + path);
-                }
+        for (String name : beanNamesForType) {
+            LocalStaticMapping bean = applicationContext.getBean(name, LocalStaticMapping.class);
+            bean.init();
+            for (String path : bean.getPaths()) {
+                handlers.add(bean);
+                log.info("本地静态文件映射：" + path);
             }
         }
-        handlers.add(new StaticRequestHandler());// 项目静态文件
+
+        // 注入
+        handlers.add(applicationContext.getBean(StaticRequestHandler.class));// 项目静态文件
+
         handlers.add(new BuildControllerHandler(applicationContext).build());// controller转发
         requestHandlers = handlers.toArray(new RequestHandler[0]);
 
@@ -55,7 +58,7 @@ public class FinalServerInitializer {
         if (namesForType.length > 0) {
             List<Filter> list = new ArrayList<>();
             for (String name : namesForType) {
-                Filter filter = (Filter) applicationContext.getBean(name);
+                Filter filter = applicationContext.getBean(name, Filter.class);
                 filter.init();// 初始化
                 FinalServerApplication.addShutdownHook(new ShutdownEvent() {
                     @Override

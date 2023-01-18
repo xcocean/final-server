@@ -21,15 +21,15 @@ import java.util.*;
  */
 public class BuildControllerHandler {
     private static final Logger log = LoggerFactory.getLogger(BuildControllerHandler.class);
-    private ApplicationContext applicationContext;
+    protected ApplicationContext applicationContext;
     private StandardReflectionParameterNameDiscoverer getParameterNames = new StandardReflectionParameterNameDiscoverer();
 
     public BuildControllerHandler(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
     }
 
-    private HashMap<String, RequestInfo> absolutePath = new HashMap<>();
-    private List<RequestInfo> restFulPath = new ArrayList<>();
+    protected HashMap<String, RequestInfo> absolutePath = new HashMap<>();
+    protected List<RequestInfo> restFulPath = new ArrayList<>();
 
     public ControllerRequestHandler build() {
         log.debug("开始加载 Controller 请求处理");
@@ -39,13 +39,15 @@ public class BuildControllerHandler {
         Set<String> tmp = new HashSet<>(Arrays.asList(allName));
         tmp.addAll(Arrays.asList(names));
         allName = tmp.toArray(new String[]{});
+
+        // 遍历缓存处理
         for (String name : allName) {
             Object bean = BeanUtils.getTarget(applicationContext.getBean(name));
-            Object annotation = bean.getClass().getAnnotation(Controller.class);
+            /*Object annotation = bean.getClass().getAnnotation(Controller.class);
             if (annotation == null)
                 annotation = bean.getClass().getAnnotation(org.springframework.stereotype.Controller.class);
             if (annotation == null)
-                continue;
+                continue;*/
             log.debug(BeanUtils.getSpringProxyBeanName(bean.getClass()));
 
             String basePath = "/";
@@ -98,7 +100,7 @@ public class BuildControllerHandler {
                 log.debug(name.toString());
         }
         log.debug("Controller 请求处理加载完成");
-        return new ControllerRequestHandler(absolutePath, restFulPath, applicationContext);
+        return null;//new ControllerRequestHandler(absolutePath, restFulPath, applicationContext);
     }
 
     // @RequestMapping 检查前后缀
