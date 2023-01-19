@@ -12,8 +12,8 @@ import java.util.Arrays;
  * @author lingkang
  * Created by 2023/1/7
  */
-@Component
-@Aspect
+//@Component
+//@Aspect
 public class ControllerConfigAop {
 
     // 包下所有controller都进行AOP

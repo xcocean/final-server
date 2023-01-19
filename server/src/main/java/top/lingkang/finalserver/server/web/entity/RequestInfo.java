@@ -1,7 +1,6 @@
 package top.lingkang.finalserver.server.web.entity;
 
-import top.lingkang.finalserver.server.web.handler.CustomRequestHandler;
-import top.lingkang.finalserver.server.web.http.RequestMethod;
+import top.lingkang.finalserver.server.core.CustomRequestHandler;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -19,6 +18,39 @@ public class RequestInfo {
     private String requestMethod;
     private Class<?> controllerClass;
     private String beanName;
+    private boolean isCustomRequestHandler;
+    private CustomRequestHandler customRequestHandler;
+
+    @Override
+    public String toString() {
+        return "RequestInfo{" +
+                "path='" + path + '\'' +
+                ", restFulParam=" + Arrays.toString(restFulParam) +
+                ", method=" + method +
+                ", paramNum=" + paramNum +
+                ", requestMethod='" + requestMethod + '\'' +
+                ", controllerClass=" + controllerClass +
+                ", beanName='" + beanName + '\'' +
+                ", isCustomRequestHandler=" + isCustomRequestHandler +
+                ", customRequestHandler=" + customRequestHandler +
+                '}';
+    }
+
+    public CustomRequestHandler getCustomRequestHandler() {
+        return customRequestHandler;
+    }
+
+    public void setCustomRequestHandler(CustomRequestHandler customRequestHandler) {
+        this.customRequestHandler = customRequestHandler;
+    }
+
+    public boolean isCustomRequestHandler() {
+        return isCustomRequestHandler;
+    }
+
+    public void setCustomRequestHandler(boolean customRequestHandler) {
+        isCustomRequestHandler = customRequestHandler;
+    }
 
     public String getPath() {
         return path;

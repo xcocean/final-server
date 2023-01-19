@@ -1,10 +1,12 @@
 package top.lingkang.finalserver.server.web.handler;
 
+import cn.hutool.core.lang.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import top.lingkang.finalserver.server.annotation.*;
+import top.lingkang.finalserver.server.core.CustomRequestHandler;
 import top.lingkang.finalserver.server.utils.BeanUtils;
 import top.lingkang.finalserver.server.utils.MatchUtils;
 import top.lingkang.finalserver.server.web.entity.RequestInfo;
@@ -25,8 +27,14 @@ class BuildControllerHandler {
     protected ApplicationContext applicationContext;
     protected HashMap<String, RequestInfo> absolutePath = new HashMap<>();
     protected List<RequestInfo> restFulPath = new ArrayList<>();
+    protected boolean isBuild = false;
 
     public void build() {
+        if (isBuild) {
+            log.warn("已经构建了请求，此次操作将忽略");
+            return;
+        }
+
         log.debug("开始加载 Controller 请求处理");
         String[] allName = applicationContext.getBeanNamesForAnnotation(Controller.class);
         // 兼容spring的controller注解
@@ -90,7 +98,26 @@ class BuildControllerHandler {
                 log.debug(name.toString());
         }
         log.debug("Controller 请求处理加载完成");
-        // return null;//new ControllerRequestHandler(absolutePath, restFulPath, applicationContext);
+        isBuild = true;
+    }
+
+    public void addRequestHandler(String path, RequestMethod method, CustomRequestHandler handler) {
+        Assert.notBlank(path, "处理路径不能为空");
+        Assert.notNull(method, "请求方法不能为空");
+        Assert.notNull(handler, "自定义处理不能为空");
+        if (!path.startsWith("/"))
+            path = "/" + path;
+
+        if (absolutePath.containsKey(method.name() + "_" + path))
+            throw new IllegalArgumentException("已经存在的处理方法：" + method.name() + "_" + path);
+
+        RequestInfo info = new RequestInfo();
+        info.setCustomRequestHandler(handler);
+        info.setCustomRequestHandler(true);
+        info.setPath(path);
+        info.setRequestMethod(method.name());
+        absolutePath.put(method.name() + "_" + path, info);
+        log.debug("添加请求处理成功");
     }
 
     // @RequestMapping 检查前后缀

@@ -37,10 +37,10 @@ public class ControllerRequestHandler extends BuildControllerHandler implements 
         }
         if (requestInfo != null) {
             Object result = null;
-            /*if (requestInfo.getBeanName() == null) {// 自定义的请求处理
+            if (requestInfo.isCustomRequestHandler()) {// 自定义的请求处理
                 requestInfo.getCustomRequestHandler().handler(context);
                 return true;
-            }*/
+            }
 
             // 缓存
             Object controllerBean = cacheControllerBean.get(requestInfo.getBeanName());
@@ -80,21 +80,5 @@ public class ControllerRequestHandler extends BuildControllerHandler implements 
             }
         }
         return true;
-    }
-
-    private Object[] joinRestFulParam(RequestInfo handler, FinalServerContext context, Map<String, String> matcherRestFul) {
-       /* if (handler.getParamType().length == 0)
-            return handler.getParamType();
-        Object[] params = new Object[handler.getParamType().length];
-        for (int i = 0; i < handler.getParamType().length; i++) {
-            String param = matcherRestFul.get(handler.getParamName()[i]);
-            if (param != null) {
-                params[i] = TypeUtils.stringToObject(param, handler.getParamType()[i]);
-            } else {
-                params[i] = handlerParam.match(handler.getParamName()[i], handler.getParamType()[i], context);
-            }
-        }
-        return params;*/
-        return new Object[0];
     }
 }
