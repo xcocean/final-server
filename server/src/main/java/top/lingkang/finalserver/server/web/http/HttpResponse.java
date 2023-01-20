@@ -86,8 +86,8 @@ public class HttpResponse implements Response {
     public void returnFile(ResponseFile responseFile) {
         checkReady();
         isReady = true;
-        if (responseFile.getFilePath() == null)
-            throw new FinalServerException("返回文件路径不能为空");
+        if (responseFile.getFile() == null)
+            throw new FinalServerException("返回文件或路径不能为空");
         this.responseFile = responseFile;
     }
 

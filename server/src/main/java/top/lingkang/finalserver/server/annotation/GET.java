@@ -1,7 +1,5 @@
 package top.lingkang.finalserver.server.annotation;
 
-import top.lingkang.finalserver.server.web.http.RequestMethod;
-
 import java.lang.annotation.*;
 
 /**
@@ -11,6 +9,7 @@ import java.lang.annotation.*;
  */
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
+@Documented
 public @interface GET {
     String value() default "";
 }

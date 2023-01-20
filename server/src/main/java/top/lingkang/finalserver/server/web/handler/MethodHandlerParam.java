@@ -17,7 +17,7 @@ import java.util.Map;
 public class MethodHandlerParam {
     private static final Logger log = LoggerFactory.getLogger(MethodHandlerParam.class);
     public static final HashMap<Class<?>, HandlerParam> handlerMap = new HashMap<>();
-    private static final Map<Class<?>, Object> initValue = new HashMap<>();
+    public static final Map<Class<?>, Object> initValue = new HashMap<>();
 
 
     public Object match(String name, Class<?> type, FinalServerContext context) {

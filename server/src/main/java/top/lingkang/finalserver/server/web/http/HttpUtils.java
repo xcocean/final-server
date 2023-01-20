@@ -1,5 +1,6 @@
 package top.lingkang.finalserver.server.web.http;
 
+import cn.hutool.core.io.FileUtil;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -9,7 +10,9 @@ import io.netty.handler.codec.http.cookie.ServerCookieEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.lingkang.finalserver.server.core.FinalServerConfiguration;
+import top.lingkang.finalserver.server.web.entity.ResponseFile;
 
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Set;
@@ -159,6 +162,24 @@ public final class HttpUtils {
             Set<Cookie> cookies = context.getResponse().getCookies();
             for (Cookie cookie : cookies) {
                 context.getResponse().setHeader("Set-Cookie", ServerCookieEncoder.STRICT.encode(cookie));
+            }
+        }
+    }
+
+    public static void setResponseHeadName(ResponseFile responseFile, HttpHeaders headers) throws Exception {
+        String path = responseFile.getFile().getAbsolutePath();
+        int index = path.lastIndexOf(".");
+        if (index == -1) return;
+
+        if (!headers.contains(HttpHeaderNames.CONTENT_TYPE)) {
+            String type = StaticMimes.get(path.substring(index));
+            headers.set(HttpHeaderNames.CONTENT_TYPE, type);
+
+            // 是否为下载
+            if (responseFile.isDownload() && !headers.contains(HttpHeaderNames.CONTENT_DISPOSITION)) {
+                if (responseFile.getName() == null)// 设置名称
+                    responseFile.setName(FileUtil.getName(path));
+                headers.set(HttpHeaderNames.CONTENT_DISPOSITION, "attachment;filename=" + URLEncoder.encode(responseFile.getName(), "UTF-8"));
             }
         }
     }
