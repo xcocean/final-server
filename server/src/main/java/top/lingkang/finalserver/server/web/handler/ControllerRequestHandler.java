@@ -51,7 +51,7 @@ public class ControllerRequestHandler extends BuildControllerHandler implements 
             }
 
             // 绝对路径请求、 rest ful 请求、 aop赋值
-            result = requestInfo.getMethod().invoke(controllerBean, new Object[requestInfo.getParamNum()]);
+            result = requestInfo.getMethod().invoke(controllerBean, requestInfo.getParam());
 
             // 结果处理 ----------------------------------------------------------------------------------------------
             if (context.getResponse().isReady())

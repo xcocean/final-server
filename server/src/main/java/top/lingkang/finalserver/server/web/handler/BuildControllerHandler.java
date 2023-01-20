@@ -9,6 +9,7 @@ import top.lingkang.finalserver.server.annotation.*;
 import top.lingkang.finalserver.server.core.CustomRequestHandler;
 import top.lingkang.finalserver.server.utils.BeanUtils;
 import top.lingkang.finalserver.server.utils.MatchUtils;
+import top.lingkang.finalserver.server.utils.TypeUtils;
 import top.lingkang.finalserver.server.web.entity.RequestInfo;
 import top.lingkang.finalserver.server.web.http.RequestMethod;
 
@@ -72,7 +73,7 @@ class BuildControllerHandler {
                     info.setBeanName(name);
                     info.setControllerClass(bean.getClass());
                     info.setRequestMethod(requestType.requestMethod.name());
-                    info.setParamNum(method.getParameterTypes().length);
+                    info.setParam(getParamInitValue(method.getParameterTypes()));
                     info.setMethod(method);
 
                     // REST ful API
@@ -99,6 +100,16 @@ class BuildControllerHandler {
         }
         log.debug("Controller 请求处理加载完成");
         isBuild = true;
+    }
+
+    private Object[] getParamInitValue(Class<?>[] params) {
+        if (params.length == 0)
+            return new Object[0];
+        Object[] param = new Object[params.length];
+        for (int i = 0; i < param.length; i++) {
+            param[i] = TypeUtils.initValue.get(params[i]);
+        }
+        return param;
     }
 
     public void addRequestHandler(String path, RequestMethod method, CustomRequestHandler handler) {

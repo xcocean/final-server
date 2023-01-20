@@ -14,7 +14,7 @@ public class RequestInfo {
     private String path;
     private String[] restFulParam;
     private Method method;
-    private int paramNum;
+    private Object[] param;
     private String requestMethod;
     private Class<?> controllerClass;
     private String beanName;
@@ -27,29 +27,13 @@ public class RequestInfo {
                 "path='" + path + '\'' +
                 ", restFulParam=" + Arrays.toString(restFulParam) +
                 ", method=" + method +
-                ", paramNum=" + paramNum +
+                ", param=" + Arrays.toString(param) +
                 ", requestMethod='" + requestMethod + '\'' +
                 ", controllerClass=" + controllerClass +
                 ", beanName='" + beanName + '\'' +
                 ", isCustomRequestHandler=" + isCustomRequestHandler +
                 ", customRequestHandler=" + customRequestHandler +
                 '}';
-    }
-
-    public CustomRequestHandler getCustomRequestHandler() {
-        return customRequestHandler;
-    }
-
-    public void setCustomRequestHandler(CustomRequestHandler customRequestHandler) {
-        this.customRequestHandler = customRequestHandler;
-    }
-
-    public boolean isCustomRequestHandler() {
-        return isCustomRequestHandler;
-    }
-
-    public void setCustomRequestHandler(boolean customRequestHandler) {
-        isCustomRequestHandler = customRequestHandler;
     }
 
     public String getPath() {
@@ -76,12 +60,12 @@ public class RequestInfo {
         this.method = method;
     }
 
-    public int getParamNum() {
-        return paramNum;
+    public Object[] getParam() {
+        return param;
     }
 
-    public void setParamNum(int paramNum) {
-        this.paramNum = paramNum;
+    public void setParam(Object[] param) {
+        this.param = param;
     }
 
     public String getRequestMethod() {
@@ -106,5 +90,21 @@ public class RequestInfo {
 
     public void setBeanName(String beanName) {
         this.beanName = beanName;
+    }
+
+    public boolean isCustomRequestHandler() {
+        return isCustomRequestHandler;
+    }
+
+    public void setCustomRequestHandler(boolean customRequestHandler) {
+        isCustomRequestHandler = customRequestHandler;
+    }
+
+    public CustomRequestHandler getCustomRequestHandler() {
+        return customRequestHandler;
+    }
+
+    public void setCustomRequestHandler(CustomRequestHandler customRequestHandler) {
+        this.customRequestHandler = customRequestHandler;
     }
 }

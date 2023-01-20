@@ -7,7 +7,6 @@ import top.lingkang.finalserver.server.utils.TypeUtils;
 import top.lingkang.finalserver.server.web.http.*;
 
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author lingkang
@@ -17,7 +16,6 @@ import java.util.Map;
 public class MethodHandlerParam {
     private static final Logger log = LoggerFactory.getLogger(MethodHandlerParam.class);
     public static final HashMap<Class<?>, HandlerParam> handlerMap = new HashMap<>();
-    public static final Map<Class<?>, Object> initValue = new HashMap<>();
 
 
     public Object match(String name, Class<?> type, FinalServerContext context) {
@@ -28,7 +26,7 @@ public class MethodHandlerParam {
         }
         Object handler = handlerParam.handler(name, type, context);
         if (handler == null)
-            return initValue.get(type);
+            return TypeUtils.initValue.get(type);
         return handler;
     }
 
@@ -97,14 +95,5 @@ public class MethodHandlerParam {
         handlerMap.put(Float.class, baseHandlerParam);
         handlerMap.put(float.class, baseHandlerParam);
 
-        initValue.put(String.class, null);
-        initValue.put(Integer.class, null);
-        initValue.put(int.class, 0);
-        initValue.put(Long.class, null);
-        initValue.put(long.class, 0);
-        initValue.put(Double.class, null);
-        initValue.put(double.class, 0);
-        initValue.put(Float.class, null);
-        initValue.put(float.class, 0);
     }
 }

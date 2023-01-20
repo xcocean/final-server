@@ -3,11 +3,27 @@ package top.lingkang.finalserver.server.utils;
 import cn.hutool.core.convert.BasicType;
 import top.lingkang.finalserver.server.annotation.NotNull;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author lingkang
  * Created by 2023/1/14
  */
 public class TypeUtils {
+    public static final Map<Class<?>, Object> initValue = new HashMap<>();
+
+    static {
+        initValue.put(int.class, 0);
+        initValue.put(long.class, 0L);
+        initValue.put(double.class, 0d);
+        initValue.put(float.class, 0f);
+        initValue.put(byte.class, '0');
+        initValue.put(short.class, 0);
+        initValue.put(char.class, '0');
+        initValue.put(boolean.class, false);
+    }
+
     public static Object stringToObject(String str, Class<?> type) {
         if (type == String.class)
             return str;
@@ -29,4 +45,6 @@ public class TypeUtils {
     public static boolean isBaseType(@NotNull Class<?> clazz) {
         return clazz.isPrimitive() || BasicType.WRAPPER_PRIMITIVE_MAP.containsKey(clazz);
     }
+
+
 }
