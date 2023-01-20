@@ -79,9 +79,6 @@ public class ControllerRequestHandler implements RequestHandler {
                         requestInfo.getParamType());
 
                 result= declaredMethod.invoke(bean,new Object[]{FinalServerContext.currentContext().getResponse(),"asdasd",FinalServerContext.currentContext().getRequest()});
-
-//                Object[] param = joinParam(requestInfo, context);
-//                result = handler.getMethod().invoke(handler.getBean(), param);
             }
 
             // 结果处理 ----------------------------------------------------------------------------------------------
