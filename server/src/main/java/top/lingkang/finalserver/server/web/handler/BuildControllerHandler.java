@@ -106,7 +106,7 @@ class BuildControllerHandler {
         if (params.length == 0)
             return new Object[0];
         Object[] param = new Object[params.length];
-        for (int i = 0; i < param.length; i++) {
+        for (int i = 0; i < params.length; i++) {
             param[i] = TypeUtils.initValue.get(params[i]);
         }
         return param;

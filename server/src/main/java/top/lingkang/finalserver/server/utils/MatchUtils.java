@@ -14,6 +14,9 @@ import java.util.Map;
  */
 public class MatchUtils {
 
+    /**
+     * 输入 /a/{asd}  /a/ssss
+     */
     public static Map<String, String> matcherRestFul(String pattern, String path, String[] param) {
         String[] root = pattern.split("/");
         String[] node = path.split("/");

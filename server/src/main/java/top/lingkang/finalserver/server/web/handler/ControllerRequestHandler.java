@@ -19,6 +19,7 @@ import java.util.Map;
 public class ControllerRequestHandler extends BuildControllerHandler implements RequestHandler {
     private static final Logger log = LoggerFactory.getLogger(ControllerRequestHandler.class);
     public static Map<String, Object> cacheControllerBean = new HashMap<>();
+    public static final ThreadLocal<Map<String, String>> restFulMap = new ThreadLocal<>();
 
     public boolean handler(FinalServerContext context) throws Exception {
         String reqURL = context.getRequest().getHttpMethod().name() + "_" + context.getRequest().getPath();
@@ -30,6 +31,7 @@ public class ControllerRequestHandler extends BuildControllerHandler implements 
                     matcherRestFul = MatchUtils.matcherRestFul(info.getPath(), context.getRequest().getPath(), info.getRestFulParam());
                     if (matcherRestFul != null) {
                         requestInfo = info;
+                        restFulMap.set(matcherRestFul);
                         break;
                     }
                 }

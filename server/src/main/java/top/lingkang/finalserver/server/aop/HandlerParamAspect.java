@@ -6,11 +6,14 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
 import top.lingkang.finalserver.server.annotation.*;
+import top.lingkang.finalserver.server.utils.TypeUtils;
+import top.lingkang.finalserver.server.web.handler.ControllerRequestHandler;
 import top.lingkang.finalserver.server.web.handler.MethodHandlerParam;
 import top.lingkang.finalserver.server.web.http.FinalServerContext;
 
 import java.lang.reflect.Method;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -56,15 +59,32 @@ public class HandlerParamAspect {
     }
 
     private Object handler(ProceedingJoinPoint joinPoint, MethodSignature methodSignature) throws Throwable {
+        Map<String, String> restFul = ControllerRequestHandler.restFulMap.get();
         //获取参数名称
         String[] parameterNames = methodSignature.getParameterNames();
         Object[] args = new Object[parameterNames.length];
-        for (int i = 0; i < parameterNames.length; i++) {
-            args[i] = handlerParam.match(
-                    parameterNames[i],
-                    methodSignature.getParameterTypes()[i],
-                    FinalServerContext.currentContext());
+        if (restFul == null) {
+            for (int i = 0; i < parameterNames.length; i++) {
+                args[i] = handlerParam.match(
+                        parameterNames[i],
+                        methodSignature.getParameterTypes()[i],
+                        FinalServerContext.currentContext());
+            }
+        } else {
+            for (int i = 0; i < parameterNames.length; i++) {
+                String value = restFul.get(parameterNames[i]);
+                if (value != null) {
+                    args[i] = TypeUtils.stringToObject(value, methodSignature.getParameterTypes()[i]);
+                } else {
+                    args[i] = handlerParam.match(
+                            parameterNames[i],
+                            methodSignature.getParameterTypes()[i],
+                            FinalServerContext.currentContext());
+                }
+
+            }
         }
+
         return joinPoint.proceed(args);
     }
 }

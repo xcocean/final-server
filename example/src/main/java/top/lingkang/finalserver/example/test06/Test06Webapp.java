@@ -37,8 +37,10 @@ public class Test06Webapp {
     }
 
     @GET("/a/{param}")
-    public Object get2(String param){
+    public Object get2(String param,ParamInfo info){
         System.out.println(param);
+        System.out.println(info);
         return param;
     }
+
 }
