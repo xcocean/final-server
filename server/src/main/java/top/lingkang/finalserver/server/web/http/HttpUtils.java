@@ -14,6 +14,7 @@ import top.lingkang.finalserver.server.web.entity.ResponseFile;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -199,10 +200,11 @@ public final class HttpUtils {
      */
     public static Map<String, Object> getReturnFinalTemplateMap(FinalServerContext context) {
         // 模板全局map
-        Map<String, Object> map = FinalServerContext.getTemplateGlobalMap();
+        Map<String, Object> map = context.getResponse().getTemplateMap();
+        if (map == null)
+            map = new HashMap<>();
 
-        if (context.getResponse().getTemplateMap() != null)
-            map.putAll(context.getResponse().getTemplateMap());
+        map.putAll(FinalServerContext.getTemplateGlobalMap());
 
         // 添加固有参数
         map.put("request", context.getRequest());
