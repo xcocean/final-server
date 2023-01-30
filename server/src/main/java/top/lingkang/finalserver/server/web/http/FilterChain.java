@@ -8,9 +8,10 @@ import top.lingkang.finalserver.server.web.handler.RequestHandler;
  * @since 1.0.0
  */
 public class FilterChain {
-    private Filter[] filters;
-    private int length, current = 0;
-    private RequestHandler[] requestHandler;
+    private  final Filter[] filters;
+    private final int length;
+    private int current = 0;
+    private final RequestHandler[] requestHandler;
 
     public FilterChain(Filter[] filters, RequestHandler[] requestHandler) {
         this.filters = filters;

@@ -3,11 +3,9 @@ package top.lingkang.finalserver.server.web.nio;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
-import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
-import io.netty.handler.stream.ChunkedWriteHandler;
 import top.lingkang.finalserver.server.core.FinalServerProperties;
-import top.lingkang.finalserver.server.web.http.HandlerHttpWrapper;
+import top.lingkang.finalserver.server.web.http.DispatcherHandler;
 
 /**
  * @author lingkang
@@ -23,7 +21,7 @@ public class HandlerNioInitializer extends ChannelInitializer<Channel> {
         // pipeline.addLast(new FinalHttpRequestDecoder());// http 解码
         // pipeline.addLast(new HttpRequestEncoder());// http 编码
         pipeline.addLast(new FinalHttpObjectAggregator(FinalServerProperties.server_maxContentLength));
-        pipeline.addLast(new HandlerHttpWrapper());// 进行一次包装
+        pipeline.addLast(new DispatcherHandler());
     }
 
 }

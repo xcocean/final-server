@@ -71,7 +71,7 @@ public class FinalServerWeb {
                 .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                 //置连接为保持活动的状态
                 .childOption(ChannelOption.SO_KEEPALIVE, true);
-        // 子处理器
+        // 调度处理
         serverBootstrap.childHandler(
                 new HandlerNioInitializer()
         );
@@ -81,8 +81,8 @@ public class FinalServerWeb {
             log.info(
                     "Started {} in {} seconds (JVM running for {})",
                     FinalServerApplication.mainClass.getSimpleName(),
-                    new Double((System.currentTimeMillis() - FinalServerApplication.startTime)) / 1000.0,
-                    new Double(ManagementFactory.getRuntimeMXBean().getUptime()) / 1000.0
+                    (double) (System.currentTimeMillis() - FinalServerApplication.startTime) / 1000.0,
+                    (double) ManagementFactory.getRuntimeMXBean().getUptime() / 1000.0
             );
             log.info("website: http://localhost:" + port);
 

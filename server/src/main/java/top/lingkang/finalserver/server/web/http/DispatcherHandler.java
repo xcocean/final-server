@@ -21,9 +21,10 @@ import java.net.URLDecoder;
  * @author lingkang
  * Created by 2022/12/6
  * @since 1.0.0
+ * 调度处理
  */
-public class HandlerHttpWrapper extends SimpleChannelInboundHandler<FullHttpRequest> {
-    private static final Logger log = LoggerFactory.getLogger(HandlerHttpWrapper.class);
+public class DispatcherHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
+    private static final Logger log = LoggerFactory.getLogger(DispatcherHandler.class);
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest msg) throws Exception {
