@@ -2,6 +2,7 @@ package top.lingkang.finalserver.server.web.handler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import top.lingkang.finalserver.server.constant.FinalServerConstants;
 import top.lingkang.finalserver.server.utils.CommonUtils;
 import top.lingkang.finalserver.server.utils.MatchUtils;
 import top.lingkang.finalserver.server.utils.TypeUtils;
@@ -87,7 +88,7 @@ public class ControllerRequestHandler extends BuildControllerHandler implements 
 
     private Object[] getParamValues(RequestInfo requestInfo) {
         if (requestInfo.getParamNames().length == 0)
-            return new Object[0];
+            return FinalServerConstants.EMPTY_OBJECT_ARRAYS;
         Map<String, String> restFul = ControllerRequestHandler.restFulMap.get();
         //获取参数名称
         Object[] args = new Object[requestInfo.getParamNames().length];

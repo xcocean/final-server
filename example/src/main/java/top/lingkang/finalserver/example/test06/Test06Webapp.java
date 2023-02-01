@@ -1,10 +1,9 @@
 package top.lingkang.finalserver.example.test06;
 
 import top.lingkang.finalserver.server.FinalServerApplication;
-import top.lingkang.finalserver.server.annotation.Controller;
-import top.lingkang.finalserver.server.annotation.FinalServerBoot;
-import top.lingkang.finalserver.server.annotation.GET;
-import top.lingkang.finalserver.server.annotation.RequestParam;
+import top.lingkang.finalserver.server.annotation.*;
+
+import java.util.Map;
 
 /**
  * @author lingkang
@@ -37,11 +36,18 @@ public class Test06Webapp {
         return param;
     }
 
-    @GET("/a/{aa}")
-    public Object get2(@RequestParam("aa")String param, ParamInfo info) {
+    @GET("/a/{id}")
+    public Object get2(@RequestParam("id")String param, ParamInfo info) {
         System.out.println(param);
         System.out.println(info);
         return param;
+    }
+
+    @GET("/h/{a}/{b}")
+    public Object h(String a, String b, @RequestHeader Map map){
+        System.out.println(b);
+        System.out.println(map);
+        return a;
     }
 
 }

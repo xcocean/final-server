@@ -12,6 +12,7 @@ import top.lingkang.finalserver.server.web.handler.MethodHandlerParam;
 import top.lingkang.finalserver.server.web.http.FinalServerContext;
 
 import java.lang.annotation.Annotation;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -39,7 +40,11 @@ public class CommonUtils {
         try {
             if (annotation instanceof RequestHeader) {
                 HttpHeaders headers = context.getRequest().getHeaders();
-                return JSON.parseObject(JSON.toJSONString(headers), type);
+                Map<String,String> map=new HashMap<>();
+                for (String key:headers.names()){
+                    map.put(key,headers.get(key));
+                }
+                return JSON.parseObject(JSON.toJSONString(map), type);
             }
             Map<String, String> params = context.getRequest().getParams();
             if (params.isEmpty())

@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import top.lingkang.finalserver.server.annotation.*;
+import top.lingkang.finalserver.server.constant.FinalServerConstants;
 import top.lingkang.finalserver.server.core.CustomRequestHandler;
 import top.lingkang.finalserver.server.error.FinalServerException;
 import top.lingkang.finalserver.server.utils.BeanUtils;
@@ -110,7 +111,8 @@ class BuildControllerHandler {
     private String[] getParamNames(Method method) {
         Class<?>[] parameterTypes = method.getParameterTypes();
         if (parameterTypes.length == 0)
-            return new String[0];
+            return FinalServerConstants.EMPTY_STRING_ARRAYS;
+
         String[] names = new String[parameterTypes.length];
         Annotation[][] annotations = method.getParameterAnnotations();
         for (int i = 0; i < parameterTypes.length; i++) {
@@ -118,7 +120,7 @@ class BuildControllerHandler {
             if (annotation.length == 0) {
                 String name = TypeUtils.tryGetParamName(i, method);
                 if (StrUtil.isEmpty(name)) {
-                    throw new FinalServerException("无法获取到方法入参的名称：" + method.getName() + "  可以添加对应的注解获取：@RequestParam、@RequestBody、@RequestHeader");
+                    log.warn("无法获取到方法入参的名称：" + method.getName() + " 可能无法接受到入参，可以添加对应的注解获取：@RequestParam、@RequestHeader获取入参");
                 }
                 names[i] = name;
             }

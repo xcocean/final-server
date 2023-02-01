@@ -1,6 +1,7 @@
 package top.lingkang.finalserver.server.utils;
 
 import cn.hutool.core.convert.BasicType;
+import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 import top.lingkang.finalserver.server.annotation.NotNull;
 import top.lingkang.finalserver.server.annotation.RequestHeader;
@@ -51,7 +52,7 @@ public class TypeUtils {
         return clazz.isPrimitive() || BasicType.WRAPPER_PRIMITIVE_MAP.containsKey(clazz);
     }
 
-    private static final LocalVariableTableParameterNameDiscoverer parameterNameDiscoverer = new LocalVariableTableParameterNameDiscoverer();
+    private static final DefaultParameterNameDiscoverer parameterNameDiscoverer = new DefaultParameterNameDiscoverer();
 
     public static String tryGetParamName(int index, Method method) {
         return parameterNameDiscoverer.getParameterNames(method)[index];
