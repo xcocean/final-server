@@ -12,8 +12,6 @@
     <context:annotation-config/>
     <!-- 使@Aspect注解生效 -->
     <aop:aspectj-autoproxy/>
-    <!--controller AOP-->
-    <bean id="handlerParamAspect" class="top.lingkang.finalserver.server.aop.HandlerParamAspect"/>
     <!--静态文件-->
     <bean id="staticRequestHandler" class="top.lingkang.finalserver.server.web.handler.StaticRequestHandler"/>
     <!--controller初始化-->

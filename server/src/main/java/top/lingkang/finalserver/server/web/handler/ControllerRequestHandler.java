@@ -2,6 +2,7 @@ package top.lingkang.finalserver.server.web.handler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import top.lingkang.finalserver.server.utils.CommonUtils;
 import top.lingkang.finalserver.server.utils.MatchUtils;
 import top.lingkang.finalserver.server.utils.TypeUtils;
 import top.lingkang.finalserver.server.web.entity.RequestInfo;
@@ -52,8 +53,8 @@ public class ControllerRequestHandler extends BuildControllerHandler implements 
                 cacheControllerBean.put(requestInfo.getBeanName(), controllerBean);
             }
 
-            // 绝对路径请求、 rest ful 请求、 aop赋值
-            result = requestInfo.getMethod().invoke(controllerBean, requestInfo.getParam());
+            // 绝对路径请求、 rest ful 请求、 方法赋值
+            result = requestInfo.getMethod().invoke(controllerBean, getParamValues(requestInfo));
 
             // 结果处理 ----------------------------------------------------------------------------------------------
             if (context.getResponse().isReady())
@@ -82,5 +83,36 @@ public class ControllerRequestHandler extends BuildControllerHandler implements 
             }
         }
         return true;
+    }
+
+    private Object[] getParamValues(RequestInfo requestInfo) {
+        if (requestInfo.getParamNames().length == 0)
+            return new Object[0];
+        Map<String, String> restFul = ControllerRequestHandler.restFulMap.get();
+        //获取参数名称
+        Object[] args = new Object[requestInfo.getParamNames().length];
+        if (restFul == null) {
+            for (int i = 0; i < requestInfo.getParamNames().length; i++) {
+                args[i] = CommonUtils.handlerParam.match(
+                        requestInfo.getParamNames()[i],
+                        requestInfo.getParamTypes()[i],
+                        requestInfo.getParamAnnotation()[i],
+                        FinalServerContext.currentContext());
+            }
+        } else {
+            for (int i = 0; i < requestInfo.getParamNames().length; i++) {
+                String value = restFul.get(requestInfo.getParamNames()[i]);
+                if (value != null) {
+                    args[i] = TypeUtils.stringToObject(value, requestInfo.getParamTypes()[i]);
+                } else {
+                    args[i] = CommonUtils.handlerParam.match(
+                            requestInfo.getParamNames()[i],
+                            requestInfo.getParamTypes()[i],
+                            requestInfo.getParamAnnotation()[i],
+                            FinalServerContext.currentContext());
+                }
+            }
+        }
+        return args;
     }
 }

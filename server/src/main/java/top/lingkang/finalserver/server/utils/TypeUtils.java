@@ -1,8 +1,13 @@
 package top.lingkang.finalserver.server.utils;
 
 import cn.hutool.core.convert.BasicType;
+import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 import top.lingkang.finalserver.server.annotation.NotNull;
+import top.lingkang.finalserver.server.annotation.RequestHeader;
+import top.lingkang.finalserver.server.annotation.RequestParam;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,6 +49,21 @@ public class TypeUtils {
      */
     public static boolean isBaseType(@NotNull Class<?> clazz) {
         return clazz.isPrimitive() || BasicType.WRAPPER_PRIMITIVE_MAP.containsKey(clazz);
+    }
+
+    private static final LocalVariableTableParameterNameDiscoverer parameterNameDiscoverer = new LocalVariableTableParameterNameDiscoverer();
+
+    public static String tryGetParamName(int index, Method method) {
+        return parameterNameDiscoverer.getParameterNames(method)[index];
+    }
+
+    public static String getRequestParamName(Annotation annotation) {
+        if (annotation instanceof RequestParam) {
+            return ((RequestParam) annotation).value();
+        } else if (annotation instanceof RequestHeader) {
+            return ((RequestHeader) annotation).value();
+        }
+        return null;
     }
 
 

@@ -1,18 +1,21 @@
 package top.lingkang.finalserver.server.web.handler;
 
 import cn.hutool.core.lang.Assert;
+import cn.hutool.core.util.StrUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import top.lingkang.finalserver.server.annotation.*;
 import top.lingkang.finalserver.server.core.CustomRequestHandler;
+import top.lingkang.finalserver.server.error.FinalServerException;
 import top.lingkang.finalserver.server.utils.BeanUtils;
 import top.lingkang.finalserver.server.utils.MatchUtils;
 import top.lingkang.finalserver.server.utils.TypeUtils;
 import top.lingkang.finalserver.server.web.entity.RequestInfo;
 import top.lingkang.finalserver.server.web.http.RequestMethod;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.*;
 
@@ -73,7 +76,9 @@ class BuildControllerHandler {
                     info.setBeanName(name);
                     info.setControllerClass(bean.getClass());
                     info.setRequestMethod(requestType.requestMethod.name());
-                    info.setParam(getParamInitValue(method.getParameterTypes()));
+                    info.setParamNames(getParamNames(method));
+                    info.setParamTypes(method.getParameterTypes());
+                    info.setParamAnnotation(getParamAnnotation(method));
                     info.setMethod(method);
 
                     // REST ful API
@@ -102,7 +107,44 @@ class BuildControllerHandler {
         isBuild = true;
     }
 
-    private Object[] getParamInitValue(Class<?>[] params) {
+    private String[] getParamNames(Method method) {
+        Class<?>[] parameterTypes = method.getParameterTypes();
+        if (parameterTypes.length == 0)
+            return new String[0];
+        String[] names = new String[parameterTypes.length];
+        Annotation[][] annotations = method.getParameterAnnotations();
+        for (int i = 0; i < parameterTypes.length; i++) {
+            Annotation[] annotation = annotations[i];
+            if (annotation.length == 0) {
+                String name = TypeUtils.tryGetParamName(i, method);
+                if (StrUtil.isEmpty(name)) {
+                    throw new FinalServerException("无法获取到方法入参的名称：" + method.getName() + "  可以添加对应的注解获取：@RequestParam、@RequestBody、@RequestHeader");
+                }
+                names[i] = name;
+            }
+            for (Annotation ann : annotation) {
+                String name = TypeUtils.getRequestParamName(ann);
+                names[i] = name;
+            }
+        }
+        return names;
+    }
+
+    private Annotation[] getParamAnnotation(Method method) {
+        Annotation[][] annotations = method.getParameterAnnotations();
+        Annotation[] result = new Annotation[annotations.length];
+        for (int i = 0; i < annotations.length; i++) {
+            for (Annotation a : annotations[i]) {
+                if (a instanceof RequestParam || a instanceof RequestHeader) {
+                    result[i] = a;
+                    break;
+                }
+            }
+        }
+        return result;
+    }
+
+    /*private Object[] getParamInitValue(Class<?>[] params) {
         if (params.length == 0)
             return new Object[0];
         Object[] param = new Object[params.length];
@@ -110,7 +152,7 @@ class BuildControllerHandler {
             param[i] = TypeUtils.initValue.get(params[i]);
         }
         return param;
-    }
+    }*/
 
     public void addRequestHandler(String path, RequestMethod method, CustomRequestHandler handler) {
         Assert.notBlank(path, "处理路径不能为空");

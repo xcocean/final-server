@@ -2,6 +2,7 @@ package top.lingkang.finalserver.server.web.entity;
 
 import top.lingkang.finalserver.server.core.CustomRequestHandler;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
@@ -14,27 +15,14 @@ public class RequestInfo {
     private String path;
     private String[] restFulParam;
     private Method method;
-    private Object[] param;
+    private String[] paramNames;
+    private Class<?>[] paramTypes;
+    private Annotation[] paramAnnotation;
     private String requestMethod;
     private Class<?> controllerClass;
     private String beanName;
     private boolean isCustomRequestHandler;
     private CustomRequestHandler customRequestHandler;
-
-    @Override
-    public String toString() {
-        return "RequestInfo{" +
-                "path='" + path + '\'' +
-                ", restFulParam=" + Arrays.toString(restFulParam) +
-                ", method=" + method +
-                ", param=" + Arrays.toString(param) +
-                ", requestMethod='" + requestMethod + '\'' +
-                ", controllerClass=" + controllerClass +
-                ", beanName='" + beanName + '\'' +
-                ", isCustomRequestHandler=" + isCustomRequestHandler +
-                ", customRequestHandler=" + customRequestHandler +
-                '}';
-    }
 
     public String getPath() {
         return path;
@@ -60,12 +48,28 @@ public class RequestInfo {
         this.method = method;
     }
 
-    public Object[] getParam() {
-        return param;
+    public String[] getParamNames() {
+        return paramNames;
     }
 
-    public void setParam(Object[] param) {
-        this.param = param;
+    public void setParamNames(String[] paramNames) {
+        this.paramNames = paramNames;
+    }
+
+    public Class<?>[] getParamTypes() {
+        return paramTypes;
+    }
+
+    public void setParamTypes(Class<?>[] paramTypes) {
+        this.paramTypes = paramTypes;
+    }
+
+    public Annotation[] getParamAnnotation() {
+        return paramAnnotation;
+    }
+
+    public void setParamAnnotation(Annotation[] paramAnnotation) {
+        this.paramAnnotation = paramAnnotation;
     }
 
     public String getRequestMethod() {

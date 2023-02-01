@@ -4,6 +4,7 @@ import top.lingkang.finalserver.server.FinalServerApplication;
 import top.lingkang.finalserver.server.annotation.Controller;
 import top.lingkang.finalserver.server.annotation.FinalServerBoot;
 import top.lingkang.finalserver.server.annotation.GET;
+import top.lingkang.finalserver.server.annotation.RequestParam;
 
 /**
  * @author lingkang
@@ -18,26 +19,26 @@ public class Test06Webapp {
     }
 
     @GET()
-    public Object index(String param){
+    public Object index(String param) {
         System.out.println(param);
         return "index";
     }
 
     @GET("/{param}")
-    public Object get(String param){
+    public Object get(String param) {
         System.out.println(param);
         return param;
     }
 
     @GET("/{param}")
-    public Object get3(String param){
+    public Object get3(String param) {
         System.out.println(3);
         System.out.println(param);
         return param;
     }
 
-    @GET("/a/{param}")
-    public Object get2(String param,ParamInfo info){
+    @GET("/a/{aa}")
+    public Object get2(@RequestParam("aa")String param, ParamInfo info) {
         System.out.println(param);
         System.out.println(info);
         return param;
