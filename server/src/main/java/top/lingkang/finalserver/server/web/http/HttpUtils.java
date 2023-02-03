@@ -200,11 +200,9 @@ public final class HttpUtils {
      */
     public static Map<String, Object> getReturnFinalTemplateMap(FinalServerContext context) {
         // 模板全局map
-        Map<String, Object> map = context.getResponse().getTemplateMap();
-        if (map == null)
-            map = new HashMap<>();
-
-        map.putAll(FinalServerContext.getTemplateGlobalMap());
+        Map<String, Object> map = new HashMap<>(FinalServerContext.getTemplateGlobalMap());
+        if (context.getResponse().getTemplateMap() != null)
+            map.putAll(context.getResponse().getTemplateMap());
 
         // 添加固有参数
         map.put("request", context.getRequest());
