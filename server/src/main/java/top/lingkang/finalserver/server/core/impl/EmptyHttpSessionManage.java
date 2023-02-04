@@ -19,7 +19,7 @@ public class EmptyHttpSessionManage implements HttpSessionManage {
     }
 
     @Override
-    public void addSessionIdToCurrentHttp(FinalServerContext context) {
+    public void bindCurrentSession(FinalServerContext context) {
 
     }
 }

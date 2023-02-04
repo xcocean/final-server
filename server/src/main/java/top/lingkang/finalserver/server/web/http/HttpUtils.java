@@ -35,7 +35,7 @@ public final class HttpUtils {
             return;
 
         // 添加会话到cookie
-        FinalServerConfiguration.httpSessionManage.addSessionIdToCurrentHttp(context);
+        FinalServerConfiguration.httpSessionManage.bindCurrentSession(context);
         // 添加cookie
         HttpUtils.addHeaderCookie(context);
 

@@ -124,7 +124,7 @@ class HandlerHttpRequest extends SimpleChannelInboundHandler<FinalServerContext>
         HttpUtils.setResponseHeadName(context.getResponse().getResponseFile(), headers);
 
         // 添加会话到cookie
-        FinalServerConfiguration.httpSessionManage.addSessionIdToCurrentHttp(context);
+        FinalServerConfiguration.httpSessionManage.bindCurrentSession(context);
         // 添加cookie
         HttpUtils.addHeaderCookie(context);
         // 设置用户设置的请求头，可以覆盖上面的设置

@@ -5,8 +5,6 @@ import top.lingkang.finalserver.server.web.http.FinalServerContext;
 import top.lingkang.finalserver.server.web.http.Request;
 import top.lingkang.finalserver.server.web.http.Session;
 
-import java.util.HashMap;
-
 /**
  * @author lingkang
  * Created by 2022/12/12
@@ -18,5 +16,8 @@ public interface HttpSessionManage {
     @NotNull
     Session getSession(Request request);
 
-    void addSessionIdToCurrentHttp(FinalServerContext context);
+    /**
+     * 绑定当前会话，默认将它添加到 cookie
+     */
+    void bindCurrentSession(FinalServerContext context);
 }

@@ -81,7 +81,7 @@ public class DefaultHttpSessionManage implements HttpSessionManage {
     }
 
     @Override
-    public void addSessionIdToCurrentHttp(FinalServerContext context) {
+    public void bindCurrentSession(FinalServerContext context) {
         Session session = context.getRequest().getSession();
         if (session.hasUpdateAttribute()) {
             sessionMap.put(session.getId(), session);
