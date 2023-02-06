@@ -2,6 +2,8 @@ package top.lingkang.finalserver.server.core.impl;
 
 import io.netty.handler.codec.http.cookie.Cookie;
 import io.netty.handler.codec.http.cookie.DefaultCookie;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import top.lingkang.finalserver.server.core.FinalServerConfiguration;
 import top.lingkang.finalserver.server.core.FinalServerProperties;
 import top.lingkang.finalserver.server.core.HttpSessionManage;
@@ -23,23 +25,18 @@ import java.util.TimerTask;
 /**
  * @author lingkang
  * Created by 2022/12/12
- * @since 1.0.0
- * 数据库存储会话，默认使用MySQL，例
- * // 使用了 beecp 连接池 <a href="https://gitee.com/Chris2018998/BeeCP">beecp</a>
- *  @Configuration
- *  public class MyHttpSessionManage {
- *      @Bean
- *      public DbHttpSessionManage dbHttpSessionManage() {
- *      BeeDataSourceConfig config = new BeeDataSourceConfig();
- *      config.setDriverClassName("com.mysql.cj.jdbc.Driver");
- *      config.setJdbcUrl("jdbc:mysql://localhost:3306/test?serverTimezone=UTC");
- *      config.setUsername("root");
- *      config.setPassword("123456");
- *      config.setMaxActive(10);
- *      BeeDataSource dataSource = new BeeDataSource(config);
- *      return new DbHttpSessionManage(dataSource);
- *      }
- *  }
+ * @Configuration public class MyHttpSessionManage {
+ * @Bean public DbHttpSessionManage dbHttpSessionManage() {
+ * BeeDataSourceConfig config = new BeeDataSourceConfig();
+ * config.setDriverClassName("com.mysql.cj.jdbc.Driver");
+ * config.setJdbcUrl("jdbc:mysql://localhost:3306/test?serverTimezone=UTC");
+ * config.setUsername("root");
+ * config.setPassword("123456");
+ * config.setMaxActive(10);
+ * BeeDataSource dataSource = new BeeDataSource(config);
+ * return new DbHttpSessionManage(dataSource);
+ * }
+ * }
  *
  * <p>
  * 建表sql
@@ -50,8 +47,12 @@ import java.util.TimerTask;
  * `last_time` datetime DEFAULT NULL,
  * PRIMARY KEY (`id`) USING BTREE
  * ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+ * @since 1.0.0
+ * 数据库存储会话，默认使用MySQL，例
+ * // 使用了 beecp 连接池 <a href="https://gitee.com/Chris2018998/BeeCP">beecp</a>
  */
 public class DbHttpSessionManage implements HttpSessionManage {
+    private static final Logger log = LoggerFactory.getLogger(DbHttpSessionManage.class);
     private Timer timer = new Timer();
     private DataSource dataSource;
     private static final ThreadLocal<Session> localSession = new ThreadLocal<>();
@@ -60,7 +61,7 @@ public class DbHttpSessionManage implements HttpSessionManage {
         if (dataSource == null) {
             throw new RuntimeException("使用数据库存储会话，必须配置数据源：DataSource, 异常原因：DataSource 为空");
         }
-        this.dataSource=dataSource;
+        this.dataSource = dataSource;
         // 会话淘汰机制
         timer.schedule(new TimerTask() {
             @Override
@@ -111,7 +112,7 @@ public class DbHttpSessionManage implements HttpSessionManage {
         Connection connection = null;
         try {
             connection = dataSource.getConnection();
-            statement = connection.prepareStatement("select * from f_store_session where id=?");
+            statement = connection.prepareStatement("select content from f_store_session where id=?");
             statement.setMaxRows(1);
             statement.setObject(1, id);
             ResultSet resultSet = statement.executeQuery();
@@ -174,10 +175,11 @@ public class DbHttpSessionManage implements HttpSessionManage {
                 statement.executeUpdate();
             } else {// 更新
                 statement = connection.prepareStatement(
-                        "update f_store_session set content=? where id=?"
+                        "update f_store_session set content=?,last_time=? where id=?"
                 );
                 statement.setObject(1, SerializableUtils.objectToByte(session));
-                statement.setObject(2, session.getId());
+                statement.setObject(2, new Date());
+                statement.setObject(3, session.getId());
                 statement.executeUpdate();
             }
         } catch (SQLException e) {
@@ -192,16 +194,17 @@ public class DbHttpSessionManage implements HttpSessionManage {
         }
     }
 
-    private void cleanSession() {
+    public void cleanSession() {
         PreparedStatement statement = null;
         Connection connection = null;
         try {
             connection = dataSource.getConnection();
-            statement = connection.prepareStatement("delete from f_store_session where last_time<");
+            statement = connection.prepareStatement("delete from f_store_session where last_time<?");
             // 预留10分钟
             long removeTime = System.currentTimeMillis() - FinalServerProperties.server_session_age - 600000L;
             statement.setObject(1, new Date(removeTime));
-            statement.executeUpdate();
+            int update = statement.executeUpdate();
+            log.info("清除过期会话个数：{}", update);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         } finally {
