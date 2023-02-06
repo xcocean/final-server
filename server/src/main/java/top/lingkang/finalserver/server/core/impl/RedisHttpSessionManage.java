@@ -11,7 +11,6 @@ import top.lingkang.finalserver.server.web.http.HttpSession;
 import top.lingkang.finalserver.server.web.http.Request;
 import top.lingkang.finalserver.server.web.http.Session;
 
-import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -21,8 +20,8 @@ import java.util.concurrent.TimeUnit;
  * 会话存储的redis实现
  */
 public class RedisHttpSessionManage implements HttpSessionManage {
-
     private RedissonClient redissonClient;
+    private static final ThreadLocal<Session> localSession = new ThreadLocal<>();
 
     public RedisHttpSessionManage(RedissonClient redissonClient) {
         this.redissonClient = redissonClient;
@@ -30,6 +29,9 @@ public class RedisHttpSessionManage implements HttpSessionManage {
 
     @Override
     public Session getSession(Request request) {
+        Session get = localSession.get();
+        if (get != null)
+            return get;
         Cookie cookie = request.getCookie(FinalServerProperties.server_session_name);
         Session session = null;
         if (cookie == null) {
@@ -45,7 +47,7 @@ public class RedisHttpSessionManage implements HttpSessionManage {
             redissonClient.getBucket(session.getId()).delete();
             session = new HttpSession(FinalServerConfiguration.idGenerateFactory.generateSessionId(request));
         }
-
+        localSession.set(session);
         return session;
     }
 
@@ -62,5 +64,6 @@ public class RedisHttpSessionManage implements HttpSessionManage {
             context.getResponse().addCookie(cookie);
             setSession(context.getRequest().getSession());
         }
+        localSession.remove();
     }
 }
