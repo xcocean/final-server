@@ -33,7 +33,7 @@ public class HttpSession implements Session, Serializable {
 
     @Override
     public long getCreationTime() {
-        return 0;
+        return createTime;
     }
 
     @Override
