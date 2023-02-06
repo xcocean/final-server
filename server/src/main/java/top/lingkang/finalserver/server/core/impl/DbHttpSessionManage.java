@@ -102,6 +102,8 @@ public class DbHttpSessionManage implements HttpSessionManage {
             cookie.setPath("/");
             context.getResponse().addCookie(cookie);
         }
+        // 不移除会出现线程滞留，因为使用了线程池
+        localSession.remove();
     }
 
     private Session getSession(String id) {
