@@ -1,0 +1,12 @@
+
+
+
+test6：用于测试 rest ful 风格api
+
+test7：检查全局模板渲染变量
+
+test8：无
+
+test9：测试数据库存储会话
+
+test10：测试security
