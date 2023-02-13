@@ -10,3 +10,5 @@ test8：无
 test9：测试数据库存储会话
 
 test10：测试security
+
+test11: 测试beetl模板引擎

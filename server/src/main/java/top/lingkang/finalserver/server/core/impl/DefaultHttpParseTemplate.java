@@ -41,7 +41,8 @@ public class DefaultHttpParseTemplate implements HttpParseTemplate {
     }
 
     @Override
-    public byte[] getTemplate(String template, Map<String, Object> map, FinalServerContext context) throws Exception {
+    public byte[] getTemplate(String template, Map<String, Object> map, Map<String, Object> globalMap, FinalServerContext context) throws Exception {
+        map.putAll(globalMap);
         return templateEngine.process(template, new TemplateContext(Locale.ROOT, map)).getBytes(StandardCharsets.UTF_8);
     }
 

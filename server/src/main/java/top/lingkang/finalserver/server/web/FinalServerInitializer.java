@@ -116,7 +116,8 @@ public class FinalServerInitializer {
         HttpParseTemplate httpParseTemplate = BeanUtils.getBean(HttpParseTemplate.class, applicationContext);
         if (httpParseTemplate != null)// 使用默认模板解析
             FinalServerConfiguration.httpParseTemplate = httpParseTemplate;
-        FinalServerConfiguration.httpParseTemplate.init(FinalServerProperties.server_template);
+        FinalServerConfiguration.httpParseTemplate.init(FinalServerProperties.server_template_prefix);
+        log.info("模板引擎扫描路径：{}  后缀匹配：{}", FinalServerProperties.server_template_prefix, FinalServerProperties.server_template_suffix);
 
         // 初始化会话管理
         String[] sessionManage = applicationContext.getBeanNamesForType(HttpSessionManage.class);

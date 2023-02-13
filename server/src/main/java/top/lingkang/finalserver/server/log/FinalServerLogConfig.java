@@ -3,8 +3,7 @@ package top.lingkang.finalserver.server.log;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
-import org.slf4j.ILoggerFactory;
-import org.slf4j.impl.StaticLoggerBinder;
+import org.slf4j.LoggerFactory;
 import top.lingkang.finalserver.server.core.FinalServerProperties;
 
 import java.io.InputStream;
@@ -18,21 +17,18 @@ public class FinalServerLogConfig {
 
     public FinalServerLogConfig() {
         try {
-            ILoggerFactory loggerFactory = StaticLoggerBinder.getSingleton().getLoggerFactory();
-            if (loggerFactory instanceof LoggerContext) {
-                InputStream in = FinalServerLogConfig.class.getClassLoader().getResourceAsStream(FinalServerProperties.log_file);
-                if (in == null)
-                    in = FinalServerLogConfig.class.getClassLoader().getResourceAsStream("final-server-logback.xml");
-                LoggerContext loggerContext = (LoggerContext) loggerFactory;
-                loggerContext.stop();
-                loggerContext.reset();
-                JoranConfigurator configurator = new ch.qos.logback.classic.joran.JoranConfigurator();
-                configurator.setContext(loggerContext);
-                configurator.doConfigure(in);
-                in.close();
-                if ("true".equals(FinalServerProperties.debug)) {
-                    setLogLevel("DEBUG");
-                }
+            LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
+            InputStream in = FinalServerLogConfig.class.getClassLoader().getResourceAsStream(FinalServerProperties.log_file);
+            if (in == null)
+                in = FinalServerLogConfig.class.getClassLoader().getResourceAsStream("final-server-logback.xml");
+            loggerContext.stop();
+            loggerContext.reset();
+            JoranConfigurator configurator = new ch.qos.logback.classic.joran.JoranConfigurator();
+            configurator.setContext(loggerContext);
+            configurator.doConfigure(in);
+            in.close();
+            if ("true".equals(FinalServerProperties.debug)) {
+                setLogLevel("DEBUG");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -48,7 +44,7 @@ public class FinalServerLogConfig {
             if (in == null)
                 in = FinalServerLogConfig.class.getClassLoader().getResourceAsStream("final-server-logback.xml");
 
-            LoggerContext loggerContext = (LoggerContext) StaticLoggerBinder.getSingleton().getLoggerFactory();
+            LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
             loggerContext.stop();
             loggerContext.reset();
             JoranConfigurator configurator = new ch.qos.logback.classic.joran.JoranConfigurator();

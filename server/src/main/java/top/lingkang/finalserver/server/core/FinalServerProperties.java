@@ -15,7 +15,6 @@ public class FinalServerProperties {
     public static int server_port = 7070;
     public static String debug = "false";
     public static String server_static = "/static";
-    public static String server_template = "/template";
     public static String log_file = "logback.xml";
     public static int server_thread_maxReceive = 0;
     public static int server_thread_maxHandler = 0;
@@ -42,7 +41,6 @@ public class FinalServerProperties {
         server_port = SystemPropsUtil.getInt("server.port", server_port);
         debug = SystemPropsUtil.get("debug", debug);
         server_static = SystemPropsUtil.get("server.static", server_static);
-        server_template = SystemPropsUtil.get("server.template", server_template);
         log_file = SystemPropsUtil.get("log.file", log_file);
         server_thread_maxReceive = SystemPropsUtil.getInt("server.thread.maxReceive", server_thread_maxReceive);
         server_thread_maxHandler = SystemPropsUtil.getInt("server.thread.maxHandler", server_thread_maxHandler);

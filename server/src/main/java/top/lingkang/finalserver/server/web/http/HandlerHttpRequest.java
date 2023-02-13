@@ -54,7 +54,7 @@ class HandlerHttpRequest extends SimpleChannelInboundHandler<FinalServerContext>
                             ctx,
                             FinalServerConfiguration.httpParseTemplate.getTemplate(
                                     response.getTemplatePath(),
-                                    HttpUtils.getReturnFinalTemplateMap(context), context),
+                                    HttpUtils.getReturnFinalTemplateMap(context), FinalServerContext.templateGlobalMap,context),
                             200);
                 } else { // 其他内容
                     if (response.getForwardPath() != null) {// 是否使用了转发

@@ -149,9 +149,10 @@ public final class HttpUtils {
      * 返回视图模板
      */
     public static void sendTemplate(ChannelHandlerContext context, String template, int statusCode) throws Exception {
+        FinalServerContext serverContext = FinalServerContext.currentContext();
         byte[] content = FinalServerConfiguration.httpParseTemplate.getTemplate(
                 template,
-                HttpUtils.getReturnFinalTemplateMap(FinalServerContext.currentContext()),
+                getReturnFinalTemplateMap(serverContext), FinalServerContext.templateGlobalMap,
                 FinalServerContext.currentContext()
         );
 
@@ -200,9 +201,9 @@ public final class HttpUtils {
      */
     public static Map<String, Object> getReturnFinalTemplateMap(FinalServerContext context) {
         // 模板全局map
-        Map<String, Object> map = new HashMap<>(FinalServerContext.getTemplateGlobalMap());
-        if (context.getResponse().getTemplateMap() != null)
-            map.putAll(context.getResponse().getTemplateMap());
+        Map<String, Object> map = context.getResponse().getTemplateMap();
+        if (map == null)
+            map = new HashMap<>();
 
         // 添加固有参数
         map.put("request", context.getRequest());

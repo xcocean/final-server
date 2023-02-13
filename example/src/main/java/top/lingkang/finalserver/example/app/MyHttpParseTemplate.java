@@ -18,8 +18,8 @@ public class MyHttpParseTemplate implements HttpParseTemplate {
     }
 
     @Override
-    public byte[] getTemplate(String template, Map<String, Object> map, FinalServerContext context) throws Exception {
+    public byte[] getTemplate(String template, Map<String, Object> map, Map<String, Object> globalMap, FinalServerContext context) throws Exception {
         // 在此处进行模板渲染，返回输出结果
-        return null;
+        return new byte[0];
     }
 }

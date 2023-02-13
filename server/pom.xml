@@ -57,6 +57,11 @@
             <groupId>org.thymeleaf</groupId>
             <artifactId>thymeleaf</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.ibeetl</groupId>
+            <artifactId>beetl</artifactId>
+            <optional>true</optional>
+        </dependency>
 
         <!--log-->
         <dependency>

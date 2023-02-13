@@ -15,5 +15,14 @@ public interface HttpParseTemplate {
     // 初始化模板，每次启动只会执行一次
     void init(String templatePath);
 
-    byte[] getTemplate(String template, Map<String,Object> map, FinalServerContext context) throws Exception;
+    /**
+     *
+     * @param template 模板名称
+     * @param map 本次渲染变量
+     * @param globalMap 全局渲染变量
+     * @param context 上下文
+     * @return 输出模板
+     * @throws Exception
+     */
+    byte[] getTemplate(String template, Map<String, Object> map, Map<String, Object> globalMap, FinalServerContext context) throws Exception;
 }
