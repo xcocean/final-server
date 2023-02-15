@@ -38,7 +38,7 @@
 
     <modules>
         <module>server</module>
-        <module>example</module>
+        <!--<module>example</module>-->
     </modules>
 
     <properties>
