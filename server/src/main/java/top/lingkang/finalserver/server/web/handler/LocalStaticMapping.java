@@ -58,7 +58,7 @@ public class LocalStaticMapping implements RequestHandler {
             for (String basePath : basePaths) {
                 File file = new File(basePath + path);
                 if (file.exists()) {
-                    context.getResponse().returnFile(new ResponseFile(file.getAbsolutePath()));
+                    context.getResponse().returnFile(new ResponseFile(file));
                     return true;
                 }
             }

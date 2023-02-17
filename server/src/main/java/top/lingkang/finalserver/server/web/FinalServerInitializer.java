@@ -125,7 +125,6 @@ public class FinalServerInitializer {
             FinalServerConfiguration.httpSessionManage = applicationContext.getBean(sessionManage[0], HttpSessionManage.class);
             if (sessionManage.length > 1)
                 log.warn("存在多个会话管理，应用了首个：{}", sessionManage[0]);
-            log.info("use redis store session.");
         } else
             FinalServerConfiguration.httpSessionManage = new DefaultHttpSessionManage();
 

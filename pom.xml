@@ -45,7 +45,7 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <spring.version>6.0.4</spring.version>
+        <spring.version>6.0.5</spring.version>
         <logback.version>1.4.5</logback.version>
         <netty.version>4.1.87.Final</netty.version>
         <beetl.version>3.14.1.RELEASE</beetl.version>
@@ -105,13 +105,14 @@
                 <version>${logback.version}</version>
             </dependency>
 
+            <!-- https://mvnrepository.com/artifact/cn.hutool/hutool-core -->
             <dependency>
                 <groupId>cn.hutool</groupId>
                 <artifactId>hutool-core</artifactId>
-                <version>5.8.11</version>
+                <version>5.8.12</version>
             </dependency>
 
-            <!--https://github.com/alibaba/fastjson2-->
+            <!-- https://mvnrepository.com/artifact/com.alibaba.fastjson2/fastjson2 -->
             <dependency>
                 <groupId>com.alibaba.fastjson2</groupId>
                 <artifactId>fastjson2</artifactId>
@@ -212,7 +213,7 @@
             <layout>default</layout>
             <url>http://maven.aliyun.com/nexus/content/groups/public</url>
             <snapshots>
-                <enabled>false</enabled>
+                <enabled>true</enabled>
             </snapshots>
             <releases>
                 <enabled>true</enabled>
@@ -227,7 +228,7 @@
                 <enabled>true</enabled>
             </releases>
             <snapshots>
-                <enabled>false</enabled>
+                <enabled>true</enabled>
             </snapshots>
         </repository>
     </repositories>
