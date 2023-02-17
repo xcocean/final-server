@@ -1,5 +1,6 @@
 package top.lingkang.finalserver.server.web.handler;
 
+import cn.hutool.core.lang.Assert;
 import top.lingkang.finalserver.server.web.entity.ResponseFile;
 import top.lingkang.finalserver.server.web.http.FinalServerContext;
 
@@ -34,6 +35,7 @@ public class LocalStaticMapping implements RequestHandler {
         addStaticByAbsolutePath(paths);
         List<String> list = new ArrayList<>();
         for (String basePath : paths) {
+            Assert.notBlank(basePath, "静态资源映射路径不能为空！");
             if (basePath.endsWith("/"))
                 basePath = basePath.substring(0, basePath.length() - 1);
             if (basePath.endsWith("//"))

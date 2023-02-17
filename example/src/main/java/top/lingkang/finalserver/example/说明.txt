@@ -12,3 +12,5 @@ test9：测试数据库存储会话
 test10：测试security
 
 test11: 测试beetl模板引擎
+
+test12: 静态文件资源URL映射
