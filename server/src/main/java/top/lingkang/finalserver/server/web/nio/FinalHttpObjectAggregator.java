@@ -7,8 +7,8 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import top.lingkang.finalserver.server.core.FinalServerConfiguration;
-import top.lingkang.finalserver.server.error.ContentTooLargeException;
+
+import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 /**
  * @author lingkang
@@ -16,9 +16,11 @@ import top.lingkang.finalserver.server.error.ContentTooLargeException;
  * @since 1.0.0
  **/
 public class FinalHttpObjectAggregator extends HttpObjectAggregator {
-    private static final Logger logger= LoggerFactory.getLogger(FinalHttpObjectAggregator.class);
+    private static final Logger logger = LoggerFactory.getLogger(FinalHttpObjectAggregator.class);
     private static final FullHttpResponse TOO_LARGE_CLOSE = new DefaultFullHttpResponse(
-            HttpVersion.HTTP_1_1, HttpResponseStatus.REQUEST_ENTITY_TOO_LARGE, Unpooled.EMPTY_BUFFER);
+            HTTP_1_1, HttpResponseStatus.REQUEST_ENTITY_TOO_LARGE,
+            Unpooled.wrappedBuffer("请求内容太大，它可能是文件".getBytes())
+    );
 
     public FinalHttpObjectAggregator(int maxContentLength) {
         super(maxContentLength);
@@ -44,8 +46,22 @@ public class FinalHttpObjectAggregator extends HttpObjectAggregator {
                     }
                 });
             } else {
-                logger.warn("请求内容太大，请设置 server.maxContentLength 属性，例如：server.maxContentLength=0");
-                FinalServerConfiguration.webExceptionHandler.exception(ctx,new ContentTooLargeException("请求内容太大，拒绝处理。The request content is too large, refused to process"));
+                HttpRequest request = (HttpRequest) oversized;
+                logger.warn(
+                        "此次异常的请求是 {} - {}\n请求内容太大，它可能是文件，请设置 server.maxContentLength 属性，例如：server.maxContentLength=0 为最大限制2GB，文件太大可考虑分段上传！",
+                        request.method().name(),
+                        request.uri()
+                );
+                logger.debug("详细信息：" + oversized);
+                ctx.writeAndFlush(TOO_LARGE_CLOSE.retainedDuplicate()).addListener(new ChannelFutureListener() {
+                    @Override
+                    public void operationComplete(ChannelFuture future) {
+                        future.channel().close();
+                        if (future.isSuccess()) {
+                            ctx.close();
+                        }
+                    }
+                });
             }
         } else if (oversized instanceof HttpResponse) {
             ctx.close();
