@@ -47,7 +47,7 @@ public class HttpRequest implements Request {
 
     @Override
     public String getParam(String name) {
-        if (msg.method() == HttpMethod.POST) {
+        if (msg.method() != HttpMethod.GET) {
             checkQueryBody();
             InterfaceHttpData data = queryBody.getBodyHttpData(name);
             if (data != null && data.getHttpDataType() == InterfaceHttpData.HttpDataType.Attribute) {
