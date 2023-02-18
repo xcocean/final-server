@@ -142,6 +142,12 @@ public class FinalServerInitializer {
         for (String listener : webListeners) {
             FinalServerConfiguration.webListener.add(applicationContext.getBean(listener, WebListener.class));
         }
+
+        // 序列化初始化
+        String[] serializable = applicationContext.getBeanNamesForType(SerializableObject.class);
+        if (serializable.length > 0) {
+            FinalServerConfiguration.serializable = applicationContext.getBean(serializable[0], SerializableObject.class);
+        }
     }
 
     @Order(Integer.MAX_VALUE)// 最后加载
