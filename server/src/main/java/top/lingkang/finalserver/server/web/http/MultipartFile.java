@@ -29,8 +29,9 @@ public class MultipartFile {
     public File getFile() throws IOException {
         if (file != null)
             return file;
-        if (fileUpload.isInMemory()) {
+        if (isInMemory()) {
             file = File.createTempFile("FUp_MF_", "-" + fileUpload.getFilename());
+            FileUtil.writeBytes(fileUpload.get(), file);
         } else {
             file = fileUpload.getFile();
         }
@@ -69,6 +70,10 @@ public class MultipartFile {
 
     public String getHttpDataType() {
         return fileUpload.getContentType();
+    }
+
+    public byte[] getBytes() throws IOException{
+        return fileUpload.get();
     }
 
     /**

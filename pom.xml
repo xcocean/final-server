@@ -9,6 +9,11 @@
     <packaging>pom</packaging>
     <version>1.0.0-SNAPSHOT</version>
 
+    <modules>
+        <module>server</module>
+        <!--<module>example</module>-->
+    </modules>
+
     <!--基本开源信息-->
     <url>https://gitee.com/lingkang_top/final-security</url>
     <description>final-server是一个基于netty实现的web服务器</description>
@@ -35,11 +40,6 @@
         <url>https://gitee.com/lingkang_top/final-server</url>
         <connection>https://gitee.com/lingkang_top/final-server.git</connection>
     </scm>
-
-    <modules>
-        <module>server</module>
-        <!--<module>example</module>-->
-    </modules>
 
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>

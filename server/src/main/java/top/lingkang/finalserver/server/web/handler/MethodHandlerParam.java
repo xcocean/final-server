@@ -1,5 +1,6 @@
 package top.lingkang.finalserver.server.web.handler;
 
+import cn.hutool.core.util.StrUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.lingkang.finalserver.server.annotation.RequestHeader;
@@ -76,14 +77,14 @@ public class MethodHandlerParam {
         baseHandlerParam = new HandlerParam() {
             @Override
             public Object handler(String name, Class<?> type, Annotation annotation, FinalServerContext context) {
-                if (annotation instanceof RequestHeader) {
+                if (annotation instanceof RequestHeader) {// 请求头中获取
                     String param = context.getRequest().getHeader(name);
-                    if (param == null)
+                    if (StrUtil.isEmpty(param))
                         return null;
                     return TypeUtils.stringToObject(param, type);
-                }
+                }// 请求体、请求参数中获取
                 String param = context.getRequest().getParam(name);
-                if (param == null)
+                if (StrUtil.isEmpty(param))
                     return null;
                 try {
                     return TypeUtils.stringToObject(param, type);
