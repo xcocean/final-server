@@ -55,7 +55,7 @@ public class FinalServerApplication extends DynamicAddController {
         FinalServerApplication.mainClass = mainClass;
         FinalServerBoot mainClassAnnotation = mainClass.getAnnotation(FinalServerBoot.class);
         if (mainClassAnnotation == null) {
-            FinalSystemOut.error("启动类未添加@FinalServerBoot，未执行相关功能");
+            FinalSystemOut.error("启动类未添加 @FinalServerBoot，未执行相关功能");
             return;
         }
 
