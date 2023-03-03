@@ -211,6 +211,6 @@ public class FinalServerApplication extends DynamicAddController {
 
     public static String getXmlPath() {
         log.debug(xmlFile.getAbsolutePath());
-        return xmlFile.getPath();
+        return xmlFile.getAbsolutePath();
     }
 }
