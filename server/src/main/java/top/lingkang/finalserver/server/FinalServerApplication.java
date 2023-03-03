@@ -8,13 +8,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import top.lingkang.finalserver.server.annotation.FinalServerBoot;
 import top.lingkang.finalserver.server.core.CustomRequestHandler;
 import top.lingkang.finalserver.server.core.DynamicAddController;
 import top.lingkang.finalserver.server.core.FinalServerProperties;
 import top.lingkang.finalserver.server.core.ShutdownEvent;
-import top.lingkang.finalserver.server.core.impl.ShutdownEventRemoveTempConfigFile;
 import top.lingkang.finalserver.server.error.FinalServerException;
 import top.lingkang.finalserver.server.log.FinalServerLogConfig;
 import top.lingkang.finalserver.server.log.FinalSystemOut;
@@ -78,14 +77,15 @@ public class FinalServerApplication extends DynamicAddController {
             log.debug("FinalServer 配置加载完成");
 
             // 添加钩子
-            addShutdownHook(new ShutdownEventRemoveTempConfigFile(getXmlPath()));
             addShutdownHook();
 
             // 启动spring
-            applicationContext = new FileSystemXmlApplicationContext(getXmlPath());
+            applicationContext = new ClassPathXmlApplicationContext(getXmlPath());
         } catch (Exception e) {
             log.error("FinalServer 启动失败: ", e);
             System.exit(0);
+        } finally {
+            xmlFile.delete();
         }
     }
 
@@ -202,7 +202,7 @@ public class FinalServerApplication extends DynamicAddController {
         xml = xml.replace("#componentScan", packageName);
 
         try {
-            xmlFile = File.createTempFile("final-server-spring-" + IdUtil.objectId(), ".xml");
+            xmlFile = File.createTempFile("temp-final-server-spring-" + IdUtil.objectId(), ".xml");
             FileUtil.writeString(xml, xmlFile, StandardCharsets.UTF_8);
         } catch (Exception e) {
             e.printStackTrace();
@@ -211,6 +211,9 @@ public class FinalServerApplication extends DynamicAddController {
 
     public static String getXmlPath() {
         log.debug(xmlFile.getAbsolutePath());
-        return xmlFile.getAbsolutePath();
+        if (xmlFile.getAbsolutePath().startsWith("/")) {
+            return "file:" + xmlFile.getAbsolutePath();
+        }
+        return "file:/" + xmlFile.getAbsolutePath();
     }
 }
