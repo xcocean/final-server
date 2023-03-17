@@ -8,12 +8,15 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import top.lingkang.finalserver.server.FinalServerApplication;
 import top.lingkang.finalserver.server.core.FinalServerProperties;
 import top.lingkang.finalserver.server.core.FinalThreadFactory;
 import top.lingkang.finalserver.server.core.impl.ShutdownEventWeb;
+import top.lingkang.finalserver.server.web.nio.BaseHandlerNioInitializer;
 import top.lingkang.finalserver.server.web.nio.FinalServerNioServerSocketChannel;
-import top.lingkang.finalserver.server.web.nio.HandlerNioInitializer;
+import top.lingkang.finalserver.server.web.nio.WsHandlerNioInitializer;
+import top.lingkang.finalserver.server.web.ws.WebSocketDispatch;
 
 import java.lang.management.ManagementFactory;
 
@@ -26,6 +29,9 @@ public class FinalServerWeb {
     private static final Logger log = LoggerFactory.getLogger(FinalServerWeb.class);
     private EventLoopGroup bossGroup;
     public static EventLoopGroup workGroup;
+    public ServerBootstrap serverBootstrap;
+    @Autowired
+    private WebSocketDispatch webSocketDispatch;
 
     private void init() {
         // 运行
@@ -57,7 +63,7 @@ public class FinalServerWeb {
         workGroup = new NioEventLoopGroup(work, new FinalThreadFactory("handler"));
         FinalServerApplication.addShutdownHook(new ShutdownEventWeb(bossGroup, workGroup));
         // netty服务器创建，ServerBootstrap是一个启动类
-        ServerBootstrap serverBootstrap = new ServerBootstrap();
+        serverBootstrap = new ServerBootstrap();
         serverBootstrap.group(bossGroup, workGroup)      //设置主从线程
                 .channel(FinalServerNioServerSocketChannel.class) //  设置nio的双向管道
                 //当连接被阻塞时BACKLOG代表的是阻塞队列的长度
@@ -73,7 +79,7 @@ public class FinalServerWeb {
                 .childOption(ChannelOption.SO_KEEPALIVE, true);
         // 调度处理
         serverBootstrap.childHandler(
-                new HandlerNioInitializer()
+                webSocketDispatch.handlerNumber() != 0 ? new WsHandlerNioInitializer() : new BaseHandlerNioInitializer()
         );
         //启动server并绑定端口监听和设置同步方式
         try {

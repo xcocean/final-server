@@ -23,7 +23,7 @@ import java.net.URLDecoder;
  * @since 1.0.0
  * 调度处理
  */
-public class DispatcherHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
+public class DispatcherHandler extends BaseDispatcherHandler {
     private static final Logger log = LoggerFactory.getLogger(DispatcherHandler.class);
 
     @Override
@@ -39,20 +39,6 @@ public class DispatcherHandler extends SimpleChannelInboundHandler<FullHttpReque
 
         // http
         httpHandler(ctx, msg);
-    }
-
-    private void httpHandler(ChannelHandlerContext ctx, FullHttpRequest msg) throws Exception {
-        // 构建上下文
-        FinalServerContext context = new FinalServerContext(ctx, new HttpRequest(ctx, msg));
-        context.setResponse(new HttpResponse(ctx));
-
-        // 写内容
-        ctx.pipeline().addLast(new ChunkedWriteHandler());
-        // http 处理
-        ctx.pipeline().addLast(new HandlerHttpRequest());
-
-        // next
-        ctx.fireChannelRead(context);
     }
 
     private void webSocketHandler(ChannelHandlerContext ctx, FullHttpRequest request) {

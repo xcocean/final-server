@@ -6,6 +6,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.Order;
 import top.lingkang.finalserver.server.annotation.Websocket;
+import top.lingkang.finalserver.server.web.FinalServerWeb;
+import top.lingkang.finalserver.server.web.nio.BaseHandlerNioInitializer;
 
 import java.util.HashMap;
 
@@ -22,8 +24,10 @@ public class WebSocketDispatch {
     public WebSocketDispatch(ApplicationContext applicationContext) {
         // init
         String[] names = applicationContext.getBeanNamesForType(WebSocketHandler.class);
-        if (names.length == 0)
+        if (names.length == 0){
+            log.info("不需要加载websocket处理");
             return;
+        }
         for (String name : names) {
             Object bean = applicationContext.getBean(name);
             Websocket annotation = bean.getClass().getAnnotation(Websocket.class);
@@ -63,5 +67,9 @@ public class WebSocketDispatch {
 
     public WebSocketHandler getHandler(String path) {
         return ws.get(path);
+    }
+
+    public int handlerNumber(){
+        return ws.size();
     }
 }
