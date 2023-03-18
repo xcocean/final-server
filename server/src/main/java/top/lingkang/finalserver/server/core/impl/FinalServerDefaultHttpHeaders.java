@@ -21,7 +21,6 @@ public class FinalServerDefaultHttpHeaders implements ServerDefaultHttpHeaders {
                 .remove(HttpHeaderNames.CONTENT_TYPE)
                 .set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE)
                 .set("keep-alive", "timeout=30")
-                .set(HttpHeaderNames.DATE, new Date())
-                .set("Server", FinalServerConstants.version);
+                .set(HttpHeaderNames.DATE, new Date());
     }
 }
