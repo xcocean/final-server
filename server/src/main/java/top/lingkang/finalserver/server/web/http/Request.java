@@ -32,6 +32,7 @@ public interface Request {
 
     /**
      * 获取请求体，非GET请求才有值
+     * 适用于post内容中 raw
      */
     String getBody();
 
