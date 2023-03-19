@@ -28,7 +28,15 @@ final-server是一个基于netty实现的高性能web服务器。使用spring 6.
     <version>x.y.z</version>
 </dependency>
 ```
-若使用`jdk8~jdk19`时，排除高版本spring，如下：
+默认条件：`JDK11+`, 引入依赖
+```
+<dependency>
+    <groupId>top.lingkang</groupId>
+    <artifactId>server</artifactId>
+    <version>x.y.z</version>
+</dependency>
+```
+若使用`jdk8`及以下时，排除高版本spring，如下：
 ```xml
 <dependency>
     <groupId>top.lingkang</groupId>
@@ -39,6 +47,14 @@ final-server是一个基于netty实现的高性能web服务器。使用spring 6.
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
         </exclusion>
+        <exclusion>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </exclusion>
+        <exclusion>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+        </exclusion>
     </exclusions>
 </dependency>
 
@@ -47,6 +63,16 @@ final-server是一个基于netty实现的高性能web服务器。使用spring 6.
     <groupId>org.springframework</groupId>
     <artifactId>spring-context</artifactId>
     <version>5.3.25</version>
+</dependency>
+<dependency>
+    <groupId>org.slf4j</groupId>
+    <artifactId>slf4j-api</artifactId>
+    <version>1.2.11</version>
+</dependency>
+<dependency>
+    <groupId>ch.qos.logback</groupId>
+    <artifactId>logback-core</artifactId>
+    <version>1.2.11</version>
 </dependency>
 ```
 `排除spring6+，再引入spring5.x，即可使用jdk8+`
