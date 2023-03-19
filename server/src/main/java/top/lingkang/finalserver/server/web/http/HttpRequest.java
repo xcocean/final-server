@@ -68,6 +68,15 @@ public class HttpRequest implements Request {
     }
 
     @Override
+    public String getBody() {
+        if (msg.method() != HttpMethod.GET) {
+            checkQueryBody();
+            return queryBody.toString();
+        }
+        return null;
+    }
+
+    @Override
     public <T> T getParamToBean(Class<T> beanClass) {
         Map<String, String> params = getParams();
         if (params.isEmpty())

@@ -17,19 +17,25 @@ public interface Response {
     // 设置请求头
     void setHeader(String name, String value);
 
+    // 获取响应头
     HttpHeaders getHeaders();
 
+    // 返回string结果，http/text
     void returnString(String str);
 
+    // 返回json结果
     void returnJsonObject(Object json);
 
+    // 返回模板解析
     void returnTemplate(String template);
 
+    // 返回模板解析和解析map
     void returnTemplate(String templatePath, Map<String, Object> map);
 
     // 返回文件，前端会下载文件。filePath为文件所在路径
     void returnFile(ResponseFile responseFile);
 
+    // 返回字节
     void returnBytes(byte[] bytes);
 
     /**
@@ -55,15 +61,21 @@ public interface Response {
     // 只能获取到本次会话响应添加的cookie
     Set<Cookie> getCookies();
 
+    // 获取模板解析的路径
     String getTemplatePath();
 
+    // 获取模板解析的map映射
     Map<String, Object> getTemplateMap();
 
+    // 获取响应文件
     ResponseFile getResponseFile();
 
+    // 获取响应状态码
     int getStatusCode();
 
+    // 获取响应的字节内容
     byte[] getContent();
 
+    // 获取重定向路径
     String getForwardPath();
 }
