@@ -5,6 +5,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.*;
 import io.netty.handler.codec.http.cookie.Cookie;
 import io.netty.handler.codec.http.multipart.*;
+import io.netty.util.CharsetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.lingkang.finalserver.server.core.FinalServerConfiguration;
@@ -70,8 +71,7 @@ public class HttpRequest implements Request {
     @Override
     public String getBody() {
         if (msg.method() != HttpMethod.GET) {
-            checkQueryBody();
-            return queryBody.toString();
+            return msg.content().toString(CharsetUtil.UTF_8);
         }
         return null;
     }
