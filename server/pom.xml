@@ -12,7 +12,7 @@
     <artifactId>server</artifactId>
 
     <!--基本开源信息-->
-    <url>https://gitee.com/lingkang_top/final-security</url>
+    <url>https://gitee.com/lingkang_top/final-server</url>
     <description>final-server是一个基于netty实现的web服务器</description>
     <organization>
         <name>lingkang</name>
