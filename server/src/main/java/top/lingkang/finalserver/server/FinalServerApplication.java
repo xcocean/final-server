@@ -85,7 +85,8 @@ public class FinalServerApplication extends DynamicAddController {
             log.error("FinalServer 启动失败: ", e);
             System.exit(0);
         } finally {
-            xmlFile.delete();
+            if (xmlFile != null)
+                xmlFile.delete();
         }
     }
 
