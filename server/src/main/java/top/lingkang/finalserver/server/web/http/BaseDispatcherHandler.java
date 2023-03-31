@@ -3,17 +3,10 @@ package top.lingkang.finalserver.server.web.http;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.FullHttpRequest;
-import io.netty.handler.codec.http.websocketx.extensions.compression.WebSocketServerCompressionHandler;
 import io.netty.handler.stream.ChunkedWriteHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.lingkang.finalserver.server.constant.FinalServerConstants;
-import top.lingkang.finalserver.server.core.FinalServerProperties;
-import top.lingkang.finalserver.server.utils.BeanUtils;
-import top.lingkang.finalserver.server.web.ws.FinalWebSocketServerProtocolHandler;
-import top.lingkang.finalserver.server.web.ws.WebSocketDispatch;
-import top.lingkang.finalserver.server.web.ws.WebSocketHandler;
-import top.lingkang.finalserver.server.web.ws.WebSocketInitializer;
 
 import java.net.URLDecoder;
 

@@ -148,6 +148,12 @@ public class FinalServerInitializer {
         if (serializable.length > 0) {
             FinalServerConfiguration.serializable = applicationContext.getBean(serializable[0], SerializableObject.class);
         }
+
+        // 返回文件处理
+        ReturnStaticFileHandler staticFileHandler = BeanUtils.getBean(ReturnStaticFileHandler.class, applicationContext);
+        if (staticFileHandler != null)
+            FinalServerConfiguration.returnStaticFileHandler = staticFileHandler;
+
     }
 
     @Order(Integer.MAX_VALUE)// 最后加载

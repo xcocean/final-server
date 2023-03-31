@@ -33,4 +33,7 @@ public class FinalServerConfiguration {
 
     // 默认模板解析
     public static HttpParseTemplate httpParseTemplate=new DefaultHttpParseTemplate();
+
+    // 返回文件处理
+    public static ReturnStaticFileHandler returnStaticFileHandler=new DefaultReturnStaticFileHandler();
 }

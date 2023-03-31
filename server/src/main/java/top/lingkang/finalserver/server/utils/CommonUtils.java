@@ -40,9 +40,9 @@ public class CommonUtils {
         try {
             if (annotation instanceof RequestHeader) {
                 HttpHeaders headers = context.getRequest().getHeaders();
-                Map<String,String> map=new HashMap<>();
-                for (String key:headers.names()){
-                    map.put(key,headers.get(key));
+                Map<String, String> map = new HashMap<>();
+                for (String key : headers.names()) {
+                    map.put(key, headers.get(key));
                 }
                 return JSON.parseObject(JSON.toJSONString(map), type);
             }
@@ -58,4 +58,10 @@ public class CommonUtils {
 
     public static final MethodHandlerParam handlerParam = new MethodHandlerParam();
 
+    public static String getDir() {
+        String dir = System.getProperty("user.dir");
+        if (dir.endsWith("/"))
+            dir = dir.substring(0, dir.length() - 1);
+        return dir;
+    }
 }

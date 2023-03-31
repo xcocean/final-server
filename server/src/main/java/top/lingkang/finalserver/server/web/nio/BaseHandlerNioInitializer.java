@@ -6,7 +6,6 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.http.HttpServerCodec;
 import top.lingkang.finalserver.server.core.FinalServerProperties;
 import top.lingkang.finalserver.server.web.http.BaseDispatcherHandler;
-import top.lingkang.finalserver.server.web.http.DispatcherHandler;
 
 /**
  * @author lingkang
