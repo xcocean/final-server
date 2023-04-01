@@ -8,9 +8,9 @@ import top.lingkang.finalserver.server.annotation.*;
  */
 @Controller
 public class TestController {
-    @GET
+    /*@GET
     public void index() {
-    }
+    }*/
 
     @POST("a/a")
     public void index1() {
