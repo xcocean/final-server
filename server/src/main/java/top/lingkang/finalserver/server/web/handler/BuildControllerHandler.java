@@ -9,7 +9,6 @@ import org.springframework.context.ApplicationContext;
 import top.lingkang.finalserver.server.annotation.*;
 import top.lingkang.finalserver.server.constant.FinalServerConstants;
 import top.lingkang.finalserver.server.core.CustomRequestHandler;
-import top.lingkang.finalserver.server.error.FinalServerException;
 import top.lingkang.finalserver.server.utils.BeanUtils;
 import top.lingkang.finalserver.server.utils.MatchUtils;
 import top.lingkang.finalserver.server.utils.TypeUtils;
@@ -53,7 +52,7 @@ class BuildControllerHandler {
             Object bean = BeanUtils.getTarget(applicationContext.getBean(name));
             log.debug(BeanUtils.getSpringProxyBeanName(bean.getClass()));
 
-            String basePath = "/";
+            String basePath = "";
             // 判断类上是否有@RequestMapping注解
             RequestMapping requestMapping = bean.getClass().getAnnotation(RequestMapping.class);
             if (requestMapping != null) {
@@ -67,12 +66,10 @@ class BuildControllerHandler {
                 RequestType requestType = getAnnotationPathValue(method);
                 if (requestType != null) {
                     String path = basePath + checkMapping(requestType.value);
+                    if (!path.startsWith("/"))
+                        path = "/" + path;
                     if (path.length() > 1 && path.endsWith("/"))
                         throw new IllegalArgumentException("Controller处理的URL不能以 '/' 作为结尾  class:" + bean.getClass().getName() + " 方法:" + method.getName());
-
-                    if (absolutePath.containsKey(requestType.requestMethod.name() + "_" + path)) {// GET_/index
-                        throw new IllegalArgumentException("存在重复的URL处理：" + path + "  " + requestType.requestMethod.name() + "  " + bean.getClass().getName());
-                    }
 
                     info.setBeanName(name);
                     info.setControllerClass(bean.getClass());
@@ -82,14 +79,24 @@ class BuildControllerHandler {
                     info.setParamAnnotation(getParamAnnotation(method));
                     info.setMethod(method);
 
+                    path = path.replaceAll(" ", "");// 删除空格
                     // REST ful API
                     if (path.contains("{")) {
-                        path = path.replaceAll(" ", "");
+                        info.setPath(path);
+                        if (restFulPathCheck(info)) {// GET_/index
+                            throw new IllegalArgumentException("存在重复的 Restful API 处理：" + path + "  "
+                                    + requestType.requestMethod.name() + "  " + bean.getClass().getName()
+                                    + "." + info.getMethod().getName());
+                        }
                         String[] fulParam = MatchUtils.getRestFulParam(path);
                         info.setRestFulParam(fulParam);
-                        info.setPath(path);
                         restFulPath.add(info);
                     } else {
+                        if (absolutePath.containsKey(requestType.requestMethod.name() + "_" + path)) {// GET_/index
+                            throw new IllegalArgumentException("存在重复的URL处理：" + path + "  "
+                                    + requestType.requestMethod.name() + "  " + bean.getClass().getName()
+                                    + "." + info.getMethod().getName());
+                        }
                         // 方法名_path
                         path = requestType.requestMethod.name() + "_" + path;
                         info.setPath(path);
@@ -146,15 +153,14 @@ class BuildControllerHandler {
         return result;
     }
 
-    /*private Object[] getParamInitValue(Class<?>[] params) {
-        if (params.length == 0)
-            return new Object[0];
-        Object[] param = new Object[params.length];
-        for (int i = 0; i < params.length; i++) {
-            param[i] = TypeUtils.initValue.get(params[i]);
+    // requestType.requestMethod.name() + "_" + path
+    private boolean restFulPathCheck(RequestInfo requestInfo) {
+        for (RequestInfo info : restFulPath) {
+            if (info.getPath().equals(requestInfo.getPath()) && info.getRequestMethod().equals(requestInfo.getRequestMethod()))
+                return true;
         }
-        return param;
-    }*/
+        return false;
+    }
 
     public void addRequestHandler(String path, RequestMethod method, CustomRequestHandler handler) {
         Assert.notBlank(path, "处理路径不能为空");
@@ -175,12 +181,14 @@ class BuildControllerHandler {
         log.debug("添加请求处理成功");
     }
 
-    // @RequestMapping 检查前后缀
+    // @RequestMapping 检查前后缀,返回值最后不带 /
     private String checkPrefixAndSuffix(String path) {
+        if (path.length() == 0)
+            return path;
         if (!path.startsWith("/"))
             path = "/" + path;
-        if (!path.endsWith("/"))
-            path = path + "/";
+        if (path.endsWith("/"))
+            path = path.substring(0, path.length() - 1);
         return path;
     }
 

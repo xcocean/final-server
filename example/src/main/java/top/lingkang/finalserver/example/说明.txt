@@ -20,3 +20,5 @@ test11: 测试beetl模板引擎
 test12: 静态文件资源URL映射
 
 test13: 测试文件上传
+
+test14: controller路径测试
