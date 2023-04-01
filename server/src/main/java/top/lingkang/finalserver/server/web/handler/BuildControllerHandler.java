@@ -193,8 +193,8 @@ class BuildControllerHandler {
     }
 
     private String checkMapping(String path) {
-        if (path.length() > 1 && path.startsWith("/")) {
-            path = path.substring(1);
+        if (path.length() > 1 && !path.startsWith("/")) {
+            path = "/" + path;
         }
         return path;
     }

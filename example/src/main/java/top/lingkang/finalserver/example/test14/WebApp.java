@@ -12,7 +12,7 @@ import java.util.List;
  * @author lingkang
  * Created by 2023/1/19
  */
-@RequestMapping("/admin/")
+@RequestMapping("/admin")
 @Controller
 @FinalServerBoot
 public class WebApp {
