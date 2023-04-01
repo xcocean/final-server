@@ -67,9 +67,7 @@ public class FinalServerApplication extends DynamicAddController {
 
             // 检查端口
             if (!NetUtil.isUsableLocalPort(FinalServerProperties.server_port)) {
-                log.error("FinalServer start fail  启动失败，端口被占用: {}", FinalServerProperties.server_port);
-                System.exit(0);
-                return;
+                throw new RuntimeException("FinalServer start fail  启动失败，端口被占用: " + FinalServerProperties.server_port);
             }
 
             // 配置spring xml
@@ -82,7 +80,7 @@ public class FinalServerApplication extends DynamicAddController {
             // 启动spring
             applicationContext = new ClassPathXmlApplicationContext(getXmlPath());
         } catch (Exception e) {
-            log.error("FinalServer 启动失败: ", e);
+            e.printStackTrace();
             System.exit(0);
         } finally {
             if (xmlFile != null)
