@@ -4,6 +4,7 @@ import cn.hutool.core.util.StrUtil;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.*;
 import io.netty.handler.stream.ChunkedFile;
 import org.slf4j.Logger;
@@ -29,10 +30,11 @@ public class DefaultReturnStaticFileHandler implements ReturnStaticFileHandler {
     private static final Logger log = LoggerFactory.getLogger(DefaultReturnStaticFileHandler.class);
 
     @Override
-    public void returnStaticFile(File file, FinalServerContext context) throws Exception {
+    public void returnStaticFile(FinalServerContext context, ChannelHandlerContext ctx) throws Exception {
+        File file = context.getResponse().getResponseFile().getFile();
         if (!file.exists()) {
             log.warn("文件不存在：{}", file.getAbsolutePath());
-            FinalServerConfiguration.webExceptionHandler.notHandler(context.getCtx());
+            FinalServerConfiguration.webExceptionHandler.notHandler(ctx);
             return;
         }
         RandomAccessFile randomAccessFile = new RandomAccessFile(file, "r");
@@ -81,12 +83,12 @@ public class DefaultReturnStaticFileHandler implements ReturnStaticFileHandler {
         DefaultHttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, status);
         response.headers().set(headers);
 
-        context.getCtx().write(response);
-        context.getCtx().writeAndFlush(
+        ctx.write(response);
+        ctx.writeAndFlush(
                 new ChunkedFile(randomAccessFile, offset, length, 1024),
-                context.getCtx().newProgressivePromise()
+                ctx.newProgressivePromise()
         );
-        context.getCtx().writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(new ChannelFutureListener() {
+        ctx.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(new ChannelFutureListener() {
             @Override
             public void operationComplete(ChannelFuture future) {
                 future.channel().close();

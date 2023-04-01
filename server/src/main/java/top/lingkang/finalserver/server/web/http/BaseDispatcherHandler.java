@@ -30,7 +30,7 @@ public class BaseDispatcherHandler extends SimpleChannelInboundHandler<FullHttpR
 
     protected void httpHandler(ChannelHandlerContext ctx, FullHttpRequest msg) throws Exception {
         // 构建上下文
-        FinalServerContext context = new FinalServerContext(ctx, new HttpRequest(ctx, msg));
+        FinalServerContext context = new FinalServerContext(new HttpRequest(ctx, msg));
         context.setResponse(new HttpResponse(ctx));
 
         // 写内容

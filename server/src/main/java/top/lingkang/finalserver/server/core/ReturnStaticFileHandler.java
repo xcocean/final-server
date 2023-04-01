@@ -1,9 +1,8 @@
 package top.lingkang.finalserver.server.core;
 
+import io.netty.channel.ChannelHandlerContext;
 import top.lingkang.finalserver.server.web.http.FinalServerContext;
 
-import java.io.File;
-
 public interface ReturnStaticFileHandler {
-    void returnStaticFile(File file, FinalServerContext context) throws Exception;
+    void returnStaticFile(FinalServerContext context, ChannelHandlerContext ctx) throws Exception;
 }

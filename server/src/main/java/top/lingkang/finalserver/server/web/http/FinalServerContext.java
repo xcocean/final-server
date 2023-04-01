@@ -1,7 +1,5 @@
 package top.lingkang.finalserver.server.web.http;
 
-import io.netty.channel.ChannelHandlerContext;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,8 +10,7 @@ import java.util.Map;
  * 上下文会再连接断开时移除
  */
 public class FinalServerContext {
-    public FinalServerContext(ChannelHandlerContext ctx, Request request) {
-        this.ctx = ctx;
+    public FinalServerContext(Request request) {
         this.request = request;
         finalServerContext.set(this);
     }
@@ -22,11 +19,6 @@ public class FinalServerContext {
     public static final Map<String, Object> templateGlobalMap = new HashMap<>();
     private Request request;
     private Response response;
-    private ChannelHandlerContext ctx;
-
-    public ChannelHandlerContext getCtx() {
-        return ctx;
-    }
 
     public Request getRequest() {
         return request;

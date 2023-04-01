@@ -36,7 +36,7 @@ class HandlerHttpRequest extends SimpleChannelInboundHandler<FinalServerContext>
             if (response.isReady()) {
                 if (response.getResponseFile() != null) {
                     FinalServerConfiguration.returnStaticFileHandler
-                            .returnStaticFile(response.getResponseFile().getFile(), context);
+                            .returnStaticFile(context, ctx);
                     return;
                 }
 
