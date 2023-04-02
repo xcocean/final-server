@@ -44,6 +44,6 @@ public class DefaultWebExceptionHandler implements WebExceptionHandler {
     public String getErrorMsg(Throwable cause) {
         if (cause.getMessage() != null)
             return cause.getMessage();
-        return getErrorMsg(cause.getCause());
+        return "空指针异常";
     }
 }
