@@ -42,8 +42,8 @@ public class DefaultWebExceptionHandler implements WebExceptionHandler {
     }
 
     public String getErrorMsg(Throwable cause) {
-        if (cause.getMessage() != null)
-            return cause.getMessage();
-        return "空指针异常";
+        if (cause instanceof NullPointerException)
+            return "空指针异常";
+        return cause.getMessage() != null ? cause.getMessage() : cause.getCause().getMessage();
     }
 }
