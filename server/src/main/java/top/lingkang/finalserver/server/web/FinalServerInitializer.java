@@ -154,6 +154,11 @@ public class FinalServerInitializer {
         if (staticFileHandler != null)
             FinalServerConfiguration.returnStaticFileHandler = staticFileHandler;
 
+        // 默认响应头
+        ServerDefaultHttpHeaders defaultHttpHeaders = BeanUtils.getBean(ServerDefaultHttpHeaders.class, applicationContext);
+        if (defaultHttpHeaders != null)
+            FinalServerConfiguration.defaultResponseHeaders = defaultHttpHeaders;
+
     }
 
     @Order(Integer.MAX_VALUE)// 最后加载
