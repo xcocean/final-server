@@ -25,11 +25,12 @@ public class FinalServerProperties {
     public static long server_session_age = 1800000;
     public static int server_maxContentLength = 3145728;
     public static long server_uploadFileBuffer = 3145728L;
-    public static long server_fileFtpSize = 1048576L;
+    public static long server_file_ftpSize = 1048576L;
     public static String server_template_suffix = ".html";
     public static String server_template_prefix = "templates/";
     public static boolean server_template_cache;
     public static long server_template_cacheTime = 3600000;
+    public static String file_cache_control="max-age=1800";
 
     public static void load() {
         if (isLoad) {
@@ -51,14 +52,14 @@ public class FinalServerProperties {
         server_session_age = SystemPropsUtil.getLong("server.session.age", server_session_age);
         server_maxContentLength = SystemPropsUtil.getInt("server.maxContentLength", server_maxContentLength);
         server_uploadFileBuffer = SystemPropsUtil.getLong("server.uploadFileBuffer", server_uploadFileBuffer);
-        server_fileFtpSize = SystemPropsUtil.getLong("server.fileFtpSize", server_fileFtpSize);
+        server_file_ftpSize = SystemPropsUtil.getLong("server.file.ftpSize", server_file_ftpSize);
 
         // 模板引擎配置
         server_template_suffix = SystemPropsUtil.get("server.template.suffix", server_template_suffix);
         server_template_prefix = SystemPropsUtil.get("server.template.prefix", server_template_prefix);
         server_template_cache = SystemPropsUtil.getBoolean("server.template.cache", server_template_cache);
         server_template_cacheTime = SystemPropsUtil.getLong("server.template.cacheTime", server_template_cacheTime);
-
+        file_cache_control=SystemPropsUtil.get("server.file.cacheControl", file_cache_control);
         check();
     }
 

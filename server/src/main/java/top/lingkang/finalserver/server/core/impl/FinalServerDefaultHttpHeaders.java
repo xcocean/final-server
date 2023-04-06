@@ -4,7 +4,6 @@ import io.netty.handler.codec.http.DefaultHttpHeaders;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaderValues;
 import io.netty.handler.codec.http.HttpHeaders;
-import top.lingkang.finalserver.server.constant.FinalServerConstants;
 import top.lingkang.finalserver.server.core.ServerDefaultHttpHeaders;
 
 import java.util.Date;

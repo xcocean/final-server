@@ -43,7 +43,7 @@ public class DefaultReturnStaticFileHandler implements ReturnStaticFileHandler {
         headers.set(HttpHeaderNames.ACCEPT_RANGES, HttpHeaderValues.BYTES);
         headers.set(HttpHeaderNames.CONTENT_LENGTH, randomAccessFile.length());
         headers.set(HttpHeaderNames.LAST_MODIFIED, new Date(file.lastModified()));
-        headers.set(HttpHeaderNames.CACHE_CONTROL, HttpHeaderValues.NO_CACHE);
+        headers.set(HttpHeaderNames.CACHE_CONTROL, FinalServerProperties.file_cache_control);// 文件缓存相关
         // 设置文件请求头
         HttpUtils.setResponseHeadName(context.getResponse().getResponseFile(), headers);
 
@@ -57,7 +57,7 @@ public class DefaultReturnStaticFileHandler implements ReturnStaticFileHandler {
         // 静态文件需要做到断点续传
         String range = context.getRequest().getHeaders().get(HttpHeaderNames.RANGE);
         long offset = 0L, length = randomAccessFile.length();
-        if (StrUtil.isNotBlank(range) && length > FinalServerProperties.server_fileFtpSize) {// Range: bytes=1900544-  Range: bytes=1900544-6666666
+        if (StrUtil.isNotBlank(range) && length > FinalServerProperties.server_file_ftpSize) {// Range: bytes=1900544-  Range: bytes=1900544-6666666
             range = range.substring(6);
             String[] split = range.split("-");
             try {
