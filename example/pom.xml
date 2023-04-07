@@ -56,11 +56,9 @@
             <scope>provided</scope>
         </dependency>
 
-        <!--一个轻量级的连接池-->
         <dependency>
-            <groupId>com.github.chris2018998</groupId>
-            <artifactId>beecp</artifactId>
-            <version>3.3.7</version>
+            <groupId>com.ibeetl</groupId>
+            <artifactId>beetl</artifactId>
         </dependency>
     </dependencies>
     <build>

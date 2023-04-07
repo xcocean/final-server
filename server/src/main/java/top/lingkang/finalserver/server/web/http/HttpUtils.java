@@ -175,7 +175,8 @@ public final class HttpUtils {
 
         if (!headers.contains(HttpHeaderNames.CONTENT_TYPE)) {
             String type = StaticMimes.get(path.substring(index));
-            headers.set(HttpHeaderNames.CONTENT_TYPE, type);
+            if (type != null)
+                headers.set(HttpHeaderNames.CONTENT_TYPE, type);
 
             // 是否为下载
             if (responseFile.isDownload() && !headers.contains(HttpHeaderNames.CONTENT_DISPOSITION)) {

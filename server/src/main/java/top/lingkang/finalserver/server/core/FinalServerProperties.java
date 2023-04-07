@@ -30,7 +30,7 @@ public class FinalServerProperties {
     public static String server_template_prefix = "templates/";
     public static boolean server_template_cache;
     public static long server_template_cacheTime = 3600000;
-    public static String file_cache_control="max-age=1800";
+    public static String file_cache_control="public";
 
     public static void load() {
         if (isLoad) {

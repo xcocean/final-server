@@ -1,13 +1,14 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>hello</title>
+    <link rel="stylesheet" href="/a.css">
 </head>
 <body>
 hi，${vv!}
 <hr>
 session:${session}
 <hr>
-<video width="320" height="240" controls src="/mp4中文.mp4"></video>
+<video id="v" width="320" height="240" controls></video>
 <hr>
 request headers: ${request!getHeaders()}
 <hr>
@@ -19,5 +20,9 @@ ${session}
 <br>
 用户拥有的角色：${session.final_hasRoles}
 <br>
+<img id="i" src="/0.png"  alt="11"/>
+<script>
+    document.getElementById("v").src='/mp4中文.mp4?t='+new Date().getTime()
+</script>
 </body>
 </html>

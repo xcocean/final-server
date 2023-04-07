@@ -35,6 +35,7 @@ public class BaseDispatcherHandler extends SimpleChannelInboundHandler<FullHttpR
 
         // 写内容
         ctx.pipeline().addLast(new ChunkedWriteHandler());
+
         // http 处理
         ctx.pipeline().addLast(new HandlerHttpRequest());
 
