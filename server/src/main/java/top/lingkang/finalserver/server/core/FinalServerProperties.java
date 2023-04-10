@@ -30,7 +30,7 @@ public class FinalServerProperties {
     public static String server_template_prefix = "templates/";
     public static boolean server_template_cache;
     public static long server_template_cacheTime = 3600000;
-    public static String file_cache_control="public";
+    public static boolean file_cache_control=true;
 
     public static void load() {
         if (isLoad) {
@@ -59,7 +59,7 @@ public class FinalServerProperties {
         server_template_prefix = SystemPropsUtil.get("server.template.prefix", server_template_prefix);
         server_template_cache = SystemPropsUtil.getBoolean("server.template.cache", server_template_cache);
         server_template_cacheTime = SystemPropsUtil.getLong("server.template.cacheTime", server_template_cacheTime);
-        file_cache_control=SystemPropsUtil.get("server.file.cacheControl", file_cache_control);
+        file_cache_control=SystemPropsUtil.getBoolean("server.file.cacheControl", file_cache_control);
         check();
     }
 

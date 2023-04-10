@@ -38,7 +38,6 @@ public class DefaultReturnStaticFileHandler implements ReturnStaticFileHandler {
         headers.set(HttpHeaderNames.ACCEPT_RANGES, HttpHeaderValues.BYTES);
         headers.set(HttpHeaderNames.CONTENT_LENGTH, file.length());
         headers.set(HttpHeaderNames.LAST_MODIFIED, file.lastModified());
-        headers.set(HttpHeaderNames.CACHE_CONTROL, FinalServerProperties.file_cache_control);
         // 设置文件请求头
         HttpUtils.setResponseHeadName(context.getResponse().getResponseFile(), headers);
 
@@ -50,21 +49,23 @@ public class DefaultReturnStaticFileHandler implements ReturnStaticFileHandler {
         headers.setAll(context.getResponse().getHeaders());
 
         // 304缓存  If-Modified-Since
-        String timeMillis = context.getRequest().getHeaders().get(HttpHeaderNames.IF_MODIFIED_SINCE);
-        if (timeMillis != null && timeMillis.equals(file.lastModified() + "")) {
-            DefaultHttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.NOT_MODIFIED);
-            response.headers().set(headers);
-            ctx.writeAndFlush(response).addListener(new ChannelFutureListener() {
-                @Override
-                public void operationComplete(ChannelFuture future) {
-                    future.channel().close();
-                    if (context.getResponse().getResponseFile().isDelete())// 检查文件删除
-                        file.delete();
-                }
-            });
-            return;
+        if (FinalServerProperties.file_cache_control) {
+            headers.set(HttpHeaderNames.CACHE_CONTROL, HttpHeaderValues.PUBLIC);// Cache-Control: public
+            String timeMillis = context.getRequest().getHeaders().get(HttpHeaderNames.IF_MODIFIED_SINCE);
+            if (timeMillis != null && timeMillis.equals(file.lastModified() + "")) {
+                DefaultHttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.NOT_MODIFIED);
+                response.headers().set(headers);
+                ctx.writeAndFlush(response).addListener(new ChannelFutureListener() {
+                    @Override
+                    public void operationComplete(ChannelFuture future) {
+                        future.channel().close();
+                        if (context.getResponse().getResponseFile().isDelete())// 检查文件删除
+                            file.delete();
+                    }
+                });
+                return;
+            }
         }
-
 
         long offset = 0L, length = file.length();
         HttpResponseStatus status = HttpResponseStatus.OK;
