@@ -24,6 +24,13 @@ final-server是一个基于netty实现的高性能web服务器。使用spring 5.
 gitee文档：[https://gitee.com/lingkang_top/final-server](https://gitee.com/lingkang_top/final-server)
 
 ### 例子
+```xml
+<dependency>
+    <groupId>top.lingkang</groupId>
+    <artifactId>server</artifactId>
+    <version>1.0.0</version>
+</dependency>
+```
 
 ```java
 @Controller
