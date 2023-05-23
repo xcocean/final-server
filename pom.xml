@@ -15,6 +15,7 @@
     </modules>
 
     <!--基本开源信息-->
+    <name>final-server</name>
     <url>https://gitee.com/lingkang_top/final-server</url>
     <description>final-server是一个基于netty实现的web服务器</description>
     <organization>

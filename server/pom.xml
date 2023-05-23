@@ -10,8 +10,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>server</artifactId>
+    <packaging>jar</packaging>
 
     <!--基本开源信息-->
+    <name>server</name>
     <url>https://gitee.com/lingkang_top/final-server</url>
     <description>final-server是一个基于netty实现的web服务器</description>
     <organization>
@@ -102,19 +104,17 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
-                <configuration>
-                    <source>8</source>
-                    <target>8</target>
-                </configuration>
-            </plugin>
-
-            <!-- 源码发布 -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
                 <version>3.2.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
 
             <!-- 生成javadoc -->
@@ -135,22 +135,6 @@
                     <additionalJOption>-Xdoclint:none</additionalJOption>
                     <failOnError>false</failOnError>
                 </configuration>
-            </plugin>
-
-            <!-- gpg认证 -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-gpg-plugin</artifactId>
-                <version>1.6</version>
-                <executions>
-                    <execution>
-                        <id>sign-artifacts</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>sign</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>
