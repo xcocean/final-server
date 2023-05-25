@@ -11,6 +11,7 @@
   * [指定配置文件](md/08.指定配置文件.md)
   * [授权与鉴权](md/09.授权与鉴权.md)
   * [RestFullApi](md/10.RestFullApi.md)
+  * [自定义session获取](md/11.自定义session获取.md)
   * [session管理](md/11.session管理.md)
   * [动态添加http处理](md/12.动态添加http处理.md)
   * [WEB监听](md/13.WEB监听.md)

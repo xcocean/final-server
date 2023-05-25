@@ -52,10 +52,10 @@ import java.util.TimerTask;
  * // 使用了 beecp 连接池 <a href="https://gitee.com/Chris2018998/BeeCP">beecp</a>
  */
 public class DbHttpSessionManage implements HttpSessionManage {
-    private static final Logger log = LoggerFactory.getLogger(DbHttpSessionManage.class);
-    private Timer timer = new Timer();
-    private DataSource dataSource;
-    private static final ThreadLocal<Session> localSession = new ThreadLocal<>();
+    protected static final Logger log = LoggerFactory.getLogger(DbHttpSessionManage.class);
+    protected Timer timer = new Timer();
+    protected DataSource dataSource;
+    protected static final ThreadLocal<Session> localSession = new ThreadLocal<>();
 
     public DbHttpSessionManage(DataSource dataSource) {
         if (dataSource == null) {

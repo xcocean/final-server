@@ -20,8 +20,8 @@ import java.util.concurrent.TimeUnit;
  * 会话存储的redis实现
  */
 public class RedisHttpSessionManage implements HttpSessionManage {
-    private RedissonClient redissonClient;
-    private static final ThreadLocal<Session> localSession = new ThreadLocal<>();
+    protected RedissonClient redissonClient;
+    protected static final ThreadLocal<Session> localSession = new ThreadLocal<>();
 
     public RedisHttpSessionManage(RedissonClient redissonClient) {
         this.redissonClient = redissonClient;
