@@ -17,13 +17,15 @@ final-server是一个基于netty实现的高性能web服务器。使用spring 5.
 * 静态文件映射，文件断点续传
 * web session管理、分布式session
 
-### 快速入门
+### 文档
 
 官网文档：[http://final-server.1it.top](http://final-server.1it.top)
 
-gitee文档：[https://gitee.com/lingkang_top/final-server](https://gitee.com/lingkang_top/final-server)
+gitee文档：[https://gitee.com/lingkang_top/final-server/tree/master/docs/md](https://gitee.com/lingkang_top/final-server/tree/master/docs/md)
 
-### 例子
+Maven公共仓库：[https://mvnrepository.com/artifact/top.lingkang/server](https://mvnrepository.com/artifact/top.lingkang/server)
+
+### 入门
 ```xml
 <dependency>
     <groupId>top.lingkang</groupId>
