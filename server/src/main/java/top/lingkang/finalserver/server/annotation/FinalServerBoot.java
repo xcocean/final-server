@@ -1,5 +1,9 @@
 package top.lingkang.finalserver.server.annotation;
 
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Import;
+import top.lingkang.finalserver.server.config.InitConfig;
+
 import java.lang.annotation.*;
 
 /**
@@ -11,9 +15,7 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+@SpringBootApplication
+@Import(InitConfig.class)
 public @interface FinalServerBoot {
-    /**
-     * 默认加载 resources/application.properties
-     */
-    String value() default "application.properties";
 }

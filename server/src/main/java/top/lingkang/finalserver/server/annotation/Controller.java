@@ -1,5 +1,7 @@
 package top.lingkang.finalserver.server.annotation;
 
+import org.springframework.stereotype.Component;
+
 import java.lang.annotation.*;
 
 /**
@@ -10,6 +12,7 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+@Component
 @org.springframework.stereotype.Controller
 public @interface Controller {
 }

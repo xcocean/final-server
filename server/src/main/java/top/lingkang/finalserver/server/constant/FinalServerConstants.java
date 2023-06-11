@@ -6,7 +6,7 @@ package top.lingkang.finalserver.server.constant;
  * @since 1.0.0
  */
 public final class FinalServerConstants {
-    public static final String version = "Final Server 1.0.0";
+    public static final String version = "Final Server 1.1.0";
 
     public static String encoding = "utf-8";
 

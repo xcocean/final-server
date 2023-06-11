@@ -22,3 +22,5 @@ test12: 静态文件资源URL映射
 test13: 测试文件上传
 
 test14: controller路径测试
+
+test15: websocket 测试

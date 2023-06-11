@@ -8,7 +8,6 @@
   * [AOP切面的使用](md/05.AOP切面的使用.md)
   * [自定义模板引擎](md/06.自定义模板引擎.md)
   * [日志配置](md/07.日志配置.md)
-  * [指定配置文件](md/08.指定配置文件.md)
   * [授权与鉴权](md/09.授权与鉴权.md)
   * [RestFullApi](md/10.RestFullApi.md)
   * [自定义session获取](md/11.自定义session获取.md)

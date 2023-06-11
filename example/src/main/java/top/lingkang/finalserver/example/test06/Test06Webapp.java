@@ -24,12 +24,6 @@ public class Test06Webapp {
     }
 
     @GET("/{param}")
-    public Object get(String param) {
-        System.out.println(param);
-        return param;
-    }
-
-    @GET("/{param}")
     public Object get3(String param) {
         System.out.println(3);
         System.out.println(param);

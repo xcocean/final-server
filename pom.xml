@@ -7,11 +7,11 @@
     <groupId>top.lingkang</groupId>
     <artifactId>final-server</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
 
     <modules>
         <module>server</module>
-        <!--<module>example</module>-->
+        <module>example</module>
     </modules>
 
     <!--基本开源信息-->
@@ -46,10 +46,10 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <spring.version>5.3.27</spring.version>
+        <spring-boot.version>2.7.12</spring-boot.version>
         <logback.version>1.2.12</logback.version>
-        <netty.version>4.1.92.Final</netty.version>
-        <beetl.version>3.14.1.RELEASE</beetl.version>
+        <netty.version>4.1.93.Final</netty.version>
+        <beetl.version>3.15.4.RELEASE</beetl.version>
         <thymeleaf.version>3.1.1.RELEASE</thymeleaf.version>
     </properties>
     <dependencyManagement>
@@ -59,12 +59,14 @@
                 <artifactId>server</artifactId>
                 <version>${project.version}</version>
             </dependency>
-            <!-- https://mvnrepository.com/artifact/org.springframework/spring-context -->
             <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-context</artifactId>
-                <version>${spring.version}</version>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
+
             <!-- https://mvnrepository.com/artifact/io.netty/netty-codec-http2 -->
             <dependency>
                 <groupId>io.netty</groupId>
@@ -84,7 +86,6 @@
                 <artifactId>beetl</artifactId>
                 <version>${beetl.version}</version>
             </dependency>
-
 
             <!--log-->
             <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
@@ -110,14 +111,14 @@
             <dependency>
                 <groupId>cn.hutool</groupId>
                 <artifactId>hutool-core</artifactId>
-                <version>5.8.18</version>
+                <version>5.8.19</version>
             </dependency>
 
             <!-- https://mvnrepository.com/artifact/com.alibaba.fastjson2/fastjson2 -->
             <dependency>
                 <groupId>com.alibaba.fastjson2</groupId>
                 <artifactId>fastjson2</artifactId>
-                <version>2.0.26</version>
+                <version>2.0.33</version>
             </dependency>
 
             <!-- https://mvnrepository.com/artifact/org.redisson/redisson -->
@@ -127,11 +128,11 @@
                 <version>3.18.1</version>
             </dependency>
 
-            <!-- https://mvnrepository.com/artifact/org.aspectj/aspectjweaver -->
+            <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
             <dependency>
-                <groupId>org.aspectj</groupId>
-                <artifactId>aspectjweaver</artifactId>
-                <version>1.9.19</version>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>1.18.28</version>
             </dependency>
 
         </dependencies>
@@ -209,10 +210,10 @@
 
     <repositories>
         <repository>
-            <id>nexus-aliyun</id>
-            <name>Nexus aliyun</name>
+            <id>nexus-tencent</id>
+            <name>Nexus tencent</name>
             <layout>default</layout>
-            <url>http://maven.aliyun.com/nexus/content/groups/public</url>
+            <url>http://mirrors.cloud.tencent.com/nexus/repository/maven-public/</url>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>

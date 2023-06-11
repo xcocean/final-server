@@ -1,7 +1,13 @@
-# 配置文件大全
+package top.lingkang.finalserver.server.config;
 
-`application.properties`
-```java
+import lombok.Data;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
+/**
+ * @author lingkang
+ * Created by 2023/6/11
+ * @since 1.1.0
+ */
 @Data
 @ConfigurationProperties(prefix = "final.server")
 public class FinalServerProperties {
@@ -70,6 +76,7 @@ public class FinalServerProperties {
     private int threadMaxReceive = 0;
     /**
      * 处理线程数，即处理最大并发数，0为默认：系统的核数 * 50（默认值不会超过200），对比，tomcat默认为200
+     * 一些测试数据参考：threadMaxReceive=12时，200：并发2200/秒；100：并发1700/秒
      */
     private int threadMaxHandler = 0;
     /**
@@ -87,5 +94,5 @@ public class FinalServerProperties {
      * 超时
      */
     private int websocketTimeout = 12000;
+
 }
-```

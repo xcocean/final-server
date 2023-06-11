@@ -26,6 +26,14 @@ public class BeanUtils {
         return clazz.getName().split("\\$\\$")[0];
     }
 
+    public static Class<?> getClassBySpringProxyClass(Class<?> clazz) {
+        try {
+            return Class.forName(getSpringProxyBeanName(clazz));
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static <T> T getBean(Class<T> clazz, ApplicationContext applicationContext) {
         try {
             return applicationContext.getBean(clazz);

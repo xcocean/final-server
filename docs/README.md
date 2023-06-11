@@ -1,12 +1,11 @@
 # final-server
 
 ### 介绍
-final-server是一个基于netty实现的高性能web服务器。使用spring 5.x作为底层，兼容spring生态。
-
+final-server是一个基于netty实现的高性能web服务器。使用 springboot 2.7.x 作为底层，兼容springboot生态。
 
 ### 特点
 
-* 相较于 `springboot` 运行内存减少一半以上
+* 相较于 `springboot`（tomcat） 运行内存减少一半以上
 * netty http2处理
 * 自带基于RPC角色鉴权（默认不启用）
 * 长连接 websocket

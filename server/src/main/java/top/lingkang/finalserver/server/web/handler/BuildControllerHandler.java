@@ -49,17 +49,18 @@ class BuildControllerHandler {
 
         // 遍历缓存处理
         for (String name : allName) {
-            Object bean = BeanUtils.getTarget(applicationContext.getBean(name));
-            log.debug(BeanUtils.getSpringProxyBeanName(bean.getClass()));
+            Object contextBean = applicationContext.getBean(name);
+            Class<?> beanClass = BeanUtils.getClassBySpringProxyClass(contextBean.getClass());
+            log.debug(BeanUtils.getSpringProxyBeanName(beanClass));
 
             String basePath = "";
             // 判断类上是否有@RequestMapping注解
-            RequestMapping requestMapping = bean.getClass().getAnnotation(RequestMapping.class);
+            RequestMapping requestMapping = (RequestMapping) beanClass.getAnnotation(RequestMapping.class);
             if (requestMapping != null) {
                 basePath = checkPrefixAndSuffix(requestMapping.value());
             }
 
-            Method[] methods = bean.getClass().getDeclaredMethods();
+            Method[] methods = beanClass.getDeclaredMethods();
             for (int index = 0; index < methods.length; index++) {
                 Method method = methods[index];
                 RequestInfo info = new RequestInfo();
@@ -69,10 +70,10 @@ class BuildControllerHandler {
                     if (!path.startsWith("/"))
                         path = "/" + path;
                     if (path.length() > 1 && path.endsWith("/"))
-                        throw new IllegalArgumentException("Controller处理的URL不能以 '/' 作为结尾  class:" + bean.getClass().getName() + " 方法:" + method.getName());
+                        throw new IllegalArgumentException("Controller处理的URL不能以 '/' 作为结尾  class:" + beanClass.getName() + " 方法:" + method.getName());
 
                     info.setBeanName(name);
-                    info.setControllerClass(bean.getClass());
+                    info.setControllerClass(beanClass);
                     info.setRequestMethod(requestType.requestMethod.name());
                     info.setParamNames(getParamNames(method));
                     info.setParamTypes(method.getParameterTypes());
@@ -85,7 +86,7 @@ class BuildControllerHandler {
                         info.setPath(path);
                         if (restFulPathCheck(info)) {// GET_/index
                             throw new IllegalArgumentException("存在重复的 Restful API 处理：" + path + "  "
-                                    + requestType.requestMethod.name() + "  " + bean.getClass().getName()
+                                    + requestType.requestMethod.name() + "  " + beanClass.getName()
                                     + "." + info.getMethod().getName());
                         }
                         String[] fulParam = MatchUtils.getRestFulParam(path);
@@ -94,7 +95,7 @@ class BuildControllerHandler {
                     } else {
                         if (absolutePath.containsKey(requestType.requestMethod.name() + "_" + path)) {// GET_/index
                             throw new IllegalArgumentException("存在重复的URL处理：" + path + "  "
-                                    + requestType.requestMethod.name() + "  " + bean.getClass().getName()
+                                    + requestType.requestMethod.name() + "  " + beanClass.getName()
                                     + "." + info.getMethod().getName());
                         }
                         // 方法名_path

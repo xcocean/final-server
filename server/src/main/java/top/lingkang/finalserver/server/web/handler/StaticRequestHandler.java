@@ -1,6 +1,6 @@
 package top.lingkang.finalserver.server.web.handler;
 
-import top.lingkang.finalserver.server.core.FinalServerProperties;
+import top.lingkang.finalserver.server.core.FinalServerConfiguration;
 import top.lingkang.finalserver.server.web.entity.ResponseFile;
 import top.lingkang.finalserver.server.web.http.FinalServerContext;
 
@@ -13,19 +13,10 @@ import java.net.URLDecoder;
  * @since 1.0.0
  */
 public class StaticRequestHandler implements RequestHandler {
-
-    private String basePath = "";
-
-    public StaticRequestHandler() {
-        basePath = FinalServerProperties.server_static;
-        if (basePath.startsWith("/"))
-            basePath = basePath.substring(1);
-    }
-
     @Override
     public boolean handler(FinalServerContext context) throws Exception {
         if (context.getRequest().getPath().contains(".")) {
-            URL resource = StaticRequestHandler.class.getClassLoader().getResource(basePath + context.getRequest().getPath());
+            URL resource = StaticRequestHandler.class.getClassLoader().getResource(FinalServerConfiguration.templateStatic + context.getRequest().getPath());
             if (resource != null) {
                 context.getResponse().returnFile(new ResponseFile(URLDecoder.decode(resource.getPath(), "UTF-8")));
                 return true;

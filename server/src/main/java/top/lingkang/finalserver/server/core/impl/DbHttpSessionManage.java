@@ -1,11 +1,11 @@
 package top.lingkang.finalserver.server.core.impl;
 
+import cn.hutool.core.io.IoUtil;
 import io.netty.handler.codec.http.cookie.Cookie;
 import io.netty.handler.codec.http.cookie.DefaultCookie;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.lingkang.finalserver.server.core.FinalServerConfiguration;
-import top.lingkang.finalserver.server.core.FinalServerProperties;
 import top.lingkang.finalserver.server.core.HttpSessionManage;
 import top.lingkang.finalserver.server.utils.SerializableUtils;
 import top.lingkang.finalserver.server.web.http.FinalServerContext;
@@ -25,31 +25,37 @@ import java.util.TimerTask;
 /**
  * @author lingkang
  * Created by 2022/12/12
- * @Configuration public class MyHttpSessionManage {
- * @Bean public DbHttpSessionManage dbHttpSessionManage() {
- * BeeDataSourceConfig config = new BeeDataSourceConfig();
- * config.setDriverClassName("com.mysql.cj.jdbc.Driver");
- * config.setJdbcUrl("jdbc:mysql://localhost:3306/test?serverTimezone=UTC");
- * config.setUsername("root");
- * config.setPassword("123456");
- * config.setMaxActive(10);
- * BeeDataSource dataSource = new BeeDataSource(config);
- * return new DbHttpSessionManage(dataSource);
+ * <pre>
+ * @Configuration
+ * public class MyHttpSessionManage {
+ *     @Bean
+ *     public DbHttpSessionManage dbHttpSessionManage() {
+ *         BeeDataSourceConfig config = new BeeDataSourceConfig();
+ *         config.setDriverClassName("com.mysql.cj.jdbc.Driver");// org.sqlite.JDBC
+ *         config.setJdbcUrl("jdbc:mysql://localhost:3306/test?serverTimezone=UTC");
+ *         config.setUsername("root");
+ *         config.setPassword("123456");
+ *         config.setMaxActive(10);
+ *         BeeDataSource dataSource = new BeeDataSource(config);
+ *         return new DbHttpSessionManage(dataSource);
+ *     }
  * }
- * }
+ * </pre>
  *
  * <p>
  * 建表sql
  * <p>
+ * <pre>
  * CREATE TABLE `f_store_session` (
- * `id` varchar(50) NOT NULL,
- * `content` blob,
- * `last_time` datetime DEFAULT NULL,
- * PRIMARY KEY (`id`) USING BTREE
- * ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+ *  `id` varchar(50) NOT NULL,
+ *  `content` blob,
+ *  `last_time` datetime DEFAULT NULL,
+ *  PRIMARY KEY (`id`) USING BTREE
+ * ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+ * </pre>
  * @since 1.0.0
  * 数据库存储会话，默认使用MySQL，例
- * // 使用了 beecp 连接池 <a href="https://gitee.com/Chris2018998/BeeCP">beecp</a>
+ * 使用了 beecp 连接池 <a href="https://gitee.com/Chris2018998/BeeCP">beecp</a>
  */
 public class DbHttpSessionManage implements HttpSessionManage {
     protected static final Logger log = LoggerFactory.getLogger(DbHttpSessionManage.class);
@@ -77,7 +83,7 @@ public class DbHttpSessionManage implements HttpSessionManage {
         if (get != null)
             return get;
 
-        Cookie cookie = request.getCookie(FinalServerProperties.server_session_name);
+        Cookie cookie = request.getCookie(FinalServerConfiguration.sessionName);
         if (cookie == null) {
             return new HttpSession(FinalServerConfiguration.idGenerateFactory.generateSessionId(request));
         }
@@ -98,8 +104,8 @@ public class DbHttpSessionManage implements HttpSessionManage {
         Session session = context.getRequest().getSession();
         if (session.hasUpdateAttribute()) {
             storeSession(session);
-            DefaultCookie cookie = new DefaultCookie(FinalServerProperties.server_session_name, context.getRequest().getSession().getId());
-            cookie.setMaxAge(FinalServerProperties.server_session_age);
+            DefaultCookie cookie = new DefaultCookie(FinalServerConfiguration.sessionName, context.getRequest().getSession().getId());
+            cookie.setMaxAge(FinalServerConfiguration.sessionExpire);
             cookie.setPath("/");
             context.getResponse().addCookie(cookie);
         }
@@ -126,12 +132,8 @@ public class DbHttpSessionManage implements HttpSessionManage {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         } finally {
-            try {
-                statement.close();
-                connection.close();
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
+            IoUtil.close(statement);
+            IoUtil.close(connection);
         }
     }
 
@@ -146,12 +148,8 @@ public class DbHttpSessionManage implements HttpSessionManage {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         } finally {
-            try {
-                statement.close();
-                connection.close();
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
+            IoUtil.close(statement);
+            IoUtil.close(connection);
         }
     }
 
@@ -185,12 +183,8 @@ public class DbHttpSessionManage implements HttpSessionManage {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         } finally {
-            try {
-                statement.close();
-                connection.close();
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
+            IoUtil.close(statement);
+            IoUtil.close(connection);
         }
     }
 
@@ -201,19 +195,15 @@ public class DbHttpSessionManage implements HttpSessionManage {
             connection = dataSource.getConnection();
             statement = connection.prepareStatement("delete from f_store_session where last_time<?");
             // 预留10分钟
-            long removeTime = System.currentTimeMillis() - FinalServerProperties.server_session_age - 600000L;
+            long removeTime = System.currentTimeMillis() - FinalServerConfiguration.sessionExpire - 600000L;
             statement.setObject(1, new Date(removeTime));
             int update = statement.executeUpdate();
             log.info("清除过期会话个数：{}", update);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         } finally {
-            try {
-                statement.close();
-                connection.close();
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
+            IoUtil.close(statement);
+            IoUtil.close(connection);
         }
     }
 }

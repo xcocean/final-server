@@ -13,8 +13,8 @@ import java.util.Optional;
  * @date 2021/7/20 14:36
  * @description
  */
-//@Aspect
-//@Component
+@Aspect
+@Component
 public class CheckLoginAspect {
 
     @Around("@annotation(top.lingkang.finalserver.example.test04.CheckLogin)")

@@ -1,12 +1,14 @@
 package top.lingkang.finalserver.server.web;
 
+import cn.hutool.core.lang.Assert;
+import cn.hutool.core.net.NetUtil;
+import cn.hutool.core.util.StrUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
-import top.lingkang.finalserver.server.FinalServerApplication;
+import top.lingkang.finalserver.server.config.FinalServerProperties;
 import top.lingkang.finalserver.server.core.*;
 import top.lingkang.finalserver.server.core.impl.DefaultHttpSessionManage;
 import top.lingkang.finalserver.server.core.impl.DefaultIdGenerateFactory;
@@ -17,7 +19,6 @@ import top.lingkang.finalserver.server.web.handler.LocalStaticMapping;
 import top.lingkang.finalserver.server.web.handler.RequestHandler;
 import top.lingkang.finalserver.server.web.handler.StaticRequestHandler;
 import top.lingkang.finalserver.server.web.http.Filter;
-import top.lingkang.finalserver.server.web.ws.WebSocketDispatch;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -30,13 +31,12 @@ import java.util.List;
  **/
 public class FinalServerInitializer {
     private static final Logger log = LoggerFactory.getLogger(FinalServerInitializer.class);
-    private final ApplicationContext applicationContext;
     public static RequestHandler[] requestHandlers = new RequestHandler[0];
     public static Filter[] filters = new Filter[0];
 
     @Autowired
     public FinalServerInitializer(ApplicationContext applicationContext) {
-        this.applicationContext = applicationContext;
+        settingConfig(applicationContext.getBean(FinalServerProperties.class));
         List<RequestHandler> handlers = new ArrayList<>();
         String[] beanNamesForType = applicationContext.getBeanNamesForType(LocalStaticMapping.class);
         for (String name : beanNamesForType) {
@@ -55,7 +55,6 @@ public class FinalServerInitializer {
         controllerBean.build();// 构建
         handlers.add(controllerBean);
 
-        // handlers.add(new BuildControllerHandler(applicationContext).build());// controller转发
         requestHandlers = handlers.toArray(new RequestHandler[0]);
 
         String[] namesForType = applicationContext.getBeanNamesForType(Filter.class);
@@ -64,12 +63,6 @@ public class FinalServerInitializer {
             for (String name : namesForType) {
                 Filter filter = applicationContext.getBean(name, Filter.class);
                 filter.init();// 初始化
-                FinalServerApplication.addShutdownHook(new ShutdownEvent() {
-                    @Override
-                    public void shutdown() throws Exception {
-                        filter.destroy();
-                    }
-                });
                 list.add(filter);
             }
 
@@ -93,15 +86,6 @@ public class FinalServerInitializer {
                 }
             });
 
-            // 添加注销事件
-            FinalServerApplication.addShutdownHook(new ShutdownEvent() {
-                @Override
-                public void shutdown() throws Exception {
-                    for (Filter filter : list)
-                        filter.destroy();
-                }
-            });
-
             filters = list.toArray(new Filter[]{});
         }
 
@@ -116,8 +100,8 @@ public class FinalServerInitializer {
         HttpParseTemplate httpParseTemplate = BeanUtils.getBean(HttpParseTemplate.class, applicationContext);
         if (httpParseTemplate != null)// 使用默认模板解析
             FinalServerConfiguration.httpParseTemplate = httpParseTemplate;
-        FinalServerConfiguration.httpParseTemplate.init(FinalServerProperties.server_template_prefix);
-        log.info("模板引擎扫描路径：{}  后缀匹配：{}", FinalServerProperties.server_template_prefix, FinalServerProperties.server_template_suffix);
+        FinalServerConfiguration.httpParseTemplate.init(FinalServerConfiguration.templatePath);
+        log.info("模板引擎扫描路径：{}  后缀匹配：{}", FinalServerConfiguration.templatePath, FinalServerConfiguration.templateSuffix);
 
         // 初始化会话管理
         String[] sessionManage = applicationContext.getBeanNamesForType(HttpSessionManage.class);
@@ -161,9 +145,58 @@ public class FinalServerInitializer {
 
     }
 
-    @Order(Integer.MAX_VALUE)// 最后加载
-    @Bean
-    public WebSocketDispatch websocketManage() {
-        return new WebSocketDispatch(applicationContext);
+    private void settingConfig(FinalServerProperties serverProperties) {
+        if (!NetUtil.isUsableLocalPort(serverProperties.getPort()))
+            throw new RuntimeException("FinalServer start fail  启动失败，端口被占用: " + serverProperties.getPort());
+
+        if (serverProperties.getUploadFileBuffer() == -1 || serverProperties.getUploadFileBuffer() == 0)
+            serverProperties.setUploadFileBuffer(Integer.MAX_VALUE);
+
+        if (!serverProperties.getTemplatePath().endsWith("/"))
+            serverProperties.setTemplatePath(serverProperties.getTemplatePath() + "/");
+        if (!serverProperties.getTemplatePath().startsWith("/"))
+            serverProperties.setTemplatePath("/" + serverProperties.getTemplatePath());
+
+        String staticPath = serverProperties.getTemplateStatic();
+        if (StrUtil.isBlank(staticPath)) {
+            staticPath = "static";
+        } else if (staticPath.startsWith("/"))
+            staticPath = staticPath.substring(1);
+        else if (staticPath.endsWith("/"))
+            staticPath = staticPath.substring(0, staticPath.length() - 1);
+        serverProperties.setTemplateStatic(staticPath);
+
+        FinalServerConfiguration.templateStatic = serverProperties.getTemplateStatic();
+        FinalServerConfiguration.templatePath = serverProperties.getTemplatePath();
+        FinalServerConfiguration.templateSuffix = serverProperties.getTemplateSuffix();
+        FinalServerConfiguration.templateCache = serverProperties.isTemplateCache();
+        FinalServerConfiguration.templateCacheTime = serverProperties.getTemplateCacheTime();
+        FinalServerConfiguration.sessionName = serverProperties.getSessionName();
+        FinalServerConfiguration.sessionExpire = serverProperties.getSessionExpire();
+        FinalServerConfiguration.uploadFileBuffer = serverProperties.getUploadFileBuffer();
+        FinalServerConfiguration.maxContentLength = serverProperties.getMaxContentLength();
+        FinalServerConfiguration.cacheControl = serverProperties.isCacheControl();
+
+        int pro = Runtime.getRuntime().availableProcessors();
+        int boss = pro, work = pro * 50;
+        if (work > 200)
+            work = 200;// 默认值不超过200
+        if (serverProperties.getThreadMaxReceive() != 0)
+            boss = serverProperties.getThreadMaxReceive();
+        if (serverProperties.getThreadMaxHandler() != 0)
+            work = serverProperties.getThreadMaxHandler();
+        FinalServerConfiguration.threadMaxReceive = boss;
+        FinalServerConfiguration.threadMaxHandler = work;
+        FinalServerConfiguration.threadBacklog = serverProperties.getThreadBacklog();
+        serverProperties.setThreadMaxReceive(boss);
+        serverProperties.setThreadMaxHandler(work);
+        Assert.isTrue(serverProperties.getThreadMaxReceive() > 0, "接收线程数不能小于1");
+        Assert.isTrue(serverProperties.getThreadMaxHandler() > 0, "线程处理数不能小于1");
+
+        FinalServerConfiguration.websocketMaxMessage = serverProperties.getWebsocketMaxMessage();
+        FinalServerConfiguration.websocketTimeout = serverProperties.getWebsocketTimeout();
+
+        log.info("配置如下：{}", serverProperties.toString());
     }
+
 }

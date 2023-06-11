@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBufUtil;
 import io.netty.handler.codec.http.websocketx.WebSocketFrame;
 import top.lingkang.finalserver.server.constant.FinalServerConstants;
 
+import java.io.Serializable;
 import java.nio.charset.Charset;
 
 /**
@@ -11,7 +12,7 @@ import java.nio.charset.Charset;
  * Created by 2022/12/12
  * @since 1.0.0
  */
-public class Message {
+public class Message implements Serializable {
     private WebSocketFrame webSocketFrame;
 
     public Message(WebSocketFrame webSocketFrame) {

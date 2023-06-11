@@ -9,7 +9,6 @@ import io.netty.util.CharsetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.lingkang.finalserver.server.core.FinalServerConfiguration;
-import top.lingkang.finalserver.server.core.FinalServerProperties;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -178,7 +177,7 @@ public class HttpRequest implements Request {
 
     @Override
     public Session getSession() {
-        if (session == null || System.currentTimeMillis() - session.lastAccessTime() > FinalServerProperties.server_session_age)
+        if (session == null || System.currentTimeMillis() - session.lastAccessTime() > FinalServerConfiguration.sessionExpire)
             session = FinalServerConfiguration.httpSessionManage.getSession(FinalServerContext.currentContext().getRequest());
         return session;
     }
@@ -218,7 +217,7 @@ public class HttpRequest implements Request {
     // 首次获取时再实例化，提升性能
     private void checkQueryBody() {
         if (queryBody == null) {
-            queryBody = new HttpPostRequestDecoder(new DefaultHttpDataFactory(FinalServerProperties.server_uploadFileBuffer), msg);
+            queryBody = new HttpPostRequestDecoder(new DefaultHttpDataFactory(FinalServerConfiguration.uploadFileBuffer), msg);
         }
     }
 }

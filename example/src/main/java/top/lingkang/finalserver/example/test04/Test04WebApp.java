@@ -72,7 +72,6 @@ public class Test04WebApp {
     // @Scheduled(fixedRate = 5000)
     public void task() {
         Test04WebApp bean = applicationContext.getBean(Test04WebApp.class);
-        System.out.println(bean.hi("1"));
     }
 
     public String hi(String name) {

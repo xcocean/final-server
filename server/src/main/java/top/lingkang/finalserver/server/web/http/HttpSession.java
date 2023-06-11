@@ -1,6 +1,6 @@
 package top.lingkang.finalserver.server.web.http;
 
-import top.lingkang.finalserver.server.core.FinalServerProperties;
+import top.lingkang.finalserver.server.core.FinalServerConfiguration;
 
 import java.io.Serializable;
 import java.util.Enumeration;
@@ -91,7 +91,7 @@ public class HttpSession implements Session, Serializable {
 
     @Override
     public boolean isExpire() {
-        boolean is = System.currentTimeMillis() - lastAccessTime > FinalServerProperties.server_session_age;
+        boolean is = System.currentTimeMillis() - lastAccessTime > FinalServerConfiguration.sessionExpire;
         if (is) {
             attributes.clear();
         }

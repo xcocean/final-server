@@ -30,7 +30,7 @@ Maven公共仓库：[https://mvnrepository.com/artifact/top.lingkang/server](htt
 <dependency>
     <groupId>top.lingkang</groupId>
     <artifactId>server</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
 </dependency>
 ```
 

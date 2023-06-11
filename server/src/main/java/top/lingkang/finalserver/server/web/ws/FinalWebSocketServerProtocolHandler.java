@@ -1,10 +1,9 @@
 package top.lingkang.finalserver.server.web.ws;
 
-import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.websocketx.WebSocketDecoderConfig;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolConfig;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
-import top.lingkang.finalserver.server.core.FinalServerProperties;
+import top.lingkang.finalserver.server.core.FinalServerConfiguration;
 
 
 /**
@@ -23,7 +22,7 @@ public class FinalWebSocketServerProtocolHandler extends WebSocketServerProtocol
                 .websocketPath(websocketPath)
                 .subprotocols(subprotocols)
                 .checkStartsWith(checkStartsWith)
-                .handshakeTimeoutMillis(FinalServerProperties.websocket_timeout)
+                .handshakeTimeoutMillis(FinalServerConfiguration.websocketTimeout)
                 .dropPongFrames(true)
                 .decoderConfig(WebSocketDecoderConfig.newBuilder()
                         .maxFramePayloadLength(maxFrameSize)

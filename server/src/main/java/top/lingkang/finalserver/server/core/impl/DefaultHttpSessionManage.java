@@ -4,11 +4,8 @@ import io.netty.handler.codec.http.cookie.Cookie;
 import io.netty.handler.codec.http.cookie.DefaultCookie;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import top.lingkang.finalserver.server.FinalServerApplication;
 import top.lingkang.finalserver.server.core.FinalServerConfiguration;
-import top.lingkang.finalserver.server.core.FinalServerProperties;
 import top.lingkang.finalserver.server.core.HttpSessionManage;
-import top.lingkang.finalserver.server.core.ShutdownEvent;
 import top.lingkang.finalserver.server.web.http.FinalServerContext;
 import top.lingkang.finalserver.server.web.http.HttpSession;
 import top.lingkang.finalserver.server.web.http.Request;
@@ -27,13 +24,6 @@ public class DefaultHttpSessionManage implements HttpSessionManage {
     protected Timer timer = new Timer();
 
     public DefaultHttpSessionManage() {
-        FinalServerApplication.addShutdownHook(new ShutdownEvent() {
-            @Override
-            public void shutdown() throws Exception {
-                timer.cancel();
-                sessionMap.clear();
-            }
-        });
 
         // 会话淘汰机制
         timer.schedule(new TimerTask() {
@@ -43,7 +33,7 @@ public class DefaultHttpSessionManage implements HttpSessionManage {
                     return;
                 log.info("自动session清理，当前session个数：{}", sessionMap.size());
                 // 预留10分钟
-                long removeTime = System.currentTimeMillis() - FinalServerProperties.server_session_age - 600000L;
+                long removeTime = System.currentTimeMillis() - FinalServerConfiguration.sessionExpire - 600000L;
                 List<String> removeList = new ArrayList<>();
                 HashMap<String, Session> temp = new HashMap<>(sessionMap);
                 for (Map.Entry<String, Session> entry : temp.entrySet()) {
@@ -62,7 +52,7 @@ public class DefaultHttpSessionManage implements HttpSessionManage {
 
     @Override
     public Session getSession(Request request) {
-        Cookie cookie = request.getCookie(FinalServerProperties.server_session_name);
+        Cookie cookie = request.getCookie(FinalServerConfiguration.sessionName);
         Session session;
         if (cookie == null) {
             session = new HttpSession(FinalServerConfiguration.idGenerateFactory.generateSessionId(request));
@@ -85,8 +75,8 @@ public class DefaultHttpSessionManage implements HttpSessionManage {
         Session session = context.getRequest().getSession();
         if (session.hasUpdateAttribute()) {
             sessionMap.put(session.getId(), session);
-            DefaultCookie cookie = new DefaultCookie(FinalServerProperties.server_session_name, context.getRequest().getSession().getId());
-            cookie.setMaxAge(FinalServerProperties.server_session_age);
+            DefaultCookie cookie = new DefaultCookie(FinalServerConfiguration.sessionName, context.getRequest().getSession().getId());
+            cookie.setMaxAge(FinalServerConfiguration.sessionExpire);
             cookie.setPath("/");
             context.getResponse().addCookie(cookie);
         }

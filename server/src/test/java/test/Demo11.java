@@ -11,7 +11,7 @@ import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpClientCodec;
 import io.netty.util.CharsetUtil;
-import top.lingkang.finalserver.server.core.FinalServerProperties;
+import top.lingkang.finalserver.server.core.FinalServerConfiguration;
 import top.lingkang.finalserver.server.web.http.FinalServerContext;
 import top.lingkang.finalserver.server.web.nio.FinalHttpObjectAggregator;
 
@@ -41,7 +41,7 @@ public class Demo11 {
                         public void initChannel(SocketChannel ch) throws Exception {
                             ChannelPipeline p = ch.pipeline();
                             p.addLast(new HttpClientCodec());
-                            p.addLast(new FinalHttpObjectAggregator(FinalServerProperties.server_maxContentLength));
+                            p.addLast(new FinalHttpObjectAggregator(FinalServerConfiguration.maxContentLength));
                             p.addLast(forwardRequestHandler);
                         }
                     });

@@ -6,6 +6,9 @@ import top.lingkang.finalserver.server.annotation.Controller;
 import top.lingkang.finalserver.server.annotation.FinalServerBoot;
 import top.lingkang.finalserver.server.annotation.GET;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 /**
  * @author lingkang
  * 2023/1/12
@@ -18,9 +21,20 @@ public class Test01WebApp {
         FinalServerApplication.run(Test01WebApp.class, args);
     }
 
+    private int count=0;
     @GET("")
     public String index() throws Exception {
-        log.info("ok");
+        // log.info("ok");
+        count++;
         return "ok";
+    }
+
+    public Test01WebApp() {
+        Timer timer = new Timer();timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                log.info("请求次数：{}",count);
+            }
+        },5000,5000);
     }
 }

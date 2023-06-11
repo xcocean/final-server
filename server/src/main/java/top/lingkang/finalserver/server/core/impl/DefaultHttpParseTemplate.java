@@ -5,7 +5,7 @@ import org.thymeleaf.context.IContext;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 import org.thymeleaf.util.Validate;
-import top.lingkang.finalserver.server.core.FinalServerProperties;
+import top.lingkang.finalserver.server.core.FinalServerConfiguration;
 import top.lingkang.finalserver.server.core.HttpParseTemplate;
 import top.lingkang.finalserver.server.web.http.FinalServerContext;
 
@@ -29,14 +29,14 @@ public class DefaultHttpParseTemplate implements HttpParseTemplate {
         // HTML is the default mode, but we will set it anyway for better understanding of code
         templateResolver.setTemplateMode(TemplateMode.HTML);
         // This will convert "home" to "templates/home.html"
-        templateResolver.setPrefix(FinalServerProperties.server_template_prefix);
-        templateResolver.setSuffix(FinalServerProperties.server_template_suffix);
+        templateResolver.setPrefix(FinalServerConfiguration.templatePath);
+        templateResolver.setSuffix(FinalServerConfiguration.templateSuffix);
         // Set template cache TTL to 1 hour. If not set, entries would live in cache until expelled by LRU
-        templateResolver.setCacheTTLMs(FinalServerProperties.server_template_cacheTime);
+        templateResolver.setCacheTTLMs(FinalServerConfiguration.templateCacheTime);
 
         // Cache is set to true by default. Set to false if you want templates to
         // be automatically updated when modified.
-        templateResolver.setCacheable(FinalServerProperties.server_template_cache);
+        templateResolver.setCacheable(FinalServerConfiguration.templateCache);
         templateEngine.setTemplateResolver(templateResolver);
     }
 

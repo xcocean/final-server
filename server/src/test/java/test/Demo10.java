@@ -1,9 +1,5 @@
 package test;
 
-import io.netty.handler.codec.http.HttpHeaderNames;
-import io.netty.handler.codec.http.HttpHeaders;
-import top.lingkang.finalserver.server.core.FinalServerProperties;
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -37,7 +33,7 @@ public class Demo10 {
 
             OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream(), "UTF-8");
             //将数据写入流中
-           out.write(new char[0]);
+            out.write(new char[0]);
             //刷新流中的数据
             out.flush();
             //关闭流(关闭之前要先刷新)

@@ -6,7 +6,7 @@ import io.netty.handler.codec.http.websocketx.extensions.compression.WebSocketSe
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.lingkang.finalserver.server.constant.FinalServerConstants;
-import top.lingkang.finalserver.server.core.FinalServerProperties;
+import top.lingkang.finalserver.server.core.FinalServerConfiguration;
 import top.lingkang.finalserver.server.utils.BeanUtils;
 import top.lingkang.finalserver.server.web.ws.FinalWebSocketServerProtocolHandler;
 import top.lingkang.finalserver.server.web.ws.WebSocketDispatch;
@@ -59,7 +59,7 @@ public class DispatcherHandler extends BaseDispatcherHandler {
                 request.uri(), //路径
                 null,
                 true,
-                FinalServerProperties.websocket_maxMessage, //最大处理数据内容
+                FinalServerConfiguration.websocketMaxMessage, //最大处理数据内容
                 false,  //掩码加密
                 true //允许 websocketPath 路径匹配，否则走全匹配，例如 websocketPath=/ws request=/ws?user=zhangsan 将匹配不上，无法处理
         ));

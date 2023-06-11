@@ -9,7 +9,6 @@ import io.netty.handler.codec.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.lingkang.finalserver.server.core.FinalServerConfiguration;
-import top.lingkang.finalserver.server.core.FinalServerProperties;
 import top.lingkang.finalserver.server.core.ReturnStaticFileHandler;
 import top.lingkang.finalserver.server.web.http.FinalServerContext;
 import top.lingkang.finalserver.server.web.http.HttpUtils;
@@ -49,7 +48,7 @@ public class DefaultReturnStaticFileHandler implements ReturnStaticFileHandler {
         headers.setAll(context.getResponse().getHeaders());
 
         // 304缓存  If-Modified-Since
-        if (FinalServerProperties.file_cache_control) {
+        if (FinalServerConfiguration.cacheControl) {
             headers.set(HttpHeaderNames.CACHE_CONTROL, HttpHeaderValues.PUBLIC);// Cache-Control: public
             String timeMillis = context.getRequest().getHeaders().get(HttpHeaderNames.IF_MODIFIED_SINCE);
             if (timeMillis != null && timeMillis.equals(file.lastModified() + "")) {
