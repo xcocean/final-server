@@ -29,6 +29,11 @@ public class Test01WebApp {
         return "ok";
     }
 
+    @GET("a")
+    public String a() throws Exception {
+        return "ok";
+    }
+
     public Test01WebApp() {
         Timer timer = new Timer();timer.schedule(new TimerTask() {
             @Override
