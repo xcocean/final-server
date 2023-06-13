@@ -196,6 +196,7 @@ public class FinalServerInitializer {
         FinalServerConfiguration.websocketMaxMessage = serverProperties.getWebsocketMaxMessage();
         FinalServerConfiguration.websocketTimeout = serverProperties.getWebsocketTimeout();
 
+        FinalServerConfiguration.port=serverProperties.getPort();
         log.info("配置如下：{}", serverProperties.toString());
     }
 
