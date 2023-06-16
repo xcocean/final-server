@@ -6,7 +6,7 @@ final-server是一个基于netty实现的高性能web服务器。使用 springbo
 ### 特点
 
 * 相较于 `springboot`（tomcat） 运行内存减少一半以上
-* netty http2处理
+* 出色的netty-http处理
 * 自带基于RPC角色鉴权（默认不启用）
 * 长连接 websocket
 * filter功能
@@ -25,3 +25,5 @@ final-server是一个基于netty实现的高性能web服务器。使用 springbo
 gitee文档：[https://gitee.com/lingkang_top/final-server/tree/master/docs/md](https://gitee.com/lingkang_top/final-server/tree/master/docs/md)
 
 Maven公共仓库：[https://mvnrepository.com/artifact/top.lingkang/server](https://mvnrepository.com/artifact/top.lingkang/server)
+
+快照仓库：[https://s01.oss.sonatype.org/content/repositories/snapshots](https://s01.oss.sonatype.org/content/repositories/snapshots)
