@@ -70,7 +70,6 @@ public class FinalServerInitializer {
             list.sort(new Comparator<Filter>() {
                 @Override
                 public int compare(Filter o1, Filter o2) {
-                    Class<? extends Filter> aClass = o1.getClass();
                     int v1 = 0, v2 = 0;
                     Order order = BeanUtils.getSpringProxyToClass(o1.getClass()).getAnnotation(Order.class);
                     if (order != null)
@@ -179,8 +178,8 @@ public class FinalServerInitializer {
 
         int pro = Runtime.getRuntime().availableProcessors();
         int boss = pro, work = pro * 50;
-        if (work > 200)
-            work = 200;// 默认值不超过200
+        if (work > 128)
+            work = 128;// 默认值不超过 128
         if (serverProperties.getThreadMaxReceive() != 0)
             boss = serverProperties.getThreadMaxReceive();
         if (serverProperties.getThreadMaxHandler() != 0)
@@ -196,7 +195,9 @@ public class FinalServerInitializer {
         FinalServerConfiguration.websocketMaxMessage = serverProperties.getWebsocketMaxMessage();
         FinalServerConfiguration.websocketTimeout = serverProperties.getWebsocketTimeout();
 
-        FinalServerConfiguration.port=serverProperties.getPort();
+        FinalServerConfiguration.port = serverProperties.getPort();
+        if (!"0".equals(System.getProperty("server.port")))
+            FinalServerConfiguration.port=Integer.parseInt(System.getProperty("server.port"));
         log.info("配置如下：{}", serverProperties.toString());
     }
 

@@ -8,7 +8,7 @@ import java.util.concurrent.ThreadFactory;
  * @since 1.0.0
  */
 public class FinalThreadFactory implements ThreadFactory {
-    private static int index = 0;
+    private int index = 0;
     private String prefix;
 
     public FinalThreadFactory(String prefix) {

@@ -33,6 +33,7 @@ public class FinalServerApplication extends DynamicAddController {
             return;
         }
 
+        System.setProperty("server.port", String.valueOf(port));
 
         try {
             // 启动spring
