@@ -1,5 +1,6 @@
 package top.lingkang.finalserver.server.web.http;
 
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson2.JSON;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.*;
@@ -137,6 +138,21 @@ public class HttpRequest implements Request {
 
     @Override
     public String getIp() {
+        String ip = getHeader("x-forwarded-for");
+        if (StrUtil.isNotEmpty(ip))
+            return ip;
+        ip = getHeader("Proxy-Client-IP");
+        if (StrUtil.isNotEmpty(ip))
+            return ip;
+        ip = getHeader("WL-Proxy-Client-IP");
+        if (StrUtil.isNotEmpty(ip))
+            return ip;
+        ip = getHeader("HTTP_CLIENT_IP");
+        if (StrUtil.isNotEmpty(ip))
+            return ip;
+        ip = getHeader("HTTP_X_FORWARDED_FOR");
+        if (StrUtil.isNotEmpty(ip))
+            return ip;
         return ((InetSocketAddress) ctx.channel().remoteAddress()).getHostString();
     }
 

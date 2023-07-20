@@ -70,7 +70,8 @@ class BuildControllerHandler {
                     if (!path.startsWith("/"))
                         path = "/" + path;
                     if (path.length() > 1 && path.endsWith("/"))
-                        throw new IllegalArgumentException("Controller处理的URL不能以 '/' 作为结尾  class:" + beanClass.getName() + " 方法:" + method.getName());
+                        throw new IllegalArgumentException("Controller处理的URL不能以 '/' 作为结尾  class: "
+                                + beanClass.getName() + " 方法: " + method.getName());
 
                     info.setBeanName(name);
                     info.setControllerClass(beanClass);
